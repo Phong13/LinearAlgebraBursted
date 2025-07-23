@@ -123,6 +123,29 @@ namespace LinearAlgebra
             tempfProxyMatrices.Add(in matrix);
             return matrix;
         }
+
+        public unsafe bool DB_isPersistant(in fProxyMxN v)
+        {
+            for (int i = 0; i < fProxyMatrices.Length; i++)
+            {
+                if (fProxyMatrices[i].Data.Ptr == v.Data.Ptr) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// For debugging checks if a vector is in the persistent list.
+        /// </summary>
+        public unsafe bool DB_isTemp(in fProxyMxN v)
+        {
+            for (int i = 0; i < tempfProxyMatrices.Length; i++)
+            {
+                if (tempfProxyMatrices[i].Data.Ptr == v.Data.Ptr) return true;
+            }
+
+            return false;
+        }
         #endregion
 
     }

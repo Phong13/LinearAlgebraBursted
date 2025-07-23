@@ -91,7 +91,7 @@ public class fProxyDotOperationTests
             arena.Dispose();
         }
 
-        public void MatVecDot()
+        public unsafe void MatVecDot()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -101,9 +101,18 @@ public class fProxyDotOperationTests
             fProxyN x = arena.fProxyVec(inVecLen, 1f);
             fProxyMxN A = arena.fProxyRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
 
+            fProxyN xx = x;
+            fProxyMxN AA = A;
+
             fProxyN b = fProxyOP.dot(A, x);
 
             Assert.AreEqual(outVecLen, b.N);
+
+            Assert.IsTrue(arena.AllocationsCount == 2);
+            Assert.IsTrue(arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
+            Assert.IsTrue(xx.Data.Ptr == x.Data.Ptr);
+            Assert.IsTrue(AA.Data.Ptr == A.Data.Ptr);
 
             arena.Dispose();
         }
@@ -134,7 +143,7 @@ public class fProxyDotOperationTests
             arena.Dispose();
         }
 
-        public void MatMatDot()
+        public unsafe void MatMatDot()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -143,7 +152,16 @@ public class fProxyDotOperationTests
             fProxyMxN A = arena.fProxyIdentityMatrix(matLen);
             fProxyMxN B = arena.fProxyIdentityMatrix(matLen);
 
+            fProxyMxN AA = A;
+            fProxyMxN BB = B;
+
             fProxyMxN C = fProxyOP.dot(A, B);
+
+            Assert.IsTrue(arena.AllocationsCount == 2);
+            Assert.IsTrue(arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(in C));
+            Assert.IsTrue(BB.Data.Ptr == B.Data.Ptr);
+            Assert.IsTrue(AA.Data.Ptr == A.Data.Ptr);
 
             for (int i = 0; i < matLen; i++)
             for (int j = 0; j < matLen; j++)
@@ -180,7 +198,7 @@ public class fProxyDotOperationTests
             arena.Dispose();
         }
 
-        public void MatVecDotNonSquare()
+        public unsafe void MatVecDotNonSquare()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -190,9 +208,18 @@ public class fProxyDotOperationTests
             fProxyN x = arena.fProxyVec(inVecLen, 1f);
             fProxyMxN A = arena.fProxyRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
 
+            fProxyN xx = x;
+            fProxyMxN AA = A;
+
             fProxyN b = fProxyOP.dot(A, x);
 
             Assert.AreEqual(outVecLen, b.N);
+
+            Assert.IsTrue(arena.AllocationsCount == 2);
+            Assert.IsTrue(arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
+            Assert.IsTrue(xx.Data.Ptr == x.Data.Ptr);
+            Assert.IsTrue(AA.Data.Ptr == A.Data.Ptr);
 
             arena.Dispose();
         }
