@@ -64,21 +64,22 @@ public class fProxyOperationsTest {
             // inpl operations should not move the vector or matrix that it is being called on.
             fProxyN c = arena.fProxyVec(vecLen, 0f);
             fProxyN d = c; // both c and d point at the same buffer.
+            Assert.IsTrue(arena.DB_isPersistant(in c));
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr);
             c.addInpl(a);
-            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points to the same buffer
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points to the same buffer
             c.subInpl(b);
-            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.signFlipInpl();
-            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.modInpl(3);
-            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.divInpl(5);
-            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.compMulInpl(a);
-            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.compDivInpl(a);
-
+            Assert.IsTrue(arena.DB_isPersistant(in c)); // verify c has not been converted
             arena.Dispose();
         }
     }
@@ -92,7 +93,7 @@ public class fProxyOperationsTest {
     [BurstCompile]
     public struct BasicMatOpTestJob : IJob
     {
-        public void Execute()
+        public unsafe void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -106,8 +107,14 @@ public class fProxyOperationsTest {
 
             fProxyMxN b = arena.fProxyMat(rows, cols, 10f);
 
+            fProxyMxN aa = a;
+            fProxyMxN bb = b;
+
+
             fProxyMxN result = default;
 
+            Assert.IsTrue(arena.TempAllocationsCount == 0);
+            Assert.IsTrue(arena.AllocationsCount == 2);
             result = a + s;
 
             result = s + a;
@@ -128,6 +135,12 @@ public class fProxyOperationsTest {
             result = a * b;
             result = a / b;
             result = a % b;
+            Assert.IsTrue(arena.TempAllocationsCount == 15);
+            Assert.IsTrue(arena.AllocationsCount == 2);
+
+            // Check that the buffers a and b were not moved by any of these operations
+            Assert.IsTrue(aa.Data.Ptr == a.Data.Ptr);
+            Assert.IsTrue(bb.Data.Ptr == b.Data.Ptr);
 
             arena.Dispose();
         }
