@@ -11,7 +11,7 @@ public class fProxyOperationsTest {
     [BurstCompile]
     public struct BasicVecOpTestJob : IJob
     {
-        public void Execute()
+        public unsafe void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -19,7 +19,6 @@ public class fProxyOperationsTest {
 
             fProxy s = 1f;
             fProxyN a = arena.fProxyVec(vecLen, 10f);
-
 
             Assert.AreEqual(vecLen, a.N); 
 
@@ -32,11 +31,14 @@ public class fProxyOperationsTest {
             fProxyN result = default;
 
             result = a + s;
+            Assert.IsTrue(arena.DB_isTemp(result));
 
             result = s + a;
 
             result = a - s;
             result = s - a;
+
+            Assert.IsTrue(arena.DB_isTemp(result));
 
             Assert.AreEqual(4, arena.TempAllocationsCount);
 
@@ -57,6 +59,25 @@ public class fProxyOperationsTest {
             result = a % b;
 
             Assert.AreEqual(11, arena.TempAllocationsCount);
+            arena.Clear();
+
+            // inpl operations should not move the vector or matrix that it is being called on.
+            fProxyN c = arena.fProxyVec(vecLen, 0f);
+            fProxyN d = c; // both c and d point at the same buffer.
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr);
+            c.addInpl(a);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points to the same buffer
+            c.subInpl(b);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            c.signFlipInpl();
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            c.modInpl(3);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            c.divInpl(5);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            c.compMulInpl(a);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // varify that c still points ot the same buffer.
+            c.compDivInpl(a);
 
             arena.Dispose();
         }

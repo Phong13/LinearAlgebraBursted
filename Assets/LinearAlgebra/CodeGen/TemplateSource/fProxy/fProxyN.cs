@@ -102,7 +102,9 @@ namespace LinearAlgebra
         }
 
         public void Dispose() {
-
+#if LINALG_DEBUG
+            for (int i = 0; i < N; i++) this[i] = float.NaN;
+#endif
             Data.Dispose();
         }
 

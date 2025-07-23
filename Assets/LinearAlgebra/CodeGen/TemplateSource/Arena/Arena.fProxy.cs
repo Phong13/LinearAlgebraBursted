@@ -52,6 +52,32 @@ namespace LinearAlgebra
         }
         #endregion
 
+        /// <summary>
+        /// For debugging checks if a vector is in the persistent list.
+        /// </summary>
+        public unsafe bool DB_isPersistant(in fProxyN v)
+        {
+            for (int i = 0; i < fProxyVectors.Length; i++)
+            {
+                if (fProxyVectors[i].Data.Ptr == v.Data.Ptr) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// For debugging checks if a vector is in the persistent list.
+        /// </summary>
+        public unsafe bool DB_isTemp(in fProxyN v)
+        {
+            for (int i = 0; i < tempfProxyVectors.Length; i++)
+            {
+                if (tempfProxyVectors[i].Data.Ptr == v.Data.Ptr) return true;
+            }
+
+            return false;
+        }
+
         #region MATRIX
         public fProxyMxN fProxyMat(int dim, bool uninit = false)
         {

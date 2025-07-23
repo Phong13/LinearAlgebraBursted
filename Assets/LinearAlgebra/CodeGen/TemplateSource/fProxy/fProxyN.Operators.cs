@@ -122,7 +122,7 @@ namespace LinearAlgebra
 
             fProxyN vec = a.TempCopy();
 
-            fProxyOP.addInpl(b, vec);
+            fProxyOP.addInpl(vec, b);
 
             return vec;
         }
