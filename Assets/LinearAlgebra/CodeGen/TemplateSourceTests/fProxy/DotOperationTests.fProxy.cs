@@ -27,6 +27,7 @@ public class fProxyDotOperationTests
             MatMatNonSquare,
             OuterDot,
             MatMatInpl,
+            MatVecInpl,
         }
 
         public TestType Type;
@@ -62,6 +63,9 @@ public class fProxyDotOperationTests
                 break;
                 case TestType.MatMatInpl:
                     MatMatDotInpl();
+                break;
+                case TestType.MatVecInpl:
+                    MatVecDotInpl();
                     break;
             }
         }
@@ -145,6 +149,32 @@ public class fProxyDotOperationTests
                 Assert.AreEqual((fProxy)i, b[i]);
 
             arena.Dispose();
+        }
+
+        public unsafe void MatVecDotInpl()
+        {
+            var arena = new Arena(Allocator.Persistent);
+            fProxyMxN A = arena.fProxyMat(2, 3);
+            A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+            A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+            fProxyN x = arena.fProxyVec(3);
+            x[0] = 1;
+            x[1] = 2;
+            x[2] = 3;
+
+            fProxyN b = arena.fProxyVec(2);
+
+            b.dotCompInpl(A, x);
+
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+            Assert.IsTrue(arena.DB_isPersistant(b));
+
+            fProxyN expectedB = arena.fProxyVec(2);
+            expectedB[0] = 14;
+            expectedB[1] = 32;
+
+            Assert.IsTrue(b.EqualsByValue(expectedB));
         }
 
         public unsafe void MatMatDotInpl()
@@ -372,5 +402,11 @@ public class fProxyDotOperationTests
     public void MatMatInplTest()
     {
         new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.MatMatInpl }.Run();
+    }
+
+    [Test]
+    public void MatVecInplTest()
+    {
+        new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.MatVecInpl }.Run();
     }
 }

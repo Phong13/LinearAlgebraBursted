@@ -145,7 +145,7 @@ namespace LinearAlgebra
         /// No allocations, stores result in this matrix
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void dotCompInpl(this fProxyN target, fProxyMxN A, fProxyN x, bool transposeA)
+        public static void dotCompInpl(this fProxyN target, fProxyMxN A, fProxyN x, bool transposeA = false)
         {
             Assume.SameDim(A.N_Cols, x.N);
             unsafe
