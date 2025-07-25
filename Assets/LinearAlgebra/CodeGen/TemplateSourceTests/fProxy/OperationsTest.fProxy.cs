@@ -79,9 +79,124 @@ public class fProxyOperationsTest {
             c.compMulInpl(a);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.compDivInpl(a);
+
             Assert.IsTrue(arena.DB_isPersistant(in c)); // verify c has not been converted
             arena.Dispose();
         }
+    }
+
+    [Test]
+    public void VecAddInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        fProxyN a = arena.fProxyVec(3);
+        a[0] = 1;
+        a[1] = 2;
+        a[2] = 3;
+         
+        fProxyN b = arena.fProxyVec(3);
+        b[0] = 5;
+        b[1] = 6;
+        b[2] = 7;
+
+        fProxyN c = arena.fProxyVec(3, 7);
+        c.addInpl(a, b);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        fProxyN cc = arena.fProxyVec(3, 7);
+        cc[0] = 6;
+        cc[1] = 8;
+        cc[2] = 10;
+
+        Assert.IsTrue(c.EqualsByValue(cc));
+        Assert.IsTrue(arena.DB_isPersistant(c));
+
+        arena.Dispose();
+    }
+
+    [Test]
+    public void VecSubInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        fProxyN a = arena.fProxyVec(3);
+        a[0] = 1;
+        a[1] = 2;
+        a[2] = 3;
+
+        fProxyN b = arena.fProxyVec(3);
+        b[0] = 5;
+        b[1] = 6;
+        b[2] = 7;
+
+        fProxyN c = arena.fProxyVec(3, 7);
+        c.subInpl(a, b);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        fProxyN cc = arena.fProxyVec(3, 7);
+        cc[0] = -4;
+        cc[1] = -4;
+        cc[2] = -4;
+
+        Assert.IsTrue(c.EqualsByValue(cc));
+        Assert.IsTrue(arena.DB_isPersistant(c));
+
+        arena.Dispose();
+    }
+
+    [Test]
+    public void MatAddInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        fProxyMxN A = arena.fProxyMat(2, 3);
+        A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+        A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+        fProxyMxN B = arena.fProxyMat(2, 3);
+        B[0, 0] = 2; B[0, 1] = 3; B[0, 2] = 4;
+        B[1, 0] = 5; B[1, 1] = 6; B[1, 2] = 7;
+
+        fProxyMxN C = arena.fProxyMat(2, 3, 7);
+        C.addInpl(A, B);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        fProxyMxN CC = arena.fProxyMat(2, 3);
+        CC[0, 0] = 3; CC[0, 1] = 5; CC[0, 2] = 7;
+        CC[1, 0] = 9; CC[1, 1] = 11; CC[1, 2] = 13;
+
+        Assert.IsTrue(C.EqualsByValue(CC));
+        Assert.IsTrue(arena.DB_isPersistant(C));
+
+        arena.Dispose();
+    }
+
+    [Test]
+    public void MatSubInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        fProxyMxN A = arena.fProxyMat(2, 3);
+        A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+        A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+        fProxyMxN B = arena.fProxyMat(2, 3);
+        B[0, 0] = 2; B[0, 1] = 3; B[0, 2] = 4;
+        B[1, 0] = 5; B[1, 1] = 6; B[1, 2] = 7;
+
+        fProxyMxN C = arena.fProxyMat(2, 3, 7);
+        C.subInpl(A, B);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        fProxyMxN CC = arena.fProxyMat(2, 3);
+        CC[0, 0] = -1; CC[0, 1] = -1; CC[0, 2] = -1;
+        CC[1, 0] = -1; CC[1, 1] = -1; CC[1, 2] = -1;
+
+        Assert.IsTrue(C.EqualsByValue(CC));
+        Assert.IsTrue(arena.DB_isPersistant(C));
+
+        arena.Dispose();
     }
 
     [Test]

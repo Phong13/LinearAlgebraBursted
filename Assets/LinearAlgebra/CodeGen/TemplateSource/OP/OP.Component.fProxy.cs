@@ -57,10 +57,28 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void addInpl<T>(this T place, T lhs, T rhs) where T : unmanaged, IUnsafefProxyArray
+        {
+            unsafe
+            {
+                UnsafeOP.compAdd(place.Data.Ptr, lhs.Data.Ptr, rhs.Data.Ptr, rhs.Data.Length);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void subInpl<T>(this T place, T fromB) where T : unmanaged, IUnsafefProxyArray
         {
             unsafe {
                 UnsafeOP.compSub(place.Data.Ptr, fromB.Data.Ptr, fromB.Data.Length);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void subInpl<T>(this T place, T lhs, T rhs) where T : unmanaged, IUnsafefProxyArray
+        {
+            unsafe
+            {
+                UnsafeOP.compSub(place.Data.Ptr, lhs.Data.Ptr, rhs.Data.Ptr, rhs.Data.Length);
             }
         }
 
