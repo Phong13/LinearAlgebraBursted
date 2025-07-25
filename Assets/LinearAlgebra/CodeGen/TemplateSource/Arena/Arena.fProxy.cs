@@ -1,4 +1,5 @@
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
 
 namespace LinearAlgebra
 {
@@ -30,6 +31,16 @@ namespace LinearAlgebra
             return vec;
         }
 
+        public fProxyN fProxyVec(float3 v)
+        {
+            var vec = new fProxyN(3, in this, true);
+            vec[0] = v.x;
+            vec[1] = v.y;
+            vec[2] = v.z;
+            fProxyVectors.Add(in vec);
+            return vec;
+        }
+
         internal fProxyN fProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
@@ -37,16 +48,26 @@ namespace LinearAlgebra
             return vec;
         }
 
-        internal fProxyN tempfProxyVec(int N, bool uninit = false)
+        public fProxyN tempfProxyVec(int N, bool uninit = false)
         {
             var vec = new fProxyN(N, in this, uninit);
             tempfProxyVectors.Add(in vec);
             return vec;
         }
 
-        internal fProxyN tempfProxyVec(in fProxyN orig)
+        public fProxyN tempfProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
+            tempfProxyVectors.Add(in vec);
+            return vec;
+        }
+
+        public fProxyN tempfProxyVec(float3 v)
+        {
+            var vec = new fProxyN(3, in this, true);
+            vec[0] = v.x;
+            vec[1] = v.y;
+            vec[2] = v.z;
             tempfProxyVectors.Add(in vec);
             return vec;
         }
@@ -108,7 +129,17 @@ namespace LinearAlgebra
             var matrix = new fProxyMxN(in orig);
             fProxyMatrices.Add(in matrix);
             return matrix;
-        }   
+        }
+
+        public fProxyMxN fProxyMat(in float3x3 orig)
+        {
+            var m = new fProxyMxN(3, 3, in this, false);
+            m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
+            m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y;
+            m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z;
+            fProxyMatrices.Add(in m);
+            return m;
+        }
 
         internal fProxyMxN tempfProxyMat(int M_rows, int M_cols, bool uninit = false)
         {
@@ -122,6 +153,16 @@ namespace LinearAlgebra
             var matrix = new fProxyMxN(orig);
             tempfProxyMatrices.Add(in matrix);
             return matrix;
+        }
+
+        public fProxyMxN tempfProxyMat(in float3x3 orig)
+        {
+            var m = new fProxyMxN(3, 3, in this, false);
+            m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
+            m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y;
+            m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z;
+            tempfProxyMatrices.Add(in m);
+            return m;
         }
 
         public unsafe bool DB_isPersistant(in fProxyMxN v)
