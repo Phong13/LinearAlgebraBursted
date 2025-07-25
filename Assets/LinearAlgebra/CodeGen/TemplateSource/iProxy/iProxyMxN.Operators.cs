@@ -176,7 +176,7 @@ namespace LinearAlgebra
 
             iProxyMxN matrix = lhs.TempCopy();
 
-            iProxyOP.addInpl(rhs, matrix);
+            iProxyOP.addInpl(matrix, rhs);
 
             return matrix;
         }
