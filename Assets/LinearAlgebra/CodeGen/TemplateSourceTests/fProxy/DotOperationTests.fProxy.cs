@@ -26,6 +26,7 @@ public class fProxyDotOperationTests
             MatVecNonSquare,
             MatMatNonSquare,
             OuterDot,
+            MatMatInpl,
         }
 
         public TestType Type;
@@ -59,6 +60,9 @@ public class fProxyDotOperationTests
                 case TestType.OuterDot:
                     OuterDot();
                 break;
+                case TestType.MatMatInpl:
+                    MatMatDotInpl();
+                    break;
             }
         }
 
@@ -141,6 +145,37 @@ public class fProxyDotOperationTests
                 Assert.AreEqual((fProxy)i, b[i]);
 
             arena.Dispose();
+        }
+
+        public unsafe void MatMatDotInpl()
+        {
+            var arena = new Arena(Allocator.Persistent);
+            fProxyMxN A = arena.fProxyMat(2, 3);
+            A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+            A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+            fProxyMxN B = fProxyOP.trans(A);
+
+            Debug.Log($"A \n{A}");
+            Debug.Log($"BB\n{B}");
+
+            fProxyMxN C = arena.fProxyMat(2, 2, 7);
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
+
+            C.dotCompInpl(A, B);
+
+            // no new allocations;
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isPersistant(C));
+
+            fProxyMxN CC = arena.fProxyMat(2,2);
+            CC[0, 0] = 14; CC[0, 1] = 32;
+            CC[1, 0] = 32; CC[1, 1] = 77;
+
+            Debug.Log($"C \n{C}");
+            Debug.Log($"CC\n{CC}");
+
+            Assert.IsTrue(C.EqualsByValue(CC));
         }
 
         public unsafe void MatMatDot()
@@ -331,5 +366,11 @@ public class fProxyDotOperationTests
     public void OuterDotTest()
     {
         new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.OuterDot }.Run();
+    }
+
+    [Test]
+    public void MatMatInplTest()
+    {
+        new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.MatMatInpl }.Run();
     }
 }

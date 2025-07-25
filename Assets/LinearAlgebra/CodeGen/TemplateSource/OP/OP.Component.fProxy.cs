@@ -127,5 +127,20 @@ namespace LinearAlgebra
                 UnsafeOP.signFlip(a.Data.Ptr, a.Data.Ptr, a.Data.Length);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EqualsByValue<T>(this T a, T rhs) where T : unmanaged, IUnsafefProxyArray
+        {
+            unsafe
+            {
+                if (a.Data.Length != rhs.Data.Length) return false;
+                for (int i = 0; i < a.Data.Length; i++)
+                {
+                    if (a.Data[i] != rhs.Data[i]) return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
