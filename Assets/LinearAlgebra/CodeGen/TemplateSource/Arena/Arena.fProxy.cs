@@ -41,6 +41,18 @@ namespace LinearAlgebra
             return vec;
         }
 
+        public fProxyN fProxyVec(float4 v)
+        {
+            var vec = new fProxyN(4, in this, true);
+            vec[0] = v.x;
+            vec[1] = v.y;
+            vec[2] = v.z;
+            vec[3] = v.w;
+            fProxyVectors.Add(in vec);
+            return vec;
+        }
+
+
         internal fProxyN fProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
@@ -68,6 +80,17 @@ namespace LinearAlgebra
             vec[0] = v.x;
             vec[1] = v.y;
             vec[2] = v.z;
+            tempfProxyVectors.Add(in vec);
+            return vec;
+        }
+
+        public fProxyN tempfProxyVec(float4 v)
+        {
+            var vec = new fProxyN(4, in this, true);
+            vec[0] = v.x;
+            vec[1] = v.y;
+            vec[2] = v.z;
+            vec[3] = v.w;
             tempfProxyVectors.Add(in vec);
             return vec;
         }
@@ -141,6 +164,17 @@ namespace LinearAlgebra
             return m;
         }
 
+        public fProxyMxN fProxyMat(in float4x4 orig)
+        {
+            var m = new fProxyMxN(4, 4, in this, false);
+            m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x; m[0, 3] = orig.c3.x;
+            m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y; m[1, 3] = orig.c3.y;
+            m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z; m[2, 3] = orig.c3.z;
+            m[3, 0] = orig.c0.w; m[3, 1] = orig.c1.w; m[3, 2] = orig.c2.w; m[3, 3] = orig.c3.w;
+            fProxyMatrices.Add(in m);
+            return m;
+        }
+
         internal fProxyMxN tempfProxyMat(int M_rows, int M_cols, bool uninit = false)
         {
             var matrix = new fProxyMxN(M_rows, M_cols, in this, uninit);
@@ -161,6 +195,17 @@ namespace LinearAlgebra
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
             m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y;
             m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z;
+            tempfProxyMatrices.Add(in m);
+            return m;
+        }
+
+        public fProxyMxN tempfProxyMat(in float4x4 orig)
+        {
+            var m = new fProxyMxN(4, 4, in this, false);
+            m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x; m[0, 3] = orig.c3.x;
+            m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y; m[1, 3] = orig.c3.y;
+            m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z; m[2, 3] = orig.c3.z;
+            m[3, 0] = orig.c0.w; m[3, 1] = orig.c1.w; m[3, 2] = orig.c2.w; m[3, 3] = orig.c3.w;
             tempfProxyMatrices.Add(in m);
             return m;
         }
