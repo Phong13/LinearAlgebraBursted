@@ -180,7 +180,7 @@ public class fProxyInitTest
                 Assert.IsTrue(mm0[0, 0] == 10 && mm0[0, 1] == 11 && mm0[1, 0] == 14 && mm0[1, 1] == 15);
 
                 float3x3 f33 = float3x3.EulerXYZ(.1f, .3f, .5f);
-                mm0.SetSubMatrix(f33, 1, 2);
+                mm0.SetSubMatrix(f33, 1, 1);
                 
 
             }
