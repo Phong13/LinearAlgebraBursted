@@ -270,5 +270,95 @@ namespace LinearAlgebra
                 return c;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetCol(this fProxyMxN a, float3 c, int colidx, int rowIdx = 0)
+        {
+            unsafe
+            {
+                a[rowIdx, colidx] = c.x;
+                a[rowIdx + 1, colidx] = c.y;
+                a[rowIdx + 2, colidx] = c.z;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetCol(this fProxyMxN a, float4 c, int colIdx, int rowIdx = 0)
+        {
+            unsafe
+            {
+                a[rowIdx, colIdx] = c.x;
+                a[rowIdx + 1, colIdx] = c.y;
+                a[rowIdx + 2, colIdx] = c.z;
+                a[rowIdx + 3, colIdx] = c.w;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetCol(this fProxyMxN a, fProxyN c, int colIdx, int rowStartIdx = 0)
+        {
+            unsafe
+            {
+                for (int i = 0; i < c.N; i++)
+                {
+                    a[rowStartIdx + i, colIdx] = c[i];
+                }
+            }
+        }
+
+        public static fProxyMxN GetSubMatrixTemp(this fProxyMxN a, int rowIdx, int numRows, int colIdx, int numCols)
+        {
+            unsafe
+            {
+                fProxyMxN m = a._arenaPtr->tempfProxyMat(numRows, numCols);
+                for (int i = 0; i < numRows; i++)
+                {
+                    for (int j = 0; j < numCols; j++)
+                    {
+                        m[i, j] = a[rowIdx + i, colIdx + j];
+                    }
+                }
+
+                return m;
+            }
+        }
+
+        public static float3x3 GetSubMatrixFloat3x3(this fProxyMxN a, int rowIdx, int colIdx)
+        {
+            unsafe
+            {
+                float3x3 m;
+
+                m.c0.x = (float) a[rowIdx    , colIdx]; m.c1.x = (float) a[rowIdx    , colIdx + 1]; m.c2.x = (float) a[rowIdx    , colIdx + 2];
+                m.c0.y = (float) a[rowIdx + 1, colIdx]; m.c1.y = (float) a[rowIdx + 1, colIdx + 1]; m.c2.y = (float) a[rowIdx + 1, colIdx + 2];
+                m.c0.z = (float) a[rowIdx + 2, colIdx]; m.c1.z = (float) a[rowIdx + 2, colIdx + 1]; m.c2.z = (float) a[rowIdx + 2, colIdx + 2];
+
+                return m;
+            }
+        }
+
+        public static void SetSubMatrix(this fProxyMxN a, fProxyMxN from, int rowIdx, int colIdx)
+        {
+            unsafe
+            {
+                for (int i = 0; i < from.M_Rows; i++)
+                {
+                    for (int j = 0; j < from.N_Cols; j++)
+                    {
+                         a[rowIdx + i, colIdx + j] = from[i, j];
+                    }
+                }
+            }
+        }
+
+        public static void SetSubMatrix(this fProxyMxN a, float3x3 from, int rowIdx, int colIdx)
+        {
+            unsafe
+            {
+                 a[rowIdx    , colIdx] = from.c0.x; a[rowIdx    , colIdx + 1] = from.c1.x; a[rowIdx    , colIdx + 2] = from.c2.x;
+                 a[rowIdx + 1, colIdx] = from.c0.y; a[rowIdx + 1, colIdx + 1] = from.c1.y; a[rowIdx + 1, colIdx + 2] = from.c2.y;
+                 a[rowIdx + 2, colIdx] = from.c0.z; a[rowIdx + 2, colIdx + 1] = from.c1.z; a[rowIdx + 2, colIdx + 2] = from.c2.z;
+            }
+        }
     }
 }

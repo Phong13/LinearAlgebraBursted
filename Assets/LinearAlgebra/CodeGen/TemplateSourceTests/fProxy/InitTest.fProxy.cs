@@ -141,12 +141,48 @@ public class fProxyInitTest
                 Assert.IsTrue(c[0] == mm0[0, 2] && c[1] == mm0[1, 2] && c[2] == mm0[2, 2] && c[3] == mm0[3, 2]);
 
                 float3 c3 = mm0.GetColAsFloat3(2);
-                UnityEngine.Debug.Log($"c: {c3}");
-                UnityEngine.Debug.Log($"m: {mm0}");
                 Assert.IsTrue(c3[0] == mm0[0, 2] && c3[1] == mm0[1, 2] && c3[2] == mm0[2, 2]);
 
                 float4 c4 = mm0.GetColAsFloat4(2);
                 Assert.IsTrue(c4[0] == mm0[0, 2] && c4[1] == mm0[1, 2] && c4[2] == mm0[2, 2] && c4[3] == mm0[3,2]);
+
+                float3 c5 = new float3(66, 55, 44);
+                mm0.SetCol(c5, 1, 1);
+                Assert.IsTrue(66 == mm0[1, 1] && 55 == mm0[2, 1] && 44 == mm0[3, 1]);
+
+                float4 c6 = new float4(66, 55, 44, 33);
+                mm0.SetCol(c6, 2);
+                Assert.IsTrue(66 == mm0[0, 2] && 55 == mm0[1, 2] && 44 == mm0[2, 2] && 33 == mm0[3,2]);
+
+                c[0] = 111; c[1] = 222; c[2] = 333; c[3] = 444;
+                mm0.SetCol(c, 3);
+                Assert.IsTrue(111 == mm0[0, 3] && 222 == mm0[1, 3] && 333 == mm0[2, 3] && 444 == mm0[3, 3]);
+            }
+
+            {
+                fProxyMxN mm0 = arena.fProxyMat(new float[,] { {1,2,3,4 },
+                                                              {5,6,7,8 },
+                                                              {9,10,11,12 },
+                                                              {13,14,15,16 }});
+                ac += 1;
+                float3x3 m = mm0.GetSubMatrixFloat3x3(1, 1);
+                Assert.IsTrue(arena.TempAllocationsCount == 4);
+                fProxyMxN mm = arena.fProxyMat(m);
+                ac += 1;
+
+                var m22 = mm0.GetSubMatrixTemp(2, 2, 1, 2);
+                Assert.IsTrue(arena.TempAllocationsCount == 5 && arena.DB_isTemp(m22));
+                Assert.IsTrue(m22.M_Rows == 2 && m22.N_Cols == 2);
+
+                Assert.IsTrue(m22[0, 0] == 10 && m22[0, 1] == 11 && m22[1, 0] == 14 && m22[1, 1] == 15);
+
+                mm0.SetSubMatrix(m22, 0, 0);
+                Assert.IsTrue(mm0[0, 0] == 10 && mm0[0, 1] == 11 && mm0[1, 0] == 14 && mm0[1, 1] == 15);
+
+                float3x3 f33 = float3x3.EulerXYZ(.1f, .3f, .5f);
+                mm0.SetSubMatrix(f33, 1, 2);
+                
+
             }
 
             arena.Dispose();
