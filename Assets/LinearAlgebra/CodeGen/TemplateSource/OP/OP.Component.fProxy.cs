@@ -3,6 +3,7 @@
 using System.Runtime.CompilerServices;
 
 using Unity.Burst;
+using Unity.Mathematics;
 
 namespace LinearAlgebra
 {
@@ -159,6 +160,115 @@ namespace LinearAlgebra
             }
 
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float3 GetSubvecAsFloat3(this fProxyN a, int index = 0)
+        {
+            float3 v;
+            unsafe
+            {
+                v.x = (float) a.Data[index];
+                v.y = (float) a.Data[index + 1];
+                v.z = (float) a.Data[index + 2];
+            }
+
+            return v;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4 GetSubvecAsFloat4(this fProxyN a, int index = 0)
+        {
+            float4 v;
+            unsafe
+            {
+                v.x = (float) a.Data[index];
+                v.y = (float) a.Data[index + 1];
+                v.z = (float) a.Data[index + 2];
+                v.w = (float) a.Data[index + 3];
+            }
+
+            return v;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fProxyN GetSubvec(this fProxyN a, int index, int len)
+        {
+            
+            unsafe
+            {
+                fProxyN v = a._arenaPtr->fProxyVec(len);
+                for (int i = 0; i < len; i++)
+                {
+                    v[i] = a[index + i];
+                }
+
+                return v;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fProxyN GetSubvecTemp(this fProxyN a, int index, int len)
+        {
+
+            unsafe
+            {
+                fProxyN v = a._arenaPtr->tempfProxyVec(len);
+                for (int i = 0; i < len; i++)
+                {
+                    v[i] = a[index + i];
+                }
+
+                return v;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float3 GetColAsFloat3(this fProxyMxN a, int col, int rowIdx = 0)
+        {
+            float3 c;
+            unsafe
+            {
+                c.x = (float) a[rowIdx, col];
+                c.y = (float) a[rowIdx + 1, col];
+                c.z = (float) a[rowIdx + 2, col];
+            }
+
+            return c;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4 GetColAsFloat4(this fProxyMxN a, int col, int rowIdx = 0)
+        {
+            float4 c;
+            unsafe
+            {
+                c.x = (float) a[rowIdx, col];
+                c.y = (float) a[rowIdx + 1, col];
+                c.z = (float) a[rowIdx + 2, col];
+                c.w = (float) a[rowIdx + 3, col];
+            }
+
+            return c;
+        }
+
+        /// <summary>
+        /// Allocated as a tempVec
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static fProxyN ColTemp(this fProxyMxN a, int col, int rowStartIdx = 0)
+        {
+            unsafe
+            {
+                int len = a.M_Rows - rowStartIdx;
+                fProxyN c = a._arenaPtr->tempfProxyVec(len);
+                for (int i = 0; i < len; i++)
+                {
+                    c[i] = a[rowStartIdx + i, col];
+                }
+
+                return c;
+            }
         }
     }
 }

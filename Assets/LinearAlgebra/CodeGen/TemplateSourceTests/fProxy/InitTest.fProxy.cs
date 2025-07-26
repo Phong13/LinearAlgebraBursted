@@ -100,6 +100,55 @@ public class fProxyInitTest
                 Assert.IsTrue(arena.DB_isPersistant(mm0));
             }
 
+            arena.ClearTemp();
+            {
+                fProxyN v0 = arena.fProxyVec(new float[] { 1,2,3,4,5,6,7});
+                Assert.IsTrue(arena.DB_isPersistant(v0));
+                float3 f3 = v0.GetSubvecAsFloat3(2);
+                Assert.IsTrue(f3.x == 3 && f3.y == 4 && f3.z == 5);
+            }
+
+            {
+                fProxyN v0 = arena.tempfProxyVec(new float[] { 1, 2, 3, 4, 5, 6, 7 });
+                Assert.IsTrue(arena.TempAllocationsCount == 1 && arena.DB_isTemp(v0)); 
+                float4 f3 = v0.GetSubvecAsFloat4(2);
+                Assert.IsTrue(f3.x == 3 && f3.y == 4 && f3.z == 5 && f3.w == 6);
+            }
+
+            int ac = arena.AllocationsCount;
+            {
+                fProxyN v0 = arena.tempfProxyVec(new float[] { 1, 2, 3, 4, 5, 6, 7 });
+                Assert.IsTrue(arena.TempAllocationsCount == 2 && arena.DB_isTemp(v0));
+                
+                fProxyN f3 = v0.GetSubvec(2,3);
+                ac += 1;
+                Assert.IsTrue(arena.AllocationsCount == ac && arena.DB_isPersistant(f3));
+                Assert.IsTrue(f3[0] == 3 && f3[1] == 4 && f3[2] == 5);
+                fProxyN f4 = v0.GetSubvecTemp(2, 3);
+                Assert.IsTrue(arena.TempAllocationsCount == 3 && arena.DB_isTemp(f4));
+                Assert.IsTrue(f3[0] == 3 && f3[1] == 4 && f3[2] == 5);
+            }
+
+            {
+                fProxyMxN mm0 = arena.fProxyMat(new float[,] { {1,2,3,4 },
+                                                              {5,6,7,8 },
+                                                              {9,10,11,12 },
+                                                              {13,14,15,16 }});
+                ac += 1;
+                Assert.IsTrue(arena.AllocationsCount == ac && arena.DB_isPersistant(mm0));
+                fProxyN c = mm0.ColTemp(2);
+                Assert.IsTrue(arena.TempAllocationsCount == 4 && arena.DB_isTemp(c));
+                Assert.IsTrue(c[0] == mm0[0, 2] && c[1] == mm0[1, 2] && c[2] == mm0[2, 2] && c[3] == mm0[3, 2]);
+
+                float3 c3 = mm0.GetColAsFloat3(2);
+                UnityEngine.Debug.Log($"c: {c3}");
+                UnityEngine.Debug.Log($"m: {mm0}");
+                Assert.IsTrue(c3[0] == mm0[0, 2] && c3[1] == mm0[1, 2] && c3[2] == mm0[2, 2]);
+
+                float4 c4 = mm0.GetColAsFloat4(2);
+                Assert.IsTrue(c4[0] == mm0[0, 2] && c4[1] == mm0[1, 2] && c4[2] == mm0[2, 2] && c4[3] == mm0[3,2]);
+            }
+
             arena.Dispose();
             Assert.AreEqual(0, arena.AllocationsCount);
             Assert.AreEqual(0, arena.TempAllocationsCount);

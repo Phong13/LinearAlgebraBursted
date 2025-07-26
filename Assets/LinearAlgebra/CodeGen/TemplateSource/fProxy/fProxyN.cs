@@ -9,7 +9,7 @@ namespace LinearAlgebra
     public partial struct fProxyN : IDisposable, IUnsafefProxyArray {
 
         [NativeDisableUnsafePtrRestriction]
-        private unsafe Arena* _arenaPtr;
+        internal unsafe Arena* _arenaPtr;
 
         public int N => Data.Length;
         
@@ -82,7 +82,7 @@ namespace LinearAlgebra
 
         public unsafe fProxyN TempCopy()
         {
-            return _arenaPtr->fProxyVec(in this);
+            return _arenaPtr->tempfProxyVec(in this);
         }
 
         public void CopyTo(in fProxyN vec)

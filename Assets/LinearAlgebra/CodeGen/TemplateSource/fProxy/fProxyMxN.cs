@@ -15,7 +15,7 @@ namespace LinearAlgebra
         public UnsafeList<fProxy> Data { get; private set; }
 
         [NativeDisableUnsafePtrRestriction]
-        private unsafe Arena* _arenaPtr;
+        internal unsafe Arena* _arenaPtr;
 
         public readonly int Length;
 

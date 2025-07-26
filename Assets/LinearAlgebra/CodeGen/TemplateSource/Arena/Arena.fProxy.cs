@@ -56,7 +56,18 @@ namespace LinearAlgebra
         internal fProxyN fProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
-            tempfProxyVectors.Add(in vec);
+            fProxyVectors.Add(in vec);
+            return vec;
+        }
+
+        public fProxyN fProxyVec(float[] orig)
+        {
+            var vec = fProxyVec(orig.Length);
+            for (int i = 0; i < orig.Length; i++)
+            {
+                vec[i] = orig[i];
+            }
+
             return vec;
         }
 
@@ -92,6 +103,16 @@ namespace LinearAlgebra
             vec[2] = v.z;
             vec[3] = v.w;
             tempfProxyVectors.Add(in vec);
+            return vec;
+        }
+
+        public fProxyN tempfProxyVec(float[] orig)
+        {
+            var vec = tempfProxyVec(orig.Length);
+            for (int i = 0; i < orig.Length; i++)
+            {
+                vec[i] = orig[i];
+            }
             return vec;
         }
         #endregion
@@ -175,6 +196,20 @@ namespace LinearAlgebra
             return m;
         }
 
+        public fProxyMxN fProxyMat(float[,] orig)
+        {
+            fProxyMxN m = fProxyMat(orig.GetLength(0), orig.GetLength(1));
+            for (int i = 0; i < m.M_Rows; i++)
+            {
+                for (int j = 0; j < m.N_Cols; j++)
+                {
+                    m[i, j] = orig[i, j];
+                }
+            }
+
+            return m;
+        }
+
         internal fProxyMxN tempfProxyMat(int M_rows, int M_cols, bool uninit = false)
         {
             var matrix = new fProxyMxN(M_rows, M_cols, in this, uninit);
@@ -207,6 +242,20 @@ namespace LinearAlgebra
             m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z; m[2, 3] = orig.c3.z;
             m[3, 0] = orig.c0.w; m[3, 1] = orig.c1.w; m[3, 2] = orig.c2.w; m[3, 3] = orig.c3.w;
             tempfProxyMatrices.Add(in m);
+            return m;
+        }
+
+        public fProxyMxN tempfProxyMat(float[,] orig)
+        {
+            fProxyMxN m = tempfProxyMat(orig.GetLength(0), orig.GetLength(1));
+            for (int i = 0; i < m.M_Rows; i++)
+            {
+                for (int j = 0; j < m.N_Cols; j++)
+                {
+                    m[i, j] = orig[i, j];
+                }
+            }
+
             return m;
         }
 
