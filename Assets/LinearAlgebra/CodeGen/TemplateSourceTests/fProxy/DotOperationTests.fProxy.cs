@@ -184,6 +184,7 @@ public class fProxyDotOperationTests
             expectedB[1] = 32;
 
             Assert.IsTrue(b.EqualsByValue(expectedB));
+  
         }
 
         public unsafe void MatMatDotInpl()

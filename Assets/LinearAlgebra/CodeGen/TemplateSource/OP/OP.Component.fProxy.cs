@@ -153,6 +153,15 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void setAll<T>(this T a, float s) where T : unmanaged, IUnsafefProxyArray
+        {
+            unsafe
+            {
+                mathUnsafefProxy.setAll(a.Data.Ptr, a.Data.Length, s);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EqualsByValue<T>(this T a, T rhs) where T : unmanaged, IUnsafefProxyArray
         {
             unsafe
@@ -166,6 +175,22 @@ namespace LinearAlgebra
 
             return true;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool AlmostEqualsByValue<T>(this T a, T rhs, fProxy eps) where T : unmanaged, IUnsafefProxyArray
+        {
+            unsafe
+            {
+                if (a.Data.Length != rhs.Data.Length) return false;
+                for (int i = 0; i < a.Data.Length; i++)
+                {
+                    if (math.abs(a.Data[i] - rhs.Data[i]) > eps) return false;
+                }
+            }
+
+            return true;
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxy3 GetSubvecAsFloat3(this fProxyN a, int index = 0)
@@ -351,7 +376,7 @@ namespace LinearAlgebra
             }
         }
 
-        public static void SetSubMatrix(this fProxyMxN a, fProxyMxN from, int rowIdx, int colIdx)
+        public static void SetSubMatrix(this fProxyMxN target, fProxyMxN from, int targRowIdx, int targColIdx)
         {
             unsafe
             {
@@ -359,11 +384,27 @@ namespace LinearAlgebra
                 {
                     for (int j = 0; j < from.N_Cols; j++)
                     {
-                         a[rowIdx + i, colIdx + j] = from[i, j];
+                         target[targRowIdx + i, targColIdx + j] = from[i, j];
                     }
                 }
             }
         }
+
+        public static void SetSubMatrix(this fProxyMxN target, int targRowIdx, int targColIdx, fProxyMxN from, int srcRow, int numRows, int srcCol, int numCols)
+        {
+            unsafe
+            {
+                for (int i = 0; i < numRows; i++)
+                {
+                    for (int j = 0; j < numCols; j++)
+                    {
+                        target[targRowIdx + i, targColIdx + j] = from[srcRow + i, srcCol + j];
+                    }
+                }
+            }
+        }
+
+
 
         public static void SetSubMatrix(this fProxyMxN a, fProxy3x3 from, int rowIdx, int colIdx)
         {

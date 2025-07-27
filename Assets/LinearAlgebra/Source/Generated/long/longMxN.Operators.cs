@@ -176,7 +176,7 @@ namespace LinearAlgebra
 
             longMxN matrix = lhs.TempCopy();
 
-            longOP.addInpl(rhs, matrix);
+            longOP.addInpl(matrix, rhs);
 
             return matrix;
         }

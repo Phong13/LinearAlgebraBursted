@@ -11,7 +11,7 @@ public class doubleOperationsTest {
     [BurstCompile]
     public struct BasicVecOpTestJob : IJob
     {
-        public void Execute()
+        public unsafe void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -19,7 +19,6 @@ public class doubleOperationsTest {
 
             double s = 1f;
             doubleN a = arena.doubleVec(vecLen, 10f);
-
 
             Assert.AreEqual(vecLen, a.N); 
 
@@ -32,11 +31,14 @@ public class doubleOperationsTest {
             doubleN result = default;
 
             result = a + s;
+            Assert.IsTrue(arena.DB_isTemp(result));
 
             result = s + a;
 
             result = a - s;
             result = s - a;
+
+            Assert.IsTrue(arena.DB_isTemp(result));
 
             Assert.AreEqual(4, arena.TempAllocationsCount);
 
@@ -57,9 +59,144 @@ public class doubleOperationsTest {
             result = a % b;
 
             Assert.AreEqual(11, arena.TempAllocationsCount);
+            arena.Clear();
 
+            // inpl operations should not move the vector or matrix that it is being called on.
+            doubleN c = arena.doubleVec(vecLen, 0f);
+            doubleN d = c; // both c and d point at the same buffer.
+            Assert.IsTrue(arena.DB_isPersistant(in c));
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr);
+            c.addInpl(a);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points to the same buffer
+            c.subInpl(b);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            c.signFlipInpl();
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            c.modInpl(3);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            c.divInpl(5);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            c.compMulInpl(a);
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            c.compDivInpl(a);
+
+            Assert.IsTrue(arena.DB_isPersistant(in c)); // verify c has not been converted
             arena.Dispose();
         }
+    }
+
+    [Test]
+    public void VecAddInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        doubleN a = arena.doubleVec(3);
+        a[0] = 1;
+        a[1] = 2;
+        a[2] = 3;
+         
+        doubleN b = arena.doubleVec(3);
+        b[0] = 5;
+        b[1] = 6;
+        b[2] = 7;
+
+        doubleN c = arena.doubleVec(3, 7);
+        c.addInpl(a, b);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        doubleN cc = arena.doubleVec(3, 7);
+        cc[0] = 6;
+        cc[1] = 8;
+        cc[2] = 10;
+
+        Assert.IsTrue(c.EqualsByValue(cc));
+        Assert.IsTrue(arena.DB_isPersistant(c));
+
+        arena.Dispose();
+    }
+
+    [Test]
+    public void VecSubInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        doubleN a = arena.doubleVec(3);
+        a[0] = 1;
+        a[1] = 2;
+        a[2] = 3;
+
+        doubleN b = arena.doubleVec(3);
+        b[0] = 5;
+        b[1] = 6;
+        b[2] = 7;
+
+        doubleN c = arena.doubleVec(3, 7);
+        c.subInpl(a, b);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        doubleN cc = arena.doubleVec(3, 7);
+        cc[0] = -4;
+        cc[1] = -4;
+        cc[2] = -4;
+
+        Assert.IsTrue(c.EqualsByValue(cc));
+        Assert.IsTrue(arena.DB_isPersistant(c));
+
+        arena.Dispose();
+    }
+
+    [Test]
+    public void MatAddInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        doubleMxN A = arena.doubleMat(2, 3);
+        A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+        A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+        doubleMxN B = arena.doubleMat(2, 3);
+        B[0, 0] = 2; B[0, 1] = 3; B[0, 2] = 4;
+        B[1, 0] = 5; B[1, 1] = 6; B[1, 2] = 7;
+
+        doubleMxN C = arena.doubleMat(2, 3, 7);
+        C.addInpl(A, B);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        doubleMxN CC = arena.doubleMat(2, 3);
+        CC[0, 0] = 3; CC[0, 1] = 5; CC[0, 2] = 7;
+        CC[1, 0] = 9; CC[1, 1] = 11; CC[1, 2] = 13;
+
+        Assert.IsTrue(C.EqualsByValue(CC));
+        Assert.IsTrue(arena.DB_isPersistant(C));
+
+        arena.Dispose();
+    }
+
+    [Test]
+    public void MatSubInPlace()
+    {
+        var arena = new Arena(Allocator.Persistent);
+        doubleMxN A = arena.doubleMat(2, 3);
+        A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+        A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+        doubleMxN B = arena.doubleMat(2, 3);
+        B[0, 0] = 2; B[0, 1] = 3; B[0, 2] = 4;
+        B[1, 0] = 5; B[1, 1] = 6; B[1, 2] = 7;
+
+        doubleMxN C = arena.doubleMat(2, 3, 7);
+        C.subInpl(A, B);
+
+        Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+
+        doubleMxN CC = arena.doubleMat(2, 3);
+        CC[0, 0] = -1; CC[0, 1] = -1; CC[0, 2] = -1;
+        CC[1, 0] = -1; CC[1, 1] = -1; CC[1, 2] = -1;
+
+        Assert.IsTrue(C.EqualsByValue(CC));
+        Assert.IsTrue(arena.DB_isPersistant(C));
+
+        arena.Dispose();
     }
 
     [Test]
@@ -71,7 +208,7 @@ public class doubleOperationsTest {
     [BurstCompile]
     public struct BasicMatOpTestJob : IJob
     {
-        public void Execute()
+        public unsafe void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -85,8 +222,14 @@ public class doubleOperationsTest {
 
             doubleMxN b = arena.doubleMat(rows, cols, 10f);
 
+            doubleMxN aa = a;
+            doubleMxN bb = b;
+
+
             doubleMxN result = default;
 
+            Assert.IsTrue(arena.TempAllocationsCount == 0);
+            Assert.IsTrue(arena.AllocationsCount == 2);
             result = a + s;
 
             result = s + a;
@@ -107,6 +250,12 @@ public class doubleOperationsTest {
             result = a * b;
             result = a / b;
             result = a % b;
+            Assert.IsTrue(arena.TempAllocationsCount == 15);
+            Assert.IsTrue(arena.AllocationsCount == 2);
+
+            // Check that the buffers a and b were not moved by any of these operations
+            Assert.IsTrue(aa.Data.Ptr == a.Data.Ptr);
+            Assert.IsTrue(bb.Data.Ptr == b.Data.Ptr);
 
             arena.Dispose();
         }

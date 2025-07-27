@@ -45,7 +45,7 @@ public class floatSolversTests {
             var Q = arena.floatIdentityMatrix(dim);
             var R = arena.floatMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 

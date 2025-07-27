@@ -88,7 +88,7 @@ public class floatLUTests
             var U = arena.floatIdentityMatrix(dim);
             var L = arena.floatIdentityMatrix(dim);
 
-            var A = U.Copy();
+            var A = U.CopyPersistent();
 
             LU.luDecompositionNoPivot(ref U, ref L);
 
@@ -105,7 +105,7 @@ public class floatLUTests
             var U = arena.floatRandomDiagonalMatrix(dim, 1f, 3f);
             var L = arena.floatIdentityMatrix(dim);
 
-            var A = U.Copy();
+            var A = U.CopyPersistent();
 
             LU.luDecompositionNoPivot(ref U, ref L);
 
@@ -185,7 +185,7 @@ public class floatLUTests
             for(int d = 0; d < dim; d++)
                 U[d, d] += 5f;
             
-            var A = U.Copy();
+            var A = U.CopyPersistent();
 
             var pivot = new Pivot(dim, Allocator.Temp);
 
@@ -330,7 +330,7 @@ public class floatLUTests
             
             var b = floatOP.dot(A, x_Known);
 
-            var U = A.Copy();
+            var U = A.CopyPersistent();
             var L = arena.floatIdentityMatrix(dim);
 
             var pivot = new Pivot(dim, Allocator.Temp);
@@ -372,7 +372,7 @@ public class floatLUTests
 
             var b = floatOP.dot(A, x_Known);
 
-            var LUmat = A.Copy();
+            var LUmat = A.CopyPersistent();
             
             var pivot = new Pivot(dim, Allocator.Temp);
 

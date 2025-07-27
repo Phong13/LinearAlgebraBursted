@@ -108,5 +108,16 @@ namespace LinearAlgebra
             Data.Dispose();
         }
 
+        public override string ToString()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < N; i++)
+            {
+                sb.Append(", ");
+                sb.Append(this[i]);
+            }
+
+            return sb.ToString();
+        }
     }
 }

@@ -214,14 +214,14 @@ namespace LinearAlgebra
             return m;
         }
 
-        internal fProxyMxN tempfProxyMat(int M_rows, int M_cols, bool uninit = false)
+        public fProxyMxN tempfProxyMat(int M_rows, int M_cols, bool uninit = false)
         {
             var matrix = new fProxyMxN(M_rows, M_cols, in this, uninit);
             tempfProxyMatrices.Add(in matrix);
             return matrix;
         }
 
-        internal fProxyMxN tempfProxyMat(in fProxyMxN orig)
+        public fProxyMxN tempfProxyMat(in fProxyMxN orig)
         {
             var matrix = new fProxyMxN(orig);
             tempfProxyMatrices.Add(in matrix);

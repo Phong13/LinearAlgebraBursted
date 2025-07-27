@@ -106,6 +106,55 @@ namespace LinearAlgebra
             return c;
         }
 
+        /// <summary>
+        /// No allocations, stores result in this matrix
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void dotCompInpl(this doubleMxN target, doubleMxN a, doubleMxN b, bool transposeA = false)
+        {
+            if (transposeA)
+                Assume.SameDim(a.N_Cols, b.N_Cols);
+            else
+                Assume.SameDim(a.N_Cols, b.M_Rows);
+
+            int m, n, k;
+
+            if (transposeA)
+            {
+                m = a.N_Cols; n = a.M_Rows; k = b.N_Cols;
+            }
+            else
+            {
+                m = a.M_Rows; n = a.N_Cols; k = b.N_Cols;
+            }
+
+            Assume.SameDim(target.M_Rows, m);
+            Assume.SameDim(target.N_Cols, k);
+
+            unsafe
+            {
+                for (int i = 0; i < target.Length; i++) target[i] = 0;
+                if (transposeA)
+                    UnsafeOP.matMatDotTransA(a.Data.Ptr, b.Data.Ptr, target.Data.Ptr, m, n, k);
+                else
+                    UnsafeOP.matMatDot(a.Data.Ptr, b.Data.Ptr, target.Data.Ptr, m, n, k);
+            }
+        }
+
+        /// <summary>
+        /// No allocations, stores result in this matrix
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void dotCompInpl(this doubleN target, doubleMxN A, doubleN x, bool transposeA = false)
+        {
+            Assume.SameDim(A.N_Cols, x.N);
+            unsafe
+            {
+                for (int i = 0; i < target.N; i++) target[i] = 0;
+                UnsafeOP.matVecDot(A.Data.Ptr, x.Data.Ptr, target.Data.Ptr, A.M_Rows, A.N_Cols);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN trans(doubleMxN A)
         {

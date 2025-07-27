@@ -8,9 +8,16 @@ namespace LinearAlgebra
     public static partial class ArenaExtensions {
 
         #region CONVERSIONS_FROM_MATH
-        public static doubleN Convert(this ref Arena arena, in double2 mathVec)
+        public static doubleN Convert(this ref Arena arena, in double2 mathVec, bool isTemp)
         {
-            var vec = arena.doubleVec(2, true);
+            doubleN vec;
+            if (isTemp)
+            {
+                vec = arena.tempdoubleVec(2, true);
+            } else
+            {
+                vec = arena.doubleVec(2, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -18,9 +25,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static doubleN Convert(this ref Arena arena, in double3 mathVec)
+        public static doubleN Convert(this ref Arena arena, in double3 mathVec, bool isTemp)
         {
-            var vec = arena.doubleVec(3, true);
+            doubleN vec;
+            if (isTemp)
+            {
+                vec = arena.tempdoubleVec(3, true);
+            }
+            else
+            {
+                vec = arena.doubleVec(3, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -29,9 +44,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static doubleN Convert(this ref Arena arena, in double4 mathVec)
+        public static doubleN Convert(this ref Arena arena, in double4 mathVec, bool isTemp)
         {
-            var vec = arena.doubleVec(4, true);
+            doubleN vec;
+            if (isTemp)
+            {
+                vec = arena.tempdoubleVec(4, true);
+            }
+            else
+            {
+                vec = arena.doubleVec(4, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -41,9 +64,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static doubleMxN Convert(this ref Arena arena, in double2x2 mathMat)
+        public static doubleMxN Convert(this ref Arena arena, in double2x2 mathMat, bool isTemp)
         {
-            var mat = arena.doubleMat(2, 2, true);
+            doubleMxN mat; 
+            if (isTemp)
+            {
+                mat = arena.tempdoubleMat(2, 2, true);
+            }
+            else
+            {
+                mat = arena.doubleMat(2, 2, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -53,9 +84,17 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static doubleMxN Convert(this ref Arena arena, in double3x3 mathMat)
+        public static doubleMxN Convert(this ref Arena arena, in double3x3 mathMat, bool isTemp)
         {
-            var mat = arena.doubleMat(3, 3, true);
+            doubleMxN mat;
+            if (isTemp)
+            {
+                mat = arena.tempdoubleMat(3, 3, true);
+            }
+            else
+            {
+                mat = arena.doubleMat(3, 3, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -70,9 +109,17 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static doubleMxN Convert(this ref Arena arena, in double4x4 mathMat)
+        public static doubleMxN Convert(this ref Arena arena, in double4x4 mathMat, bool isTemp)
         {
-            var mat = arena.doubleMat(4, 4, true);
+            doubleMxN mat;
+            if (isTemp)
+            {
+                mat = arena.tempdoubleMat(4, 4, true);
+            }
+            else
+            {
+                mat = arena.doubleMat(4, 4, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -97,8 +144,8 @@ namespace LinearAlgebra
         #endregion
 
         #region CONVERSIONS_TO_MATH
-        public static double2 Convert(this ref Arena arena, in doubleN mathVec) {
-            var vec = new double2();
+        public static double2 ConvertToLen2(this ref Arena arena, in doubleN mathVec) {
+            double2 vec = new double2();
 
             vec.x = mathVec[0];
             vec.y = mathVec[1];

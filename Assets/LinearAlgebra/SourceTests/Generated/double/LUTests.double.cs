@@ -88,7 +88,7 @@ public class doubleLUTests
             var U = arena.doubleIdentityMatrix(dim);
             var L = arena.doubleIdentityMatrix(dim);
 
-            var A = U.Copy();
+            var A = U.CopyPersistent();
 
             LU.luDecompositionNoPivot(ref U, ref L);
 
@@ -105,7 +105,7 @@ public class doubleLUTests
             var U = arena.doubleRandomDiagonalMatrix(dim, 1f, 3f);
             var L = arena.doubleIdentityMatrix(dim);
 
-            var A = U.Copy();
+            var A = U.CopyPersistent();
 
             LU.luDecompositionNoPivot(ref U, ref L);
 
@@ -185,7 +185,7 @@ public class doubleLUTests
             for(int d = 0; d < dim; d++)
                 U[d, d] += 5f;
             
-            var A = U.Copy();
+            var A = U.CopyPersistent();
 
             var pivot = new Pivot(dim, Allocator.Temp);
 
@@ -330,7 +330,7 @@ public class doubleLUTests
             
             var b = doubleOP.dot(A, x_Known);
 
-            var U = A.Copy();
+            var U = A.CopyPersistent();
             var L = arena.doubleIdentityMatrix(dim);
 
             var pivot = new Pivot(dim, Allocator.Temp);
@@ -372,7 +372,7 @@ public class doubleLUTests
 
             var b = doubleOP.dot(A, x_Known);
 
-            var LUmat = A.Copy();
+            var LUmat = A.CopyPersistent();
             
             var pivot = new Pivot(dim, Allocator.Temp);
 

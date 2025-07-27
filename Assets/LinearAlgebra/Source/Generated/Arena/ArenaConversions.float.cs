@@ -8,9 +8,16 @@ namespace LinearAlgebra
     public static partial class ArenaExtensions {
 
         #region CONVERSIONS_FROM_MATH
-        public static floatN Convert(this ref Arena arena, in float2 mathVec)
+        public static floatN Convert(this ref Arena arena, in float2 mathVec, bool isTemp)
         {
-            var vec = arena.floatVec(2, true);
+            floatN vec;
+            if (isTemp)
+            {
+                vec = arena.tempfloatVec(2, true);
+            } else
+            {
+                vec = arena.floatVec(2, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -18,9 +25,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static floatN Convert(this ref Arena arena, in float3 mathVec)
+        public static floatN Convert(this ref Arena arena, in float3 mathVec, bool isTemp)
         {
-            var vec = arena.floatVec(3, true);
+            floatN vec;
+            if (isTemp)
+            {
+                vec = arena.tempfloatVec(3, true);
+            }
+            else
+            {
+                vec = arena.floatVec(3, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -29,9 +44,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static floatN Convert(this ref Arena arena, in float4 mathVec)
+        public static floatN Convert(this ref Arena arena, in float4 mathVec, bool isTemp)
         {
-            var vec = arena.floatVec(4, true);
+            floatN vec;
+            if (isTemp)
+            {
+                vec = arena.tempfloatVec(4, true);
+            }
+            else
+            {
+                vec = arena.floatVec(4, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -41,9 +64,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static floatMxN Convert(this ref Arena arena, in float2x2 mathMat)
+        public static floatMxN Convert(this ref Arena arena, in float2x2 mathMat, bool isTemp)
         {
-            var mat = arena.floatMat(2, 2, true);
+            floatMxN mat; 
+            if (isTemp)
+            {
+                mat = arena.tempfloatMat(2, 2, true);
+            }
+            else
+            {
+                mat = arena.floatMat(2, 2, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -53,9 +84,17 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static floatMxN Convert(this ref Arena arena, in float3x3 mathMat)
+        public static floatMxN Convert(this ref Arena arena, in float3x3 mathMat, bool isTemp)
         {
-            var mat = arena.floatMat(3, 3, true);
+            floatMxN mat;
+            if (isTemp)
+            {
+                mat = arena.tempfloatMat(3, 3, true);
+            }
+            else
+            {
+                mat = arena.floatMat(3, 3, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -70,9 +109,17 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static floatMxN Convert(this ref Arena arena, in float4x4 mathMat)
+        public static floatMxN Convert(this ref Arena arena, in float4x4 mathMat, bool isTemp)
         {
-            var mat = arena.floatMat(4, 4, true);
+            floatMxN mat;
+            if (isTemp)
+            {
+                mat = arena.tempfloatMat(4, 4, true);
+            }
+            else
+            {
+                mat = arena.floatMat(4, 4, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -97,8 +144,8 @@ namespace LinearAlgebra
         #endregion
 
         #region CONVERSIONS_TO_MATH
-        public static float2 Convert(this ref Arena arena, in floatN mathVec) {
-            var vec = new float2();
+        public static float2 ConvertToLen2(this ref Arena arena, in floatN mathVec) {
+            float2 vec = new float2();
 
             vec.x = mathVec[0];
             vec.y = mathVec[1];

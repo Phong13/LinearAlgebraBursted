@@ -9,7 +9,7 @@ namespace LinearAlgebra
     public partial struct doubleN : IDisposable, IUnsafedoubleArray {
 
         [NativeDisableUnsafePtrRestriction]
-        private unsafe Arena* _arenaPtr;
+        internal unsafe Arena* _arenaPtr;
 
         public int N => Data.Length;
         
@@ -82,7 +82,7 @@ namespace LinearAlgebra
 
         public unsafe doubleN TempCopy()
         {
-            return _arenaPtr->doubleVec(in this);
+            return _arenaPtr->tempdoubleVec(in this);
         }
 
         public void CopyTo(in doubleN vec)
@@ -102,9 +102,22 @@ namespace LinearAlgebra
         }
 
         public void Dispose() {
-
+#if LINALG_DEBUG
+            for (int i = 0; i < N; i++) this[i] = float.NaN;
+#endif
             Data.Dispose();
         }
 
+        public override string ToString()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < N; i++)
+            {
+                sb.Append(", ");
+                sb.Append(this[i]);
+            }
+
+            return sb.ToString();
+        }
     }
 }

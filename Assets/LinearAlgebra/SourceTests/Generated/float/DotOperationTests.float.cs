@@ -26,6 +26,8 @@ public class floatDotOperationTests
             MatVecNonSquare,
             MatMatNonSquare,
             OuterDot,
+            MatMatInpl,
+            MatVecInpl,
         }
 
         public TestType Type;
@@ -59,6 +61,12 @@ public class floatDotOperationTests
                 case TestType.OuterDot:
                     OuterDot();
                 break;
+                case TestType.MatMatInpl:
+                    MatMatDotInpl();
+                break;
+                case TestType.MatVecInpl:
+                    MatVecDotInpl();
+                    break;
             }
         }
 
@@ -91,7 +99,7 @@ public class floatDotOperationTests
             arena.Dispose();
         }
 
-        public void MatVecDot()
+        public unsafe void MatVecDot()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -101,9 +109,18 @@ public class floatDotOperationTests
             floatN x = arena.floatVec(inVecLen, 1f);
             floatMxN A = arena.floatRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
 
+            floatN xx = x;
+            floatMxN AA = A;
+
             floatN b = floatOP.dot(A, x);
 
             Assert.AreEqual(outVecLen, b.N);
+
+            Assert.IsTrue(arena.AllocationsCount == 2);
+            Assert.IsTrue(arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
+            Assert.IsTrue(xx.Data.Ptr == x.Data.Ptr);
+            Assert.IsTrue(AA.Data.Ptr == A.Data.Ptr);
 
             arena.Dispose();
         }
@@ -117,8 +134,11 @@ public class floatDotOperationTests
             floatN x = arena.floatRandomUnitVector(vecLen);
             floatMxN A = arena.floatIdentityMatrix(vecLen);
 
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             floatN b = floatOP.dot(x, A);
 
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
             Assert.AreEqual(vecLen, b.N);
             
             for (int i = 0; i < vecLen; i++)
@@ -126,7 +146,13 @@ public class floatDotOperationTests
 
             x = arena.floatIndexZeroVector(vecLen);
 
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
+
             b = floatOP.dot(x, A);
+
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 2);
+            Assert.IsTrue(arena.DB_isTemp(b));
 
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual((float)i, b[i]);
@@ -134,7 +160,65 @@ public class floatDotOperationTests
             arena.Dispose();
         }
 
-        public void MatMatDot()
+        public unsafe void MatVecDotInpl()
+        {
+            var arena = new Arena(Allocator.Persistent);
+            floatMxN A = arena.floatMat(2, 3);
+            A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+            A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+            floatN x = arena.floatVec(3);
+            x[0] = 1;
+            x[1] = 2;
+            x[2] = 3;
+
+            floatN b = arena.floatVec(2);
+
+            b.dotCompInpl(A, x);
+
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
+            Assert.IsTrue(arena.DB_isPersistant(b));
+
+            floatN expectedB = arena.floatVec(2);
+            expectedB[0] = 14;
+            expectedB[1] = 32;
+
+            Assert.IsTrue(b.EqualsByValue(expectedB));
+  
+        }
+
+        public unsafe void MatMatDotInpl()
+        {
+            var arena = new Arena(Allocator.Persistent);
+            floatMxN A = arena.floatMat(2, 3);
+            A[0, 0] = 1; A[0, 1] = 2; A[0, 2] = 3;
+            A[1, 0] = 4; A[1, 1] = 5; A[1, 2] = 6;
+
+            floatMxN B = floatOP.trans(A);
+
+            Debug.Log($"A \n{A}");
+            Debug.Log($"BB\n{B}");
+
+            floatMxN C = arena.floatMat(2, 2, 7);
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
+
+            C.dotCompInpl(A, B);
+
+            // no new allocations;
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isPersistant(C));
+
+            floatMxN CC = arena.floatMat(2,2);
+            CC[0, 0] = 14; CC[0, 1] = 32;
+            CC[1, 0] = 32; CC[1, 1] = 77;
+
+            Debug.Log($"C \n{C}");
+            Debug.Log($"CC\n{CC}");
+
+            Assert.IsTrue(C.EqualsByValue(CC));
+        }
+
+        public unsafe void MatMatDot()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -143,7 +227,16 @@ public class floatDotOperationTests
             floatMxN A = arena.floatIdentityMatrix(matLen);
             floatMxN B = arena.floatIdentityMatrix(matLen);
 
+            floatMxN AA = A;
+            floatMxN BB = B;
+
             floatMxN C = floatOP.dot(A, B);
+
+            Assert.IsTrue(arena.AllocationsCount == 2);
+            Assert.IsTrue(arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(in C));
+            Assert.IsTrue(BB.Data.Ptr == B.Data.Ptr);
+            Assert.IsTrue(AA.Data.Ptr == A.Data.Ptr);
 
             for (int i = 0; i < matLen; i++)
             for (int j = 0; j < matLen; j++)
@@ -180,7 +273,7 @@ public class floatDotOperationTests
             arena.Dispose();
         }
 
-        public void MatVecDotNonSquare()
+        public unsafe void MatVecDotNonSquare()
         {
             var arena = new Arena(Allocator.Persistent);
 
@@ -190,9 +283,18 @@ public class floatDotOperationTests
             floatN x = arena.floatVec(inVecLen, 1f);
             floatMxN A = arena.floatRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
 
+            floatN xx = x;
+            floatMxN AA = A;
+
             floatN b = floatOP.dot(A, x);
 
             Assert.AreEqual(outVecLen, b.N);
+
+            Assert.IsTrue(arena.AllocationsCount == 2);
+            Assert.IsTrue(arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
+            Assert.IsTrue(xx.Data.Ptr == x.Data.Ptr);
+            Assert.IsTrue(AA.Data.Ptr == A.Data.Ptr);
 
             arena.Dispose();
         }
@@ -304,5 +406,17 @@ public class floatDotOperationTests
     public void OuterDotTest()
     {
         new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.OuterDot }.Run();
+    }
+
+    [Test]
+    public void MatMatInplTest()
+    {
+        new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.MatMatInpl }.Run();
+    }
+
+    [Test]
+    public void MatVecInplTest()
+    {
+        new DotOperationTestsJob() { Type = DotOperationTestsJob.TestType.MatVecInpl }.Run();
     }
 }

@@ -182,10 +182,24 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void compSub([NoAlias] float* from, [NoAlias] float* target, int n)
+        public static void compAdd([NoAlias] float* target, [NoAlias] float* lhs, [NoAlias] float* rhs, int n)
+        {
+            for (int i = 0; i < n; i++)
+                target[i] = lhs[i] + rhs[i];
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void compSub([NoAlias] float* target, [NoAlias] float* from, int n)
         {
             for (int i = 0; i < n; i++)
                 target[i] -= from[i];
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void compSub([NoAlias] float* target, [NoAlias] float* lhs, [NoAlias] float* rhs, int n)
+        {
+            for (int i = 0; i < n; i++)
+                target[i] = lhs[i] - rhs[i];
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -87,7 +87,7 @@ public class floatOrthoOpTests
             var Q = arena.floatIdentityMatrix(dim);
             var R = arena.floatMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -112,7 +112,7 @@ public class floatOrthoOpTests
             for(int i = 0; i < dim; i++)
                 Q[i, i] = 1f;
             
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -131,7 +131,7 @@ public class floatOrthoOpTests
             var Q = arena.floatRandomDiagonalMatrix(dim, 1f, 3f);
             var R = arena.floatMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -153,7 +153,7 @@ public class floatOrthoOpTests
             var R = arena.floatMat(dim);
             var Q = arena.floatRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221);
             
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -173,7 +173,7 @@ public class floatOrthoOpTests
             var R = arena.floatMat(dim);
             var Q = arena.floatRandomMatrix(dim * 2, dim, -5f, 5f, 9612221);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -191,7 +191,7 @@ public class floatOrthoOpTests
             var Q = arena.floatHilbertMatrix(dim);
             var R = arena.floatMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -234,7 +234,7 @@ public class floatOrthoOpTests
 
                 var R = arena.floatMat(dim);
 
-                var A = Q.Copy();
+                var A = Q.CopyPersistent();
 
                 OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -255,7 +255,7 @@ public class floatOrthoOpTests
             var Q = arena.floatMat(dim, dim);
             var R = arena.floatMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -314,7 +314,7 @@ public class floatOrthoOpTests
                 else
                     A = arena.floatRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7);
                 
-                var Q = A.Copy();
+                var Q = A.CopyPersistent();
                 var R = arena.floatMat(dim);
 
                 OrthoOP.qrDecomposition(ref Q, ref R);
@@ -399,7 +399,7 @@ public class floatOrthoOpTests
                 for(int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f*random.NextFloat();
 
-                var Q = A.Copy();
+                var Q = A.CopyPersistent();
                 var R = arena.floatMat(systemDim); 
 
                 OrthoOP.qrDecomposition(ref Q, ref R);
@@ -449,7 +449,7 @@ public class floatOrthoOpTests
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextFloat();
 
-                var Q = A.Copy();
+                var Q = A.CopyPersistent();
                 var R = arena.floatMat(sysDimN);
 
                 OrthoOP.qrDecomposition(ref Q, ref R);

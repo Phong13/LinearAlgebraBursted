@@ -45,7 +45,7 @@ public class doubleSolversTests {
             var Q = arena.doubleIdentityMatrix(dim);
             var R = arena.doubleMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 

@@ -85,5 +85,54 @@ namespace LinearAlgebra
 
             Data.Dispose();
         }
+
+        public override string ToString()
+        {
+            // Get the dimensions of the matrix.
+            int rows = M_Rows;
+            int cols = N_Cols;
+
+            // Determine the maximum width needed for each column.
+            int[] colWidths = new int[cols];
+            for (int j = 0; j < cols; j++)
+            {
+                for (int i = 0; i < rows; i++)
+                {
+                    // Format each number with two decimal places.
+                    string cellStr = this[i, j].ToString();
+                    if (cellStr.Length > colWidths[j])
+                    {
+                        colWidths[j] = cellStr.Length;
+                    }
+                }
+            }
+
+            // Use a StringBuilder to accumulate the formatted matrix string.
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < rows; i++)
+            {
+                sb.Append("[ ");
+                for (int j = 0; j < cols; j++)
+                {
+                    // Format the cell with the determined width.
+                    string cellStr = this[i, j].ToString().PadLeft(colWidths[j]);
+                    sb.Append(cellStr);
+
+                    // Append a separator if not the last column.
+                    if (j < cols - 1)
+                    {
+                        sb.Append("  ");
+                    }
+                }
+                sb.Append(" ]");
+
+                // Add a newline for each row except the last one.
+                if (i < rows - 1)
+                {
+                    sb.AppendLine();
+                }
+            }
+            return sb.ToString();
+        }
     }
 }
