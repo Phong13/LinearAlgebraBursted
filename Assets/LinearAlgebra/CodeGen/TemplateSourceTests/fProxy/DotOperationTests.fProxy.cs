@@ -134,8 +134,11 @@ public class fProxyDotOperationTests
             fProxyN x = arena.fProxyRandomUnitVector(vecLen);
             fProxyMxN A = arena.fProxyIdentityMatrix(vecLen);
 
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             fProxyN b = fProxyOP.dot(x, A);
 
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
             Assert.AreEqual(vecLen, b.N);
             
             for (int i = 0; i < vecLen; i++)
@@ -143,7 +146,13 @@ public class fProxyDotOperationTests
 
             x = arena.fProxyIndexZeroVector(vecLen);
 
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
+            Assert.IsTrue(arena.DB_isTemp(b));
+
             b = fProxyOP.dot(x, A);
+
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 2);
+            Assert.IsTrue(arena.DB_isTemp(b));
 
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual((fProxy)i, b[i]);
