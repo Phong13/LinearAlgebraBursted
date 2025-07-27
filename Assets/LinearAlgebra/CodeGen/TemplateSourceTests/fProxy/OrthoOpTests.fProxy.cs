@@ -87,7 +87,7 @@ public class fProxyOrthoOpTests
             var Q = arena.fProxyIdentityMatrix(dim);
             var R = arena.fProxyMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -112,7 +112,7 @@ public class fProxyOrthoOpTests
             for(int i = 0; i < dim; i++)
                 Q[i, i] = 1f;
             
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -131,7 +131,7 @@ public class fProxyOrthoOpTests
             var Q = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f);
             var R = arena.fProxyMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -153,7 +153,7 @@ public class fProxyOrthoOpTests
             var R = arena.fProxyMat(dim);
             var Q = arena.fProxyRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221);
             
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -173,7 +173,7 @@ public class fProxyOrthoOpTests
             var R = arena.fProxyMat(dim);
             var Q = arena.fProxyRandomMatrix(dim * 2, dim, -5f, 5f, 9612221);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -191,7 +191,7 @@ public class fProxyOrthoOpTests
             var Q = arena.fProxyHilbertMatrix(dim);
             var R = arena.fProxyMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -234,7 +234,7 @@ public class fProxyOrthoOpTests
 
                 var R = arena.fProxyMat(dim);
 
-                var A = Q.Copy();
+                var A = Q.CopyPersistent();
 
                 OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -255,7 +255,7 @@ public class fProxyOrthoOpTests
             var Q = arena.fProxyMat(dim, dim);
             var R = arena.fProxyMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
@@ -314,7 +314,7 @@ public class fProxyOrthoOpTests
                 else
                     A = arena.fProxyRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7);
                 
-                var Q = A.Copy();
+                var Q = A.CopyPersistent();
                 var R = arena.fProxyMat(dim);
 
                 OrthoOP.qrDecomposition(ref Q, ref R);
@@ -399,7 +399,7 @@ public class fProxyOrthoOpTests
                 for(int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f*random.NextFProxy();
 
-                var Q = A.Copy();
+                var Q = A.CopyPersistent();
                 var R = arena.fProxyMat(systemDim); 
 
                 OrthoOP.qrDecomposition(ref Q, ref R);
@@ -449,7 +449,7 @@ public class fProxyOrthoOpTests
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextFProxy();
 
-                var Q = A.Copy();
+                var Q = A.CopyPersistent();
                 var R = arena.fProxyMat(sysDimN);
 
                 OrthoOP.qrDecomposition(ref Q, ref R);

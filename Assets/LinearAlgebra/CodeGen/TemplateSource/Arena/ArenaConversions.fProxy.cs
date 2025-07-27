@@ -10,9 +10,16 @@ namespace LinearAlgebra
     public static partial class ArenaExtensions {
 
         #region CONVERSIONS_FROM_MATH
-        public static fProxyN Convert(this ref Arena arena, in fProxy2 mathVec)
+        public static fProxyN Convert(this ref Arena arena, in fProxy2 mathVec, bool isTemp)
         {
-            var vec = arena.fProxyVec(2, true);
+            fProxyN vec;
+            if (isTemp)
+            {
+                vec = arena.tempfProxyVec(2, true);
+            } else
+            {
+                vec = arena.fProxyVec(2, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -20,9 +27,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static fProxyN Convert(this ref Arena arena, in fProxy3 mathVec)
+        public static fProxyN Convert(this ref Arena arena, in fProxy3 mathVec, bool isTemp)
         {
-            var vec = arena.fProxyVec(3, true);
+            fProxyN vec;
+            if (isTemp)
+            {
+                vec = arena.tempfProxyVec(3, true);
+            }
+            else
+            {
+                vec = arena.fProxyVec(3, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -31,9 +46,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static fProxyN Convert(this ref Arena arena, in fProxy4 mathVec)
+        public static fProxyN Convert(this ref Arena arena, in fProxy4 mathVec, bool isTemp)
         {
-            var vec = arena.fProxyVec(4, true);
+            fProxyN vec;
+            if (isTemp)
+            {
+                vec = arena.tempfProxyVec(4, true);
+            }
+            else
+            {
+                vec = arena.fProxyVec(4, true);
+            }
 
             vec[0] = mathVec.x;
             vec[1] = mathVec.y;
@@ -43,9 +66,17 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static fProxyMxN Convert(this ref Arena arena, in fProxy2x2 mathMat)
+        public static fProxyMxN Convert(this ref Arena arena, in fProxy2x2 mathMat, bool isTemp)
         {
-            var mat = arena.fProxyMat(2, 2, true);
+            fProxyMxN mat; 
+            if (isTemp)
+            {
+                mat = arena.tempfProxyMat(2, 2, true);
+            }
+            else
+            {
+                mat = arena.fProxyMat(2, 2, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -55,9 +86,17 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static fProxyMxN Convert(this ref Arena arena, in fProxy3x3 mathMat)
+        public static fProxyMxN Convert(this ref Arena arena, in fProxy3x3 mathMat, bool isTemp)
         {
-            var mat = arena.fProxyMat(3, 3, true);
+            fProxyMxN mat;
+            if (isTemp)
+            {
+                mat = arena.tempfProxyMat(3, 3, true);
+            }
+            else
+            {
+                mat = arena.fProxyMat(3, 3, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -72,9 +111,17 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static fProxyMxN Convert(this ref Arena arena, in fProxy4x4 mathMat)
+        public static fProxyMxN Convert(this ref Arena arena, in fProxy4x4 mathMat, bool isTemp)
         {
-            var mat = arena.fProxyMat(4, 4, true);
+            fProxyMxN mat;
+            if (isTemp)
+            {
+                mat = arena.tempfProxyMat(4, 4, true);
+            }
+            else
+            {
+                mat = arena.fProxyMat(4, 4, true);
+            }
 
             mat[0, 0] = mathMat.c0.x;
             mat[1, 0] = mathMat.c0.y;
@@ -99,8 +146,8 @@ namespace LinearAlgebra
         #endregion
 
         #region CONVERSIONS_TO_MATH
-        public static fProxy2 Convert(this ref Arena arena, in fProxyN mathVec) {
-            var vec = new fProxy2();
+        public static fProxy2 ConvertToLen2(this ref Arena arena, in fProxyN mathVec) {
+            fProxy2 vec = new fProxy2();
 
             vec.x = mathVec[0];
             vec.y = mathVec[1];

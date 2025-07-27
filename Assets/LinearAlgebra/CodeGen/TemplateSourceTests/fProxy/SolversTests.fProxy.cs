@@ -45,7 +45,7 @@ public class fProxySolversTests {
             var Q = arena.fProxyIdentityMatrix(dim);
             var R = arena.fProxyMat(dim);
 
-            var A = Q.Copy();
+            var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 

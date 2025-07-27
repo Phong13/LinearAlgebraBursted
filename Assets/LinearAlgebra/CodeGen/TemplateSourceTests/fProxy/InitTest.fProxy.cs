@@ -6,6 +6,10 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
+//+deleteThis
+using LinearAlgebra.mathProxies;
+//-deleteThis
+
 public class fProxyInitTest
 {
     [BurstCompile]
@@ -52,20 +56,20 @@ public class fProxyInitTest
             Assert.AreEqual(1, arena.AllocationsCount);
 
             {
-                float3 v0 = new float3(1, 2, 3);
+                fProxy3 v0 = new fProxy3(1, 2, 3);
                 fProxyN vv0 = arena.fProxyVec(v0);
                 Assert.IsTrue(v0[0] == vv0[0] && v0[1] == vv0[1] && v0[2] == vv0[2]);
                 Assert.IsTrue(arena.DB_isPersistant(vv0));
             }
             {
-                float3 v0 = new float3(1, 2, 3);
+                fProxy3 v0 = new fProxy3(1, 2, 3);
                 fProxyN vvv0 = arena.tempfProxyVec(v0);
                 Assert.IsTrue(v0[0] == vvv0[0] && v0[1] == vvv0[1] && v0[2] == vvv0[2]);
                 Assert.IsTrue(arena.DB_isTemp(vvv0));
             }
 
             {
-                float4 v0 = new float4(1, 2, 3, 4);
+                fProxy4 v0 = new fProxy4(1, 2, 3, 4);
                 fProxyN vv0 = arena.fProxyVec(v0);
                 Assert.IsTrue(v0[0] == vv0[0] && v0[1] == vv0[1] && v0[2] == vv0[2] && v0[3] == vv0[3]);
                 Assert.IsTrue(arena.DB_isPersistant(vv0));
@@ -76,7 +80,10 @@ public class fProxyInitTest
             }
 
             {
-                float3x3 m0 = float3x3.EulerXYZ(math.radians(15), math.radians(25), math.radians(35));
+                fProxy3x3 m0;
+                m0.c0 = new fProxy3(1, 2, 3);
+                m0.c1 = new fProxy3(4, 5, 6);
+                m0.c2 = new fProxy3(7, 8, 9);
                 fProxyMxN mm0 = arena.fProxyMat(m0);
                 Assert.IsTrue(m0.c0.x == mm0[0, 0] && m0.c1.x == mm0[0, 1] && m0.c2.x == mm0[0, 2]);
                 Assert.IsTrue(m0.c0.y == mm0[1, 0] && m0.c1.y == mm0[1, 1] && m0.c2.y == mm0[1, 2]);
@@ -85,8 +92,11 @@ public class fProxyInitTest
             }
 
             {
-                float4x4 m0 = float4x4.EulerXYZ(math.radians(15), math.radians(25), math.radians(35));
-                m0.c3 = new float4(5, 6, 7, 8);
+                fProxy4x4 m0;
+                m0.c0 = new fProxy4(1, 2, 3,4);
+                m0.c1 = new fProxy4(4, 5, 6,5);
+                m0.c2 = new fProxy4(7, 8, 9,6);
+                m0.c3 = new fProxy4(5, 6, 7, 8);
                 m0.c0.w = 3; m0.c1.w = 4; m0.c2.w = 5; m0.c3.w = 9;
                 fProxyMxN mm0 = arena.fProxyMat(m0);
 
@@ -104,14 +114,14 @@ public class fProxyInitTest
             {
                 fProxyN v0 = arena.fProxyVec(new float[] { 1,2,3,4,5,6,7});
                 Assert.IsTrue(arena.DB_isPersistant(v0));
-                float3 f3 = v0.GetSubvecAsFloat3(2);
+                fProxy3 f3 = v0.GetSubvecAsFloat3(2);
                 Assert.IsTrue(f3.x == 3 && f3.y == 4 && f3.z == 5);
             }
 
             {
                 fProxyN v0 = arena.tempfProxyVec(new float[] { 1, 2, 3, 4, 5, 6, 7 });
                 Assert.IsTrue(arena.TempAllocationsCount == 1 && arena.DB_isTemp(v0)); 
-                float4 f3 = v0.GetSubvecAsFloat4(2);
+                fProxy4 f3 = v0.GetSubvecAsFloat4(2);
                 Assert.IsTrue(f3.x == 3 && f3.y == 4 && f3.z == 5 && f3.w == 6);
             }
 
@@ -120,11 +130,11 @@ public class fProxyInitTest
                 fProxyN v0 = arena.tempfProxyVec(new float[] { 1, 2, 3, 4, 5, 6, 7 });
                 Assert.IsTrue(arena.TempAllocationsCount == 2 && arena.DB_isTemp(v0));
                 
-                fProxyN f3 = v0.GetSubvec(2,3);
+                fProxyN f3 = v0.GetSubvec(2,3, false);
                 ac += 1;
                 Assert.IsTrue(arena.AllocationsCount == ac && arena.DB_isPersistant(f3));
                 Assert.IsTrue(f3[0] == 3 && f3[1] == 4 && f3[2] == 5);
-                fProxyN f4 = v0.GetSubvecTemp(2, 3);
+                fProxyN f4 = v0.GetSubvec(2, 3, true);
                 Assert.IsTrue(arena.TempAllocationsCount == 3 && arena.DB_isTemp(f4));
                 Assert.IsTrue(f3[0] == 3 && f3[1] == 4 && f3[2] == 5);
             }
@@ -136,21 +146,21 @@ public class fProxyInitTest
                                                               {13,14,15,16 }});
                 ac += 1;
                 Assert.IsTrue(arena.AllocationsCount == ac && arena.DB_isPersistant(mm0));
-                fProxyN c = mm0.ColTemp(2);
+                fProxyN c = mm0.Col(2);
                 Assert.IsTrue(arena.TempAllocationsCount == 4 && arena.DB_isTemp(c));
                 Assert.IsTrue(c[0] == mm0[0, 2] && c[1] == mm0[1, 2] && c[2] == mm0[2, 2] && c[3] == mm0[3, 2]);
 
-                float3 c3 = mm0.GetColAsFloat3(2);
+                fProxy3 c3 = mm0.GetColAsFloat3(2);
                 Assert.IsTrue(c3[0] == mm0[0, 2] && c3[1] == mm0[1, 2] && c3[2] == mm0[2, 2]);
 
-                float4 c4 = mm0.GetColAsFloat4(2);
+                fProxy4 c4 = mm0.GetColAsFloat4(2);
                 Assert.IsTrue(c4[0] == mm0[0, 2] && c4[1] == mm0[1, 2] && c4[2] == mm0[2, 2] && c4[3] == mm0[3,2]);
 
-                float3 c5 = new float3(66, 55, 44);
+                fProxy3 c5 = new fProxy3(66, 55, 44);
                 mm0.SetCol(c5, 1, 1);
                 Assert.IsTrue(66 == mm0[1, 1] && 55 == mm0[2, 1] && 44 == mm0[3, 1]);
 
-                float4 c6 = new float4(66, 55, 44, 33);
+                fProxy4 c6 = new fProxy4(66, 55, 44, 33);
                 mm0.SetCol(c6, 2);
                 Assert.IsTrue(66 == mm0[0, 2] && 55 == mm0[1, 2] && 44 == mm0[2, 2] && 33 == mm0[3,2]);
 
@@ -165,12 +175,12 @@ public class fProxyInitTest
                                                               {9,10,11,12 },
                                                               {13,14,15,16 }});
                 ac += 1;
-                float3x3 m = mm0.GetSubMatrixFloat3x3(1, 1);
+                fProxy3x3 m = mm0.GetSubMatrixFloat3x3(1, 1);
                 Assert.IsTrue(arena.TempAllocationsCount == 4);
                 fProxyMxN mm = arena.fProxyMat(m);
                 ac += 1;
 
-                var m22 = mm0.GetSubMatrixTemp(2, 2, 1, 2);
+                var m22 = mm0.GetSubMatrix(2, 2, 1, 2, true);
                 Assert.IsTrue(arena.TempAllocationsCount == 5 && arena.DB_isTemp(m22));
                 Assert.IsTrue(m22.M_Rows == 2 && m22.N_Cols == 2);
 
@@ -179,7 +189,10 @@ public class fProxyInitTest
                 mm0.SetSubMatrix(m22, 0, 0);
                 Assert.IsTrue(mm0[0, 0] == 10 && mm0[0, 1] == 11 && mm0[1, 0] == 14 && mm0[1, 1] == 15);
 
-                float3x3 f33 = float3x3.EulerXYZ(.1f, .3f, .5f);
+                fProxy3x3 f33;
+                f33.c0 = new fProxy3(1, 2, 3);
+                f33.c1 = new fProxy3(4, 5, 6);
+                f33.c2 = new fProxy3(7, 8, 9);
                 mm0.SetSubMatrix(f33, 1, 1);
                 
 

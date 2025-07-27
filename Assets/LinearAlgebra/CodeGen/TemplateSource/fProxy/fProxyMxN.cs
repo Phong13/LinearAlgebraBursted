@@ -72,12 +72,17 @@ namespace LinearAlgebra
             Data = data;
         }
 
-        public unsafe fProxyMxN Copy()
+        /// <summary>
+        /// Allocates a copy in the arena's persistent buffer
+        /// </summary>
+        public unsafe fProxyMxN CopyPersistent()
         {
-
             return _arenaPtr->fProxyMat(in this);
         }
 
+        /// <summary>
+        /// Allocates a copy in the arena's temp buffer
+        /// </summary>
         public unsafe fProxyMxN TempCopy()
         {
             return _arenaPtr->tempfProxyMat(in this);

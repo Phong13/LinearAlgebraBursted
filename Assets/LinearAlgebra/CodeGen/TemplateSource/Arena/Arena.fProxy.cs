@@ -1,6 +1,10 @@
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
+//+deleteThis
+using LinearAlgebra.mathProxies;
+//-deleteThis
+
 namespace LinearAlgebra
 {
     public partial struct Arena {
@@ -31,7 +35,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public fProxyN fProxyVec(float3 v)
+        public fProxyN fProxyVec(fProxy3 v)
         {
             var vec = new fProxyN(3, in this, true);
             vec[0] = v.x;
@@ -41,7 +45,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public fProxyN fProxyVec(float4 v)
+        public fProxyN fProxyVec(fProxy4 v)
         {
             var vec = new fProxyN(4, in this, true);
             vec[0] = v.x;
@@ -85,7 +89,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public fProxyN tempfProxyVec(float3 v)
+        public fProxyN tempfProxyVec(fProxy3 v)
         {
             var vec = new fProxyN(3, in this, true);
             vec[0] = v.x;
@@ -95,7 +99,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public fProxyN tempfProxyVec(float4 v)
+        public fProxyN tempfProxyVec(fProxy4 v)
         {
             var vec = new fProxyN(4, in this, true);
             vec[0] = v.x;
@@ -175,7 +179,7 @@ namespace LinearAlgebra
             return matrix;
         }
 
-        public fProxyMxN fProxyMat(in float3x3 orig)
+        public fProxyMxN fProxyMat(in fProxy3x3 orig)
         {
             var m = new fProxyMxN(3, 3, in this, false);
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
@@ -185,7 +189,7 @@ namespace LinearAlgebra
             return m;
         }
 
-        public fProxyMxN fProxyMat(in float4x4 orig)
+        public fProxyMxN fProxyMat(in fProxy4x4 orig)
         {
             var m = new fProxyMxN(4, 4, in this, false);
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x; m[0, 3] = orig.c3.x;
@@ -224,7 +228,7 @@ namespace LinearAlgebra
             return matrix;
         }
 
-        public fProxyMxN tempfProxyMat(in float3x3 orig)
+        public fProxyMxN tempfProxyMat(in fProxy3x3 orig)
         {
             var m = new fProxyMxN(3, 3, in this, false);
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
@@ -234,7 +238,7 @@ namespace LinearAlgebra
             return m;
         }
 
-        public fProxyMxN tempfProxyMat(in float4x4 orig)
+        public fProxyMxN tempfProxyMat(in fProxy4x4 orig)
         {
             var m = new fProxyMxN(4, 4, in this, false);
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x; m[0, 3] = orig.c3.x;

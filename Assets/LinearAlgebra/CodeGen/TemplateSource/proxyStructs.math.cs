@@ -35,6 +35,13 @@ namespace LinearAlgebra.mathProxies
         public float y;
         public float z;
         
+        public fProxy3(float xx, float yy, float zz)
+        {
+            x = xx;
+            y = yy;
+            z = zz;
+        }
+
         unsafe public fProxy this[int index] {
             get {
                 if ((uint)index >= 3)
@@ -57,7 +64,15 @@ namespace LinearAlgebra.mathProxies
         public float y;
         public float z;
         public float w;
-                                          
+
+        public fProxy4(float xx, float yy, float zz, float ww)
+        {
+            x = xx;
+            y = yy;
+            z = zz;
+            w = ww;
+        }
+
         unsafe public fProxy this[int index] {
             get {
                 if ((uint)index >= 4)

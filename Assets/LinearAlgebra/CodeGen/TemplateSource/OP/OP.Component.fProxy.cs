@@ -5,6 +5,11 @@ using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Mathematics;
 
+//+deleteThis
+using LinearAlgebra.mathProxies;
+//-deleteThis
+
+
 namespace LinearAlgebra
 {
 
@@ -163,41 +168,49 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 GetSubvecAsFloat3(this fProxyN a, int index = 0)
+        public static fProxy3 GetSubvecAsFloat3(this fProxyN a, int index = 0)
         {
-            float3 v;
+            fProxy3 v;
             unsafe
             {
-                v.x = (float) a.Data[index];
-                v.y = (float) a.Data[index + 1];
-                v.z = (float) a.Data[index + 2];
+                v.x =  a.Data[index];
+                v.y =  a.Data[index + 1];
+                v.z =  a.Data[index + 2];
             }
 
             return v;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetSubvecAsFloat4(this fProxyN a, int index = 0)
+        public static fProxy4 GetSubvecAsFloat4(this fProxyN a, int index = 0)
         {
-            float4 v;
+            fProxy4 v;
             unsafe
             {
-                v.x = (float) a.Data[index];
-                v.y = (float) a.Data[index + 1];
-                v.z = (float) a.Data[index + 2];
-                v.w = (float) a.Data[index + 3];
+                v.x =  a.Data[index];
+                v.y =  a.Data[index + 1];
+                v.z =  a.Data[index + 2];
+                v.w =  a.Data[index + 3];
             }
 
             return v;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static fProxyN GetSubvec(this fProxyN a, int index, int len)
+        public static fProxyN GetSubvec(this fProxyN a, int index, int len, bool isTemp)
         {
             
             unsafe
             {
-                fProxyN v = a._arenaPtr->fProxyVec(len);
+                fProxyN v;
+                if (isTemp)
+                {
+                    v = a._arenaPtr->tempfProxyVec(len);
+                } else
+                {
+                    v = a._arenaPtr->fProxyVec(len);
+                }
+
                 for (int i = 0; i < len; i++)
                 {
                     v[i] = a[index + i];
@@ -207,46 +220,31 @@ namespace LinearAlgebra
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static fProxyN GetSubvecTemp(this fProxyN a, int index, int len)
-        {
-
-            unsafe
-            {
-                fProxyN v = a._arenaPtr->tempfProxyVec(len);
-                for (int i = 0; i < len; i++)
-                {
-                    v[i] = a[index + i];
-                }
-
-                return v;
-            }
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 GetColAsFloat3(this fProxyMxN a, int col, int rowIdx = 0)
+        public static fProxy3 GetColAsFloat3(this fProxyMxN a, int col, int rowIdx = 0)
         {
-            float3 c;
+            fProxy3 c;
             unsafe
             {
-                c.x = (float) a[rowIdx, col];
-                c.y = (float) a[rowIdx + 1, col];
-                c.z = (float) a[rowIdx + 2, col];
+                c.x =  a[rowIdx, col];
+                c.y =  a[rowIdx + 1, col];
+                c.z =  a[rowIdx + 2, col];
             }
 
             return c;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float4 GetColAsFloat4(this fProxyMxN a, int col, int rowIdx = 0)
+        public static fProxy4 GetColAsFloat4(this fProxyMxN a, int col, int rowIdx = 0)
         {
-            float4 c;
+            fProxy4 c;
             unsafe
             {
-                c.x = (float) a[rowIdx, col];
-                c.y = (float) a[rowIdx + 1, col];
-                c.z = (float) a[rowIdx + 2, col];
-                c.w = (float) a[rowIdx + 3, col];
+                c.x =  a[rowIdx, col];
+                c.y =  a[rowIdx + 1, col];
+                c.z =  a[rowIdx + 2, col];
+                c.w =  a[rowIdx + 3, col];
             }
 
             return c;
@@ -256,12 +254,20 @@ namespace LinearAlgebra
         /// Allocated as a tempVec
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static fProxyN ColTemp(this fProxyMxN a, int col, int rowStartIdx = 0)
+        public static fProxyN Col(this fProxyMxN a, int col, int rowStartIdx = 0, bool isTemp = true)
         {
             unsafe
             {
                 int len = a.M_Rows - rowStartIdx;
-                fProxyN c = a._arenaPtr->tempfProxyVec(len);
+                fProxyN c;
+                if (isTemp)
+                {
+                    c = a._arenaPtr->tempfProxyVec(len);
+                } else
+                {
+                    c = a._arenaPtr->fProxyVec(len);
+                }
+
                 for (int i = 0; i < len; i++)
                 {
                     c[i] = a[rowStartIdx + i, col];
@@ -272,7 +278,7 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetCol(this fProxyMxN a, float3 c, int colidx, int rowIdx = 0)
+        public static void SetCol(this fProxyMxN a, fProxy3 c, int colidx, int rowIdx = 0)
         {
             unsafe
             {
@@ -283,7 +289,7 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetCol(this fProxyMxN a, float4 c, int colIdx, int rowIdx = 0)
+        public static void SetCol(this fProxyMxN a, fProxy4 c, int colIdx, int rowIdx = 0)
         {
             unsafe
             {
@@ -306,11 +312,19 @@ namespace LinearAlgebra
             }
         }
 
-        public static fProxyMxN GetSubMatrixTemp(this fProxyMxN a, int rowIdx, int numRows, int colIdx, int numCols)
+        public static fProxyMxN GetSubMatrix(this fProxyMxN a, int rowIdx, int numRows, int colIdx, int numCols, bool isTemp)
         {
             unsafe
             {
-                fProxyMxN m = a._arenaPtr->tempfProxyMat(numRows, numCols);
+                fProxyMxN m;
+                if (isTemp)
+                {
+                    m = a._arenaPtr->tempfProxyMat(numRows, numCols);
+                } else
+                {
+                    m = a._arenaPtr->fProxyMat(numRows, numCols);
+                }
+
                 for (int i = 0; i < numRows; i++)
                 {
                     for (int j = 0; j < numCols; j++)
@@ -323,15 +337,15 @@ namespace LinearAlgebra
             }
         }
 
-        public static float3x3 GetSubMatrixFloat3x3(this fProxyMxN a, int rowIdx, int colIdx)
+        public static fProxy3x3 GetSubMatrixFloat3x3(this fProxyMxN a, int rowIdx, int colIdx)
         {
             unsafe
             {
-                float3x3 m;
+                fProxy3x3 m;
 
-                m.c0.x = (float) a[rowIdx    , colIdx]; m.c1.x = (float) a[rowIdx    , colIdx + 1]; m.c2.x = (float) a[rowIdx    , colIdx + 2];
-                m.c0.y = (float) a[rowIdx + 1, colIdx]; m.c1.y = (float) a[rowIdx + 1, colIdx + 1]; m.c2.y = (float) a[rowIdx + 1, colIdx + 2];
-                m.c0.z = (float) a[rowIdx + 2, colIdx]; m.c1.z = (float) a[rowIdx + 2, colIdx + 1]; m.c2.z = (float) a[rowIdx + 2, colIdx + 2];
+                m.c0.x =  a[rowIdx    , colIdx]; m.c1.x =  a[rowIdx    , colIdx + 1]; m.c2.x =  a[rowIdx    , colIdx + 2];
+                m.c0.y =  a[rowIdx + 1, colIdx]; m.c1.y =  a[rowIdx + 1, colIdx + 1]; m.c2.y =  a[rowIdx + 1, colIdx + 2];
+                m.c0.z =  a[rowIdx + 2, colIdx]; m.c1.z =  a[rowIdx + 2, colIdx + 1]; m.c2.z =  a[rowIdx + 2, colIdx + 2];
 
                 return m;
             }
@@ -351,7 +365,7 @@ namespace LinearAlgebra
             }
         }
 
-        public static void SetSubMatrix(this fProxyMxN a, float3x3 from, int rowIdx, int colIdx)
+        public static void SetSubMatrix(this fProxyMxN a, fProxy3x3 from, int rowIdx, int colIdx)
         {
             unsafe
             {
