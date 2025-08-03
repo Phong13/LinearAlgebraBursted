@@ -1,12 +1,23 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
+using System;
+
 //singularFile//
 namespace LinearAlgebra
 {
     // Allocation helper
     [StructLayout(LayoutKind.Sequential)]
     public partial struct Arena : System.IDisposable {
+
+        [Flags]
+        public enum ArrayFlags : byte
+        {
+            None = 0,
+            isDisposed = 1 << 0, // 0b00000001
+            isPersistent = 1 << 1, // 0b00000010
+            isTemp = 1 << 2, // 0b00000100
+        }
 
         public int AllocationsCount => 
             //+copyReplaceFill[+]

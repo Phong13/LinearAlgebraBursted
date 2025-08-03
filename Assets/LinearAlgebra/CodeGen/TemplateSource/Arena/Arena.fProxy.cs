@@ -20,6 +20,7 @@ namespace LinearAlgebra
         public fProxyN fProxyVec(int N, bool uninit = false) {
 
             var vec = new fProxyN(N, in this, uninit);
+            vec.flags |= ArrayFlags.isPersistent;
             fProxyVectors.Add(in vec);
             return vec;
         }
@@ -28,6 +29,7 @@ namespace LinearAlgebra
         public fProxyN fProxyVec(int N, float s)
         {
             var vec = new fProxyN(N, in this, true);
+            vec.flags |= ArrayFlags.isPersistent;
             fProxyVectors.Add(in vec);
             unsafe {
                 mathUnsafefProxy.setAll(vec.Data.Ptr, N, s);
@@ -38,6 +40,7 @@ namespace LinearAlgebra
         public fProxyN fProxyVec(fProxy3 v)
         {
             var vec = new fProxyN(3, in this, true);
+            vec.flags |= ArrayFlags.isPersistent;
             vec[0] = v.x;
             vec[1] = v.y;
             vec[2] = v.z;
@@ -48,6 +51,7 @@ namespace LinearAlgebra
         public fProxyN fProxyVec(fProxy4 v)
         {
             var vec = new fProxyN(4, in this, true);
+            vec.flags |= ArrayFlags.isPersistent;
             vec[0] = v.x;
             vec[1] = v.y;
             vec[2] = v.z;
@@ -60,6 +64,7 @@ namespace LinearAlgebra
         internal fProxyN fProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
+            vec.flags |= ArrayFlags.isPersistent;
             fProxyVectors.Add(in vec);
             return vec;
         }
@@ -67,6 +72,7 @@ namespace LinearAlgebra
         public fProxyN fProxyVec(float[] orig)
         {
             var vec = fProxyVec(orig.Length);
+            vec.flags |= ArrayFlags.isPersistent;
             for (int i = 0; i < orig.Length; i++)
             {
                 vec[i] = orig[i];
@@ -78,6 +84,7 @@ namespace LinearAlgebra
         public fProxyN tempfProxyVec(int N, bool uninit = false)
         {
             var vec = new fProxyN(N, in this, uninit);
+            vec.flags |= ArrayFlags.isTemp;
             tempfProxyVectors.Add(in vec);
             return vec;
         }
@@ -86,6 +93,7 @@ namespace LinearAlgebra
         {
             var vec = new fProxyN(N, in this, true);
             tempfProxyVectors.Add(in vec);
+            vec.flags |= ArrayFlags.isTemp;
             unsafe
             {
                 mathUnsafefProxy.setAll(vec.Data.Ptr, N, s);
@@ -96,6 +104,7 @@ namespace LinearAlgebra
         public fProxyN tempfProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
+            vec.flags |= ArrayFlags.isTemp;
             tempfProxyVectors.Add(in vec);
             return vec;
         }
@@ -103,6 +112,7 @@ namespace LinearAlgebra
         public fProxyN tempfProxyVec(fProxy3 v)
         {
             var vec = new fProxyN(3, in this, true);
+            vec.flags |= ArrayFlags.isTemp;
             vec[0] = v.x;
             vec[1] = v.y;
             vec[2] = v.z;
@@ -113,6 +123,7 @@ namespace LinearAlgebra
         public fProxyN tempfProxyVec(fProxy4 v)
         {
             var vec = new fProxyN(4, in this, true);
+            vec.flags |= ArrayFlags.isTemp;
             vec[0] = v.x;
             vec[1] = v.y;
             vec[2] = v.z;
@@ -124,6 +135,7 @@ namespace LinearAlgebra
         public fProxyN tempfProxyVec(float[] orig)
         {
             var vec = tempfProxyVec(orig.Length);
+            vec.flags |= ArrayFlags.isTemp;
             for (int i = 0; i < orig.Length; i++)
             {
                 vec[i] = orig[i];
@@ -137,9 +149,14 @@ namespace LinearAlgebra
         /// </summary>
         public unsafe bool DB_isPersistant(in fProxyN v)
         {
+            if ((v.flags & ArrayFlags.isPersistent) == 0) UnityEngine.Debug.LogError("Input vector to DB_isPersistant wasn't flagged as a persistent vector.");
+            if ((v.flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Input vector to DB_isPersistant was disposed.");
             for (int i = 0; i < fProxyVectors.Length; i++)
             {
-                if (fProxyVectors[i].Data.Ptr == v.Data.Ptr) return true;
+                if (fProxyVectors[i].Data.Ptr == v.Data.Ptr)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -150,9 +167,16 @@ namespace LinearAlgebra
         /// </summary>
         public unsafe bool DB_isTemp(in fProxyN v)
         {
+            if ((v.flags & ArrayFlags.isTemp) == 0) UnityEngine.Debug.LogError("Input vector to DB_isTemp wasn't flagged as a temp vector.");
+            if ((v.flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Input vector to DB_isTemp was disposed.");
             for (int i = 0; i < tempfProxyVectors.Length; i++)
             {
-                if (tempfProxyVectors[i].Data.Ptr == v.Data.Ptr) return true;
+                if (tempfProxyVectors[i].Data.Ptr == v.Data.Ptr)
+                {
+                    if ((tempfProxyVectors[i].flags & ArrayFlags.isTemp) == 0) UnityEngine.Debug.LogError("Vector in Temp array in DB_isTemp wasn't flagged as a temp vector.");
+                    if ((v.flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Vector in Temp array was Disposed");
+                    return true;
+                }
             }
 
             return false;

@@ -15,6 +15,8 @@ namespace LinearAlgebra
         
         public UnsafeList<fProxy> Data { get; private set; }
 
+        public Arena.ArrayFlags flags;
+
         /// <summary>
         /// Creates a new vector of dimension N
         /// </summary>
@@ -34,6 +36,7 @@ namespace LinearAlgebra
             data.Resize(n, NativeArrayOptions.UninitializedMemory);
 
             Data = data;
+            flags = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -56,6 +59,7 @@ namespace LinearAlgebra
             data.CopyFrom(orig.Data);
 
             Data = data;
+            flags = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -73,6 +77,7 @@ namespace LinearAlgebra
             data.Resize(n, uninit ? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory);
             
             Data = data;
+            flags = Arena.ArrayFlags.None;
         }
 
         public unsafe fProxyN CopyPersistent()
@@ -105,7 +110,24 @@ namespace LinearAlgebra
 #if LINALG_DEBUG
             for (int i = 0; i < N; i++) this[i] = float.NaN;
 #endif
-            Data.Dispose();
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            bool disposed = (flags & Arena.ArrayFlags.isDisposed) != 0;
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose manged resources here
+                }
+
+                // Dispose unmanged resources here
+                if (N > 0 && float.IsNaN(Data[0])) UnityEngine.Debug.LogError("Vector data was NaN. Might be double freeing.");
+                Data.Dispose();
+                flags = Arena.ArrayFlags.isDisposed; // unset other flags.
+            }
         }
 
         public override string ToString()
