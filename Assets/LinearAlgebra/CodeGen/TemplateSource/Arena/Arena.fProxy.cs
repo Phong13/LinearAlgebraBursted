@@ -82,6 +82,17 @@ namespace LinearAlgebra
             return vec;
         }
 
+        public fProxyN tempfProxyVec(int N, fProxy s)
+        {
+            var vec = new fProxyN(N, in this, true);
+            tempfProxyVectors.Add(in vec);
+            unsafe
+            {
+                mathUnsafefProxy.setAll(vec.Data.Ptr, N, s);
+            }
+            return vec;
+        }
+
         public fProxyN tempfProxyVec(in fProxyN orig)
         {
             var vec = new fProxyN(in orig);
@@ -218,6 +229,17 @@ namespace LinearAlgebra
         {
             var matrix = new fProxyMxN(M_rows, M_cols, in this, uninit);
             tempfProxyMatrices.Add(in matrix);
+            return matrix;
+        }
+
+        public fProxyMxN tempfProxyMat(int M_rows, int N_cols, fProxy s)
+        {
+            var matrix = new fProxyMxN(M_rows, N_cols, in this, false);
+            tempfProxyMatrices.Add(in matrix);
+            unsafe
+            {
+                mathUnsafefProxy.setAll(matrix.Data.Ptr, matrix.Length, s);
+            }
             return matrix;
         }
 

@@ -245,6 +245,30 @@ namespace LinearAlgebra
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetSubvec(this fProxyN a, fProxyN from, int idx, int num)
+        {
+            unsafe
+            {
+                for (int i = 0; i < num; i++)
+                {
+                    a[idx + i] = from[i];
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetSubvec(this fProxyN a, float3 from, int idx)
+        {
+            unsafe
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    a[idx + i] = from[i];
+                }
+            }
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxy3 GetColAsFloat3(this fProxyMxN a, int col, int rowIdx = 0)
@@ -373,6 +397,23 @@ namespace LinearAlgebra
                 m.c0.z =  a[rowIdx + 2, colIdx]; m.c1.z =  a[rowIdx + 2, colIdx + 1]; m.c2.z =  a[rowIdx + 2, colIdx + 2];
 
                 return m;
+            }
+        }
+
+        /// <summary>
+        /// Copies part of matrix from to part of target. No allocations
+        /// </summary>
+        public static void CopySubMatrix(this fProxyMxN target, int targRowIdx, int targColIdx, fProxyMxN from, int srcRowIdx, int numRows, int srcColIdx, int numCols)
+        {
+            unsafe
+            {
+                for (int i = 0; i < numRows; i++)
+                {
+                    for (int j = 0; j < numCols; j++)
+                    {
+                        target[targRowIdx + i, targColIdx + j] = from[srcRowIdx + i, srcColIdx + j];
+                    }
+                }
             }
         }
 
