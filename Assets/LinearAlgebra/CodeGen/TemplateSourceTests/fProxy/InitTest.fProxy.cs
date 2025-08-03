@@ -111,6 +111,7 @@ public class fProxyInitTest
             }
 
             arena.ClearTemp();
+
             {
                 fProxyN v0 = arena.fProxyVec(new float[] { 1,2,3,4,5,6,7});
                 Assert.IsTrue(arena.DB_isPersistant(v0));

@@ -106,10 +106,8 @@ namespace LinearAlgebra
             Data.CopyFrom(vec.Data);
         }
 
-        public void Dispose() {
-#if LINALG_DEBUG
-            for (int i = 0; i < N; i++) this[i] = float.NaN;
-#endif
+        public void Dispose() 
+        {
             Dispose(true);
         }
 
@@ -124,7 +122,10 @@ namespace LinearAlgebra
                 }
 
                 // Dispose unmanged resources here
-                if (N > 0 && float.IsNaN(Data[0])) UnityEngine.Debug.LogError("Vector data was NaN. Might be double freeing.");
+                if (N > 0 && float.IsNaN((float) Data[0])) UnityEngine.Debug.LogError("Vector data was NaN. Might be double freeing.");
+#if LINALG_DEBUG
+                for (int i = 0; i < N; i++) this[i] = float.NaN;
+#endif
                 Data.Dispose();
                 flags = Arena.ArrayFlags.isDisposed; // unset other flags.
             }

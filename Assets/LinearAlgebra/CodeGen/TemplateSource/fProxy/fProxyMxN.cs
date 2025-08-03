@@ -12,6 +12,8 @@ namespace LinearAlgebra
         public int M_Rows;
         public int N_Cols;
 
+        public Arena.ArrayFlags flags;
+
         public UnsafeList<fProxy> Data { get; private set; }
 
         [NativeDisableUnsafePtrRestriction]
@@ -31,6 +33,7 @@ namespace LinearAlgebra
             M_Rows = M_rows;
             N_Cols = N_cols;
             Length = M_Rows * N_Cols;
+            flags = Arena.ArrayFlags.None;
             var data = new UnsafeList<fProxy>(Length, allocator, uninit ? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory);
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             Data = data;
@@ -48,6 +51,7 @@ namespace LinearAlgebra
             M_Rows = M_rows;
             N_Cols = N_cols;
             Length = M_Rows * N_Cols;
+            flags = Arena.ArrayFlags.None;
             var data = new UnsafeList<fProxy>(Length, _arenaPtr->Allocator, uninit? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory );
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             Data = data;
@@ -66,6 +70,7 @@ namespace LinearAlgebra
             M_Rows = orig.M_Rows;
             N_Cols = orig.N_Cols;
             Length = orig.Length;
+            flags = Arena.ArrayFlags.None;
             var data = new UnsafeList<fProxy>(Length, allocator, NativeArrayOptions.UninitializedMemory);
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             data.CopyFrom(orig.Data);
@@ -89,10 +94,27 @@ namespace LinearAlgebra
         }
 
         public void Dispose() {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            bool disposed = (flags & Arena.ArrayFlags.isDisposed) != 0;
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose manged resources here
+                }
+
+                // Dispose unmanged resources here
+                if (Length > 0 && float.IsNaN((float) Data[0])) UnityEngine.Debug.LogError("Vector data was NaN. Might be double freeing.");
 #if LINALG_DEBUG
-            for (int i = 0; i < Length; i++) this[i] = float.NaN;
+                for (int i = 0; i < Length; i++) this[i] = float.NaN;
 #endif
-            Data.Dispose();
+                Data.Dispose();
+                flags = Arena.ArrayFlags.isDisposed; // unset other flags.
+            }
         }
 
         void IMatrix<fProxy>.CopyTo(IMatrix<fProxy> destination) {

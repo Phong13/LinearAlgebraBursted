@@ -44,6 +44,9 @@ public class fProxyOperationsTest {
 
             arena.ClearTemp();
 
+            Assert.IsTrue(arena.DB_isPersistant(a));
+            Assert.IsTrue(arena.DB_isPersistant(b));
+
             result = a * s;
             result = s * a;
 
@@ -64,6 +67,10 @@ public class fProxyOperationsTest {
             // inpl operations should not move the vector or matrix that it is being called on.
             fProxyN c = arena.fProxyVec(vecLen, 0f);
             fProxyN d = c; // both c and d point at the same buffer.
+
+            a = arena.fProxyVec(vecLen, 10f);
+            b = arena.fProxyVec(vecLen, 10f);
+
             Assert.IsTrue(arena.DB_isPersistant(in c));
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr);
             c.addInpl(a);
@@ -72,13 +79,18 @@ public class fProxyOperationsTest {
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.signFlipInpl();
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            
             c.modInpl(3);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.divInpl(5);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.compMulInpl(a);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
-            c.compDivInpl(a);
+
+            fProxyN nonZero = arena.tempfProxyVec(c.N, 4);
+            
+            c.compDivInpl(nonZero);
+            
 
             Assert.IsTrue(arena.DB_isPersistant(in c)); // verify c has not been converted
             arena.Dispose();

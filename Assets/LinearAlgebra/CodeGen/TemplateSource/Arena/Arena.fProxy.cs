@@ -155,6 +155,8 @@ namespace LinearAlgebra
             {
                 if (fProxyVectors[i].Data.Ptr == v.Data.Ptr)
                 {
+                    if ((fProxyVectors[i].flags & ArrayFlags.isPersistent) == 0) UnityEngine.Debug.LogError("Vector in Persistent array in DB_isPersistent wasn't flagged as a persistent vector.");
+                    if ((fProxyVectors[i].flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Vector in Persistent array was Disposed");
                     return true;
                 }
             }
@@ -174,7 +176,7 @@ namespace LinearAlgebra
                 if (tempfProxyVectors[i].Data.Ptr == v.Data.Ptr)
                 {
                     if ((tempfProxyVectors[i].flags & ArrayFlags.isTemp) == 0) UnityEngine.Debug.LogError("Vector in Temp array in DB_isTemp wasn't flagged as a temp vector.");
-                    if ((v.flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Vector in Temp array was Disposed");
+                    if ((tempfProxyVectors[i].flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Vector in Temp array was Disposed");
                     return true;
                 }
             }
@@ -185,12 +187,16 @@ namespace LinearAlgebra
         #region MATRIX
         public fProxyMxN fProxyMat(int dim, bool uninit = false)
         {
-            return new fProxyMxN(dim, dim, in this, uninit);
+            var matrix = new fProxyMxN(dim, dim, in this, uninit);
+            matrix.flags |= ArrayFlags.isPersistent;
+            fProxyMatrices.Add(in matrix);
+            return matrix;
         }
 
         public fProxyMxN fProxyMat(int M_rows, int N_cols, bool uninit = false)
         {
             var matrix = new fProxyMxN(M_rows, N_cols, in this, uninit);
+            matrix.flags |= ArrayFlags.isPersistent;
             fProxyMatrices.Add(in matrix);
             return matrix;
         }
@@ -199,6 +205,7 @@ namespace LinearAlgebra
         public fProxyMxN fProxyMat(int M_rows, int N_cols, float s)
         {
             var matrix = new fProxyMxN(M_rows, N_cols, in this, false);
+            matrix.flags |= ArrayFlags.isPersistent;
             fProxyMatrices.Add(in matrix);
             unsafe
             {
@@ -210,6 +217,7 @@ namespace LinearAlgebra
         public fProxyMxN fProxyMat(in fProxyMxN orig)
         {
             var matrix = new fProxyMxN(in orig);
+            matrix.flags |= ArrayFlags.isPersistent;
             fProxyMatrices.Add(in matrix);
             return matrix;
         }
@@ -220,6 +228,7 @@ namespace LinearAlgebra
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
             m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y;
             m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z;
+            m.flags |= ArrayFlags.isPersistent;
             fProxyMatrices.Add(in m);
             return m;
         }
@@ -231,6 +240,7 @@ namespace LinearAlgebra
             m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y; m[1, 3] = orig.c3.y;
             m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z; m[2, 3] = orig.c3.z;
             m[3, 0] = orig.c0.w; m[3, 1] = orig.c1.w; m[3, 2] = orig.c2.w; m[3, 3] = orig.c3.w;
+            m.flags |= ArrayFlags.isPersistent;
             fProxyMatrices.Add(in m);
             return m;
         }
@@ -252,6 +262,7 @@ namespace LinearAlgebra
         public fProxyMxN tempfProxyMat(int M_rows, int M_cols, bool uninit = false)
         {
             var matrix = new fProxyMxN(M_rows, M_cols, in this, uninit);
+            matrix.flags |= ArrayFlags.isTemp;
             tempfProxyMatrices.Add(in matrix);
             return matrix;
         }
@@ -259,6 +270,7 @@ namespace LinearAlgebra
         public fProxyMxN tempfProxyMat(int M_rows, int N_cols, fProxy s)
         {
             var matrix = new fProxyMxN(M_rows, N_cols, in this, false);
+            matrix.flags |= ArrayFlags.isTemp;
             tempfProxyMatrices.Add(in matrix);
             unsafe
             {
@@ -270,6 +282,7 @@ namespace LinearAlgebra
         public fProxyMxN tempfProxyMat(in fProxyMxN orig)
         {
             var matrix = new fProxyMxN(orig);
+            matrix.flags |= ArrayFlags.isTemp;
             tempfProxyMatrices.Add(in matrix);
             return matrix;
         }
@@ -280,6 +293,7 @@ namespace LinearAlgebra
             m[0, 0] = orig.c0.x; m[0, 1] = orig.c1.x; m[0, 2] = orig.c2.x;
             m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y;
             m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z;
+            m.flags |= ArrayFlags.isTemp;
             tempfProxyMatrices.Add(in m);
             return m;
         }
@@ -291,6 +305,7 @@ namespace LinearAlgebra
             m[1, 0] = orig.c0.y; m[1, 1] = orig.c1.y; m[1, 2] = orig.c2.y; m[1, 3] = orig.c3.y;
             m[2, 0] = orig.c0.z; m[2, 1] = orig.c1.z; m[2, 2] = orig.c2.z; m[2, 3] = orig.c3.z;
             m[3, 0] = orig.c0.w; m[3, 1] = orig.c1.w; m[3, 2] = orig.c2.w; m[3, 3] = orig.c3.w;
+            m.flags |= ArrayFlags.isTemp;
             tempfProxyMatrices.Add(in m);
             return m;
         }
@@ -311,9 +326,16 @@ namespace LinearAlgebra
 
         public unsafe bool DB_isPersistant(in fProxyMxN v)
         {
+            if ((v.flags & ArrayFlags.isPersistent) == 0) UnityEngine.Debug.LogError("Input matrix to DB_isPersistant wasn't flagged as a persistent vector.");
+            if ((v.flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Input matrix to DB_isPersistant was disposed.");
             for (int i = 0; i < fProxyMatrices.Length; i++)
             {
-                if (fProxyMatrices[i].Data.Ptr == v.Data.Ptr) return true;
+                if (fProxyMatrices[i].Data.Ptr == v.Data.Ptr)
+                {
+                    if ((fProxyMatrices[i].flags & ArrayFlags.isPersistent) == 0) UnityEngine.Debug.LogError("Matrix in Persistent array in DB_isPersistent wasn't flagged as a persistent vector.");
+                    if ((fProxyMatrices[i].flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Matrix in Persistent array was Disposed");
+                    return true;
+                }
             }
 
             return false;
@@ -324,13 +346,22 @@ namespace LinearAlgebra
         /// </summary>
         public unsafe bool DB_isTemp(in fProxyMxN v)
         {
+            if ((v.flags & ArrayFlags.isTemp) == 0) UnityEngine.Debug.LogError("Input matrix to DB_isTemp wasn't flagged as a temp vector.");
+            if ((v.flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Input matrix to DB_isTemp was disposed.");
+
             for (int i = 0; i < tempfProxyMatrices.Length; i++)
             {
-                if (tempfProxyMatrices[i].Data.Ptr == v.Data.Ptr) return true;
+                if (tempfProxyMatrices[i].Data.Ptr == v.Data.Ptr)
+                {
+                    if ((tempfProxyMatrices[i].flags & ArrayFlags.isTemp) == 0) UnityEngine.Debug.LogError("Matrix in Temp array in DB_isTemp wasn't flagged as a temp vector.");
+                    if ((tempfProxyMatrices[i].flags & ArrayFlags.isDisposed) != 0) UnityEngine.Debug.LogError("Matrix in Temp array was Disposed");
+                    return true;
+                }
             }
 
             return false;
         }
+
         #endregion
 
     }
