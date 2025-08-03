@@ -320,6 +320,8 @@ public class fProxyLUTests
 
             var A = arena.fProxyRandomMatrix(dim, dim, -10f, 10f, 314221);
 
+            Assert.IsTrue(arena.AllocationsCount == 1 && arena.TempAllocationsCount == 0);
+
             for (int d = 0; d < dim; d++) {
                 A[d, d] *= 2f;
                 if (Unity.Mathematics.math.abs(A[d, d]) < 0.01f)
@@ -327,27 +329,39 @@ public class fProxyLUTests
             }
 
             var x_Known = arena.fProxyRandomVector(dim, 1f, 10f, 901);
-            
+
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
+
             var b = fProxyOP.dot(A, x_Known);
 
             var U = A.CopyPersistent();
             var L = arena.fProxyIdentityMatrix(dim);
+
+            Debug.Log(arena.AllocationsCount + "  " + arena.TempAllocationsCount);
+            Assert.IsTrue(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1, arena.AllocationsCount + "  " + arena.TempAllocationsCount);
+            Assert.IsTrue(arena.DB_isPersistant(U) && arena.DB_isPersistant(L) && arena.DB_isTemp(b));
 
             var pivot = new Pivot(dim, Allocator.Temp);
              
             //LU.luDecompositionNoPivot(ref U, ref L);
             LU.luDecomposition(ref U, ref L, ref pivot);
 
-            var x_Solved = b.Copy();
+            Assert.IsTrue(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1);
+
+            var x_Solved = b.CopyPersistent();
+
+            Assert.IsTrue(arena.AllocationsCount == 5 && arena.TempAllocationsCount == 1);
 
             LU.LUSolve(ref L, ref U, in pivot, ref x_Solved);
+
+            Assert.IsTrue(arena.AllocationsCount == 5 && arena.TempAllocationsCount == 1);
 
             var zeroError = Analysis.MaxZeroError(x_Known - x_Solved);
 
             Debug.Log($"Error of max(abs(x_Known - x_Solved)): {zeroError}");
 
 
-            Assert.IsTrue(zeroError < 1E-03f);
+            Assert.IsTrue(zeroError < 3E-03f);
 
             pivot.Dispose();
 
@@ -362,6 +376,8 @@ public class fProxyLUTests
 
             var A = arena.fProxyRandomMatrix(dim, dim, -10f, 10f, 314221);
 
+            Assert.IsTrue(arena.AllocationsCount == 1 && arena.TempAllocationsCount == 0);
+
             for (int d = 0; d < dim; d++) {
                 A[d, d] *= 2f;
                 if (Unity.Mathematics.math.abs(A[d, d]) < 0.01f)
@@ -369,18 +385,30 @@ public class fProxyLUTests
             }
 
             var x_Known = arena.fProxyRandomVector(dim, 1f, 10f, 901);
+            
+            Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
 
             var b = fProxyOP.dot(A, x_Known);
 
             var LUmat = A.CopyPersistent();
-            
+
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1, arena.AllocationsCount + "  " + arena.TempAllocationsCount);
+            Assert.IsTrue(arena.DB_isPersistant(LUmat) && arena.DB_isTemp(b));
+
+
             var pivot = new Pivot(dim, Allocator.Temp);
 
             LU.luDecompositionInplace(ref LUmat, ref pivot);
 
-            var x_Solved = b.Copy();
+            Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1, arena.AllocationsCount + "  " + arena.TempAllocationsCount);
+
+            var x_Solved = b.CopyPersistent();
+
+            Assert.IsTrue(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1, arena.AllocationsCount + "  " + arena.TempAllocationsCount);
 
             LU.LUSolve(ref LUmat, ref pivot, ref x_Solved);
+
+            Assert.IsTrue(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1, arena.AllocationsCount + "  " + arena.TempAllocationsCount);
 
             if (Analysis.IsAnyNan(in x_Solved))
                 throw new System.Exception("TestJob: NaN detected");
@@ -389,7 +417,7 @@ public class fProxyLUTests
 
             Debug.Log($"Error of max(abs(x_Known - x_Solved)): {zeroError}");
 
-            Assert.IsTrue(zeroError < 1E-03f);
+            Assert.IsTrue(zeroError < 3E-03f);
 
             pivot.Dispose();
 

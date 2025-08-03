@@ -75,7 +75,7 @@ namespace LinearAlgebra
             Data = data;
         }
 
-        public unsafe fProxyN Copy()
+        public unsafe fProxyN CopyPersistent()
         {
             return _arenaPtr->fProxyVec(in this);
         }
