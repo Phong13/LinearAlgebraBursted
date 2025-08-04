@@ -195,6 +195,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxy3 GetSubvecAsFloat3(this fProxyN a, int index = 0)
         {
+            Arena.CheckValid(a);
             fProxy3 v;
             unsafe
             {
@@ -209,6 +210,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxy4 GetSubvecAsFloat4(this fProxyN a, int index = 0)
         {
+            Arena.CheckValid(a);
             fProxy4 v;
             unsafe
             {
@@ -224,7 +226,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN GetSubvec(this fProxyN a, int index, int len, bool isTemp)
         {
-            
+            Arena.CheckValid(a);
             unsafe
             {
                 fProxyN v;
@@ -248,6 +250,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetSubvec(this fProxyN a, fProxyN from, int idx, int num)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 for (int i = 0; i < num; i++)
@@ -260,6 +263,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetSubvec(this fProxyN a, float3 from, int idx)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 for (int i = 0; i < 3; i++)
@@ -273,6 +277,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxy3 GetColAsFloat3(this fProxyMxN a, int col, int rowIdx = 0)
         {
+            Arena.CheckValid(a);
             fProxy3 c;
             unsafe
             {
@@ -287,6 +292,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxy4 GetColAsFloat4(this fProxyMxN a, int col, int rowIdx = 0)
         {
+            Arena.CheckValid(a);
             fProxy4 c;
             unsafe
             {
@@ -305,6 +311,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN Col(this fProxyMxN a, int col, int rowStartIdx = 0, bool isTemp = true)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 int len = a.M_Rows - rowStartIdx;
@@ -329,6 +336,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetCol(this fProxyMxN a, fProxy3 c, int colidx, int rowIdx = 0)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 a[rowIdx, colidx] = c.x;
@@ -352,6 +360,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetCol(this fProxyMxN a, fProxyN c, int colIdx, int rowStartIdx = 0)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 for (int i = 0; i < c.N; i++)
@@ -363,6 +372,7 @@ namespace LinearAlgebra
 
         public static fProxyMxN GetSubMatrix(this fProxyMxN a, int rowIdx, int numRows, int colIdx, int numCols, bool isTemp)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 fProxyMxN m;
@@ -388,6 +398,7 @@ namespace LinearAlgebra
 
         public static fProxy3x3 GetSubMatrixFloat3x3(this fProxyMxN a, int rowIdx, int colIdx)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 fProxy3x3 m;
@@ -405,6 +416,8 @@ namespace LinearAlgebra
         /// </summary>
         public static void CopySubMatrix(this fProxyMxN target, int targRowIdx, int targColIdx, fProxyMxN from, int srcRowIdx, int numRows, int srcColIdx, int numCols)
         {
+            Arena.CheckValid(target);
+            Arena.CheckValid(from);
             unsafe
             {
                 for (int i = 0; i < numRows; i++)
@@ -419,6 +432,8 @@ namespace LinearAlgebra
 
         public static void SetSubMatrix(this fProxyMxN target, fProxyMxN from, int targRowIdx, int targColIdx)
         {
+            Arena.CheckValid(target);
+            Arena.CheckValid(from);
             unsafe
             {
                 for (int i = 0; i < from.M_Rows; i++)
@@ -433,6 +448,8 @@ namespace LinearAlgebra
 
         public static void SetSubMatrix(this fProxyMxN target, int targRowIdx, int targColIdx, fProxyMxN from, int srcRow, int numRows, int srcCol, int numCols)
         {
+            Arena.CheckValid(target);
+            Arena.CheckValid(from);
             unsafe
             {
                 for (int i = 0; i < numRows; i++)
@@ -449,6 +466,7 @@ namespace LinearAlgebra
 
         public static void SetSubMatrix(this fProxyMxN a, fProxy3x3 from, int rowIdx, int colIdx)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                  a[rowIdx    , colIdx] = from.c0.x; a[rowIdx    , colIdx + 1] = from.c1.x; a[rowIdx    , colIdx + 2] = from.c2.x;

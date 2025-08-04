@@ -362,6 +362,23 @@ namespace LinearAlgebra
             return false;
         }
 
+        [System.Diagnostics.Conditional("LINALG_DEBUG")]
+        public static void CheckValid(fProxyN v)
+        {
+#if LINALG_DEBUG
+            if ((v.flags & ArrayFlags.isDisposed) != 0) throw new System.Exception("Call on disposed vector");
+            if ((v.N > 0 && float.IsNaN((float) v[0]))) throw new System.Exception("Vector data was NaN. This is likely a disposed vector.");
+#endif
+        }
+
+        [System.Diagnostics.Conditional("LINALG_DEBUG")]
+        public static void CheckValid(fProxyMxN v)
+        {
+#if LINALG_DEBUG
+            if ((v.flags & ArrayFlags.isDisposed) != 0) throw new System.Exception("Call on disposed vector");
+            if ((v.Length > 0 && float.IsNaN((float)v[0]))) throw new System.Exception("Vector data was NaN. This is likely a disposed vector.");
+#endif
+        }
         #endregion
 
     }

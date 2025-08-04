@@ -147,6 +147,7 @@ namespace LinearAlgebra
 
         #region CONVERSIONS_TO_MATH
         public static fProxy2 ToLen2(this ref Arena arena, in fProxyN mathVec) {
+            Arena.CheckValid(mathVec);
             fProxy2 vec = new fProxy2();
 
             vec.x = mathVec[0];
@@ -157,6 +158,7 @@ namespace LinearAlgebra
 
         public static fProxy3 ToLen3(this fProxyN mathVec)
         {
+            Arena.CheckValid(mathVec);
             fProxy3 vec = new fProxy3();
 
             vec.x = mathVec[0];
@@ -168,6 +170,7 @@ namespace LinearAlgebra
 
         public static fProxy4 ToLen4(this fProxyN mathVec)
         {
+            Arena.CheckValid(mathVec);
             fProxy4 vec = new fProxy4();
 
             vec.x = mathVec[0];
@@ -180,6 +183,7 @@ namespace LinearAlgebra
 
         public static fProxy2x2 To2x2(this fProxyMxN mathVec)
         {
+            Arena.CheckValid(mathVec);
             fProxy2x2 vec = new fProxy2x2();
 
             vec.c0.x = mathVec[0, 0]; vec.c1.x = mathVec[0, 1];
@@ -190,6 +194,7 @@ namespace LinearAlgebra
 
         public static fProxy3x3 To3x3(this fProxyMxN mathVec)
         {
+            Arena.CheckValid(mathVec);
             fProxy3x3 vec = new fProxy3x3();
 
             vec.c0.x = mathVec[0, 0]; vec.c1.x = mathVec[0, 1]; vec.c2.x = mathVec[0, 2];
@@ -201,6 +206,7 @@ namespace LinearAlgebra
 
         public static fProxy4x4 To4x4(this fProxyMxN mathVec)
         {
+            Arena.CheckValid(mathVec);
             fProxy4x4 vec = new fProxy4x4();
 
             vec.c0.x = mathVec[0, 0]; vec.c1.x = mathVec[0, 1]; vec.c2.x = mathVec[0, 2]; vec.c3.x = mathVec[0, 3];
