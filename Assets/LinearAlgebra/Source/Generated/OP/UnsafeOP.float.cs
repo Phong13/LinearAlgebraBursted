@@ -182,6 +182,14 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void compCopy([NoAlias] float* target, [NoAlias] float* from, int n)
+        {
+
+            for (int i = 0; i < n; i++)
+                target[i] = from[i];
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void compAdd([NoAlias] float* target, [NoAlias] float* lhs, [NoAlias] float* rhs, int n)
         {
             for (int i = 0; i < n; i++)

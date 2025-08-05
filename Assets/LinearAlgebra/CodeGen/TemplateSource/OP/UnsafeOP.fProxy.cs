@@ -182,6 +182,14 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void compCopy([NoAlias] fProxy* target, [NoAlias] fProxy* from, int n)
+        {
+
+            for (int i = 0; i < n; i++)
+                target[i] = from[i];
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void compAdd([NoAlias] fProxy* target, [NoAlias] fProxy* lhs, [NoAlias] fProxy* rhs, int n)
         {
             for (int i = 0; i < n; i++)

@@ -37,139 +37,134 @@ should be able to account for all allocations.
 
 
 ```csharp
-    // memory management struct
-    var arena = new Arena(Allocator.Persistent);
+        // memory management struct
+        var arena = new Arena(Allocator.Persistent);
 
-    int dim = 128;
-    // creates a zero vector of 128 dimensions 
-    floatN vecA = arena.floatVec(dim);
-    // creates a vector of 128 dimensions with all elements set to 1
-    floatN vecB = arena.floatVec(dim, 1f);
+        int dim = 128;
+        // creates a zero vector of 128 dimensions 
+        floatN vecA = arena.floatVec(dim);
+        // creates a vector of 128 dimensions with all elements set to 1
+        floatN vecB = arena.floatVec(dim, 1f);
 
-    // add per component (will allocate a new temporary vec)
-    floatN vecAdd = vecA + vecB;
-    // mul per component (will allocate a new temporary vec)
-    floatN vecMul = vecA * vecB;
+        // add per component (will allocate a new temporary vec)
+        floatN vecAdd = vecA + vecB;
+        // mul per component (will allocate a new temporary vec)
+        floatN vecMul = vecA * vecB;
 
-    // create identity matrix
-    floatMxN matI = arena.floatIdentityMatrix(16);
-    floatMxN matRand = arena.floatRandomMatrix(16, 16);
+        // create identity matrix
+        floatMxN matI = arena.floatIdentityMatrix(16);
+        floatMxN matRand = arena.floatRandomMatrix(16, 16);
 
-    // per component sum, allocates new temporary matrix
-    floatMxN compSumMat = matI + matRand;
+        // per component sum, allocates new temporary matrix
+        floatMxN compSumMat = matI + matRand;
 
-    // adds 1f to compSumMat inplace, allocating nothing
-    floatOP.addInpl(compSumMat, 1f);
+        // adds 1f to compSumMat inplace, allocating nothing
+        floatOP.addInpl(compSumMat, 1f);
 
-    // mulls matI into compSumMat inplace, allocating nothing 
-    floatOP.compMulInpl(compSumMat, matI);
+        // mulls matI into compSumMat inplace, allocating nothing 
+        floatOP.compMulInpl(compSumMat, matI);
 
-    // creates random matrix with range from -3f to 3f
-    floatMxN A = arena.floatRandomDiagonalMatrix(dim, -3f, 3f);
-    floatMxN B = arena.floatRandomDiagonalMatrix(dim, -3f, 3f);
+        // creates random matrix with range from -3f to 3f
+        floatMxN A = arena.floatRandomDiagonalMatrix(dim, -3f, 3f);
+        floatMxN B = arena.floatRandomDiagonalMatrix(dim, -3f, 3f);
 
-    // dot multiply A and B, will allocate new temporary matrix
-    floatMxN Ctmp = floatOP.dot(A, B);
-    
-    // make a persistent copy of this result
-    floatMxN C = arena.CopyPersistent(Ctmp);
-    
-    {
-        // DON'T DO THIS
-        // Don't use assignement operator  =  with persistent mats and vecs. It can 
-        // quietly convert them from persistent allocated to temp allocated or leak memory.
-        C = A + B;  // C used to point to persistent allocated matrix. Now it points to temporary.
-        arena.ClearTemp() // C's new memory just got freed
-        C[0,1] = 5;    // now we are writing to unallocated memory. Very very bad.
-    }
-    
-    {
-        // Best Practice. Allocate all persistent variables ahead of time
-        floatMxN AA = arena.floatMat(1,2);
-        floatMxN BB = arena.floatMat(1,2);
-        floatMxN CC = arena.floatMat(1,2);
-        
-        // Record number of allocations
-        int expectedAllocations = arena.AllocationCount;
-        ...
+        // dot multiply A and B, will allocate new temporary matrix
+        floatMxN Ctmp = floatOP.dot(A, B);
+
+        // make a persistent copy of this result
+        floatMxN C = arena.floatMat(Ctmp);
+
         {
-            // Use temporary allocations for intermediate results
-            // scope the tempoary variable in {} so the variables disappear out of scope
-            // after calcs.
-            floatMxN Dtmp = AA * CC + BB * CC;
-            ... some calculations ...
-            
-            // Copy temporary result to persistent
-            CC.Copy(Dtmp);
-            
-            // Clean up temporary variables
-            arena.ClearTemp();
-            Assert(arena.AllocationCount == expectedAllocations);
+            // DON'T DO THIS
+            // Don't use assignement operator  =  with persistent mats and vecs. It can 
+            // quietly convert them from persistent allocated to temp allocated or leak memory.
+            C = A + B;  // C used to point to persistent allocated matrix. Now it points to temporary.
+            arena.ClearTemp(); // C's new memory just got freed
+            C[0, 1] = 5;    // now we are writing to unallocated memory. Very very bad.
         }
-    }
-    
-    // adds 5f to element on [0, 0] coords
-    C[0, 0] += 5f;
 
-    floatN b = arena.floatVec(dim, 1f);
-    floatN x_result = arena.floatVec(dim, 1f);
+        {
+            // Best Practice. Allocate all persistent variables ahead of time
+            floatMxN AA = arena.floatMat(1, 2);
+            floatMxN BB = arena.floatMat(1, 2);
+            floatMxN CC = arena.floatMat(1, 2);
+
+            // Record number of allocations
+            int expectedAllocations = arena.AllocationsCount;
+            // ...
+            {
+                // Use temporary allocations for intermediate results
+                // scope the tempoary variable in {} so the variables disappear out of scope
+                // after calcs.
+                floatMxN Dtmp = AA * CC + BB * CC;
+                // ... some calculations ...
+
+                // Copy temporary result to persistent
+                CC.copyInpl(Dtmp);
+                
+
+                // Clean up temporary variables
+                arena.ClearTemp();
+                Debug.Assert(arena.AllocationsCount == expectedAllocations);
+            }
+        }
+
+        
+        C = arena.floatMat(A.M_Rows, A.N_Cols);
+        C.addInpl(A, B);
+        // adds 5f to element on [0, 0] coords
+        C[0, 0] += 5f;
+
+        floatN b = arena.floatVec(dim, 1f);
+        floatN x_result = arena.floatVec(dim, 1f);
 
 
-    // solves linear system Ax = b inplace using QR, will allocate nothing permament
-    // but will modify A and b
-    OrthoOP.qrDirectSolve(ref A, ref b, ref x_result);
+        // solves linear system Ax = b inplace using QR, will allocate nothing permament
+        // but will modify A and b
+        OrthoOP.qrDirectSolve(ref A, ref b, ref x_result);
 
-    // calculate L1 norm
-    float norm = floatNormsOP.L1(x_result);
+        // calculate L1 norm
+        float norm = floatNormsOP.L1(x_result);
 
-    // prints C matrix, although it will be cutoff because of big dimensions
-    Print.Log(C);
+        // prints C matrix, although it will be cutoff because of big dimensions
+        Print.Log(C);
 
-    // returns true for all elements c_ij > a_ij, else false
-    // will allocate
-    boolMxN matCompare = C > A;
+        // returns true for all elements c_ij > a_ij, else false
+        // will allocate
+        boolMxN matCompare = C > A;
 
-    // flips booleans, will allocate
-    matCompare = !matCompare;
+        // flips booleans, will allocate
+        matCompare = !matCompare;
 
-    // creates 3 new allocations
-    boolMxN matCompare2 = C > A | C < B;
+        // creates 3 new allocations
+        boolMxN matCompare2 = C > A | C < B;
 
-    // clears all temporary allocations
-    arena.ClearTemp();
+        // clears all temporary allocations
+        arena.ClearTemp();
 
-    // creates new int vector with dimensions of 10 and valued at 32
-    intN intVec = arena.intVec(10, 32);
+        // creates new int vector with dimensions of 10 and valued at 32
+        intN intVec = arena.intVec(10, 32);
 
-    // applies bitwise OR to elements, allocates new vector
-    intVec |= 64;
+        // applies bitwise OR to elements, allocates new vector
+        intVec |= 64;
 
-    // also allocates, inplace methods do exist though
-    intVec = 2 + (intVec << 2) + intVec;
+        // also allocates, inplace methods do exist though
+        intVec = 2 + (intVec << 2) + intVec;
 
-    // creates new integer matrix
-    intMxN intMat = arena.intRandomMatrix(10, 10, 0, 10);
+        // creates new integer matrix
+        intMxN intMat = arena.intRandomMatrix(10, 10, 0, 10);
 
-    // creates new double matrix
-    doubleMxN doubleMat = arena.doubleRandomMatrix(10, 10, 0, 10);
+        // creates new double matrix
+        doubleMxN doubleMat = arena.doubleRandomMatrix(10, 10, 0, 10);
 
-    // creates new short matrix
-    shortMxN shortMat = arena.shortRandomMatrix(10, 10, 0, 10);
+        // creates new short matrix
+        shortMxN shortMat = arena.shortRandomMatrix(10, 10, 0, 10);
 
-    // creates new long matrix
-    longMxN longMat = arena.longRandomMatrix(10, 10, 0, 10);
+        // creates new long matrix
+        longMxN longMat = arena.longRandomMatrix(10, 10, 0, 10);
 
-    // mean of a vec
-    double mean = doubleStatsOP.mean(in doubleMat);
-
-    // mean of a vec
-    double max = doubleStatsOP.max(in doubleMat);
-
-    // vector of means of each row
-    doubleN rowMean = doubleStatsOP.rowMean(in doubleMat);
-
-    // clears and dispose all allocated vectors/matrices, disposes also arena
-    arena.Dispose();
+        // clears and dispose all allocated vectors/matrices, disposes also arena
+        arena.Dispose();
 ```
 
 ## Features

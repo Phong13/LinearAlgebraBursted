@@ -96,6 +96,16 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void copyInpl<T>(this T place, T from) where T : unmanaged, IUnsafefProxyArray
+        {
+            unsafe
+            {
+                int n = math.min(place.Data.Length, from.Data.Length);
+                UnsafeOP.compCopy(place.Data.Ptr, from.Data.Ptr, n);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void subInpl<T>(this T place, T fromB) where T : unmanaged, IUnsafefProxyArray
         {
             unsafe {
