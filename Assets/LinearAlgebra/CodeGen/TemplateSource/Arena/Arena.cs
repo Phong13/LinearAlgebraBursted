@@ -42,6 +42,9 @@ namespace LinearAlgebra
         public int AllAllocationsCount => AllocationsCount + TempAllocationsCount;
 
         public Allocator Allocator;
+
+        bool isDisposed;
+
         public bool Initialized { get; private set; }
 
         private UnsafeList<boolN> BoolVectors;
@@ -53,7 +56,8 @@ namespace LinearAlgebra
 
             Initialized = true;
             Allocator = allocator;
-            
+            isDisposed = false;
+
             //+copyReplace
             fProxyVectors = new UnsafeList<fProxyN>(8, Allocator);
             fProxyMatrices = new UnsafeList<fProxyMxN>(8, Allocator);
@@ -144,29 +148,42 @@ namespace LinearAlgebra
 
         public void Dispose()
         {
-            Clear();
+            Dispose(true);
+        }
 
-            //+copyReplace
-            fProxyVectors.Dispose();
-            fProxyMatrices.Dispose();
-            tempfProxyMatrices.Dispose();
-            tempfProxyVectors.Dispose();
-            //-copyReplace
+        private void Dispose(bool disposing)
+        {
+            if (!isDisposed)
+            {
+                if (disposing)
+                {
+                    Clear();
+                }
 
-            //+copyReplace
-            iProxyVectors.Dispose();
-            iProxyMatrices.Dispose();
-            tempiProxyMatrices.Dispose();
-            tempiProxyVectors.Dispose();
-            //-copyReplace
+                // Dispose unmanged resources here
+                //+copyReplace
+                fProxyVectors.Dispose();
+                fProxyMatrices.Dispose();
+                tempfProxyMatrices.Dispose();
+                tempfProxyVectors.Dispose();
+                //-copyReplace
 
-            BoolVectors.Dispose();
-            BoolMatrices.Dispose();
-            TempBoolMatrices.Dispose();
-            TempBoolVectors.Dispose();
+                //+copyReplace
+                iProxyVectors.Dispose();
+                iProxyMatrices.Dispose();
+                tempiProxyMatrices.Dispose();
+                tempiProxyVectors.Dispose();
+                //-copyReplace
 
-            Initialized = false;
-            Allocator = Allocator.Invalid;
+                BoolVectors.Dispose();
+                BoolMatrices.Dispose();
+                TempBoolMatrices.Dispose();
+                TempBoolVectors.Dispose();
+
+                Initialized = false;
+                Allocator = Allocator.Invalid;
+                isDisposed = true;
+            }
         }
     }
 }
