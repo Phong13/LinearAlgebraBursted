@@ -90,10 +90,17 @@ public class fProxyOperationsTest {
             fProxyN nonZero = arena.tempfProxyVec(c.N, 4);
             
             c.compDivInpl(nonZero);
+
             
+
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
 
             Assert.IsTrue(arena.DB_isPersistant(in c)); // verify c has not been converted
             arena.Dispose();
+            arena.Dispose();
+            arena.Dispose();
+
+            UnityEngine.Debug.Log("c after disposal: " + c.Data.IsCreated);
         }
     }
 

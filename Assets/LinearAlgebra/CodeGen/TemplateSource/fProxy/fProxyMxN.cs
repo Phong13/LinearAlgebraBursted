@@ -7,12 +7,10 @@ namespace LinearAlgebra
     // A m x n matrix
     // m = rows
     // n = cols
-    public partial struct fProxyMxN : IDisposable, IUnsafefProxyArray, IMatrix<fProxy> {
+    public partial struct fProxyMxN : IDisposable, IUnsafefProxyArray, IMatrix<fProxy>, IEquatable<fProxyMxN> {
         
         public int M_Rows;
         public int N_Cols;
-
-        public Arena.ArrayFlags flags;
 
         public UnsafeList<fProxy> Data { get; private set; }
 
@@ -20,6 +18,14 @@ namespace LinearAlgebra
         internal unsafe Arena* _arenaPtr;
 
         public readonly int Length;
+
+        /// <summary>
+        /// Why is this a container of length 1 and not a variable? Because fProxN's are structs. When the Arena
+        /// returns freshly allocated fProxyN it is returning a copy of it's internal fProxyN that points to the same
+        /// buffers. We want all copies of this fProxyN to see the same changes. To accomplish this the flags needs
+        /// to be a pointer.
+        /// </summary>
+        public UnsafeList<Arena.ArrayFlags> flags { get; private set; }
 
         public bool IsSquare => M_Rows == N_Cols;
 
@@ -33,10 +39,12 @@ namespace LinearAlgebra
             M_Rows = M_rows;
             N_Cols = N_cols;
             Length = M_Rows * N_Cols;
-            flags = Arena.ArrayFlags.None;
             var data = new UnsafeList<fProxy>(Length, allocator, uninit ? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory);
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             Data = data;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
         /// <summary>
         /// Creates a new matrix of dimension N
@@ -51,10 +59,12 @@ namespace LinearAlgebra
             M_Rows = M_rows;
             N_Cols = N_cols;
             Length = M_Rows * N_Cols;
-            flags = Arena.ArrayFlags.None;
             var data = new UnsafeList<fProxy>(Length, _arenaPtr->Allocator, uninit? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory );
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             Data = data;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, _arenaPtr->Allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -70,11 +80,13 @@ namespace LinearAlgebra
             M_Rows = orig.M_Rows;
             N_Cols = orig.N_Cols;
             Length = orig.Length;
-            flags = Arena.ArrayFlags.None;
             var data = new UnsafeList<fProxy>(Length, allocator, NativeArrayOptions.UninitializedMemory);
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             data.CopyFrom(orig.Data);
             Data = data;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -93,14 +105,42 @@ namespace LinearAlgebra
             return _arenaPtr->tempfProxyMat(in this);
         }
 
+        public unsafe bool Equals(fProxyMxN other)
+        {
+            if (Data.Ptr == other.Data.Ptr) return true;
+            return false;
+        }
+
+        public unsafe override int GetHashCode()
+        {
+            long dataPtrHash = 0;
+            if (Data.IsCreated)
+            {
+                dataPtrHash = (long)Data.Ptr;
+            }
+
+            long flagsPtrHash = 0;
+            if (flags.IsCreated)
+            {
+                flagsPtrHash = (long)flags.Ptr;
+            }
+
+            // Use HashCode.Combine to mix the hash codes of the pointers.
+            return HashCode.Combine((long)_arenaPtr, dataPtrHash, flagsPtrHash);
+        }
+
+        public unsafe bool IsDisposed()
+        {
+            return (flags.Ptr[0] & Arena.ArrayFlags.isDisposed) != 0 || !Data.IsCreated;
+        }
+
         public void Dispose() {
             Dispose(true);
         }
 
-        private void Dispose(bool disposing)
+        private unsafe void Dispose(bool disposing)
         {
-            bool disposed = (flags & Arena.ArrayFlags.isDisposed) != 0;
-            if (!disposed)
+            if (!IsDisposed())
             {
                 if (disposing)
                 {
@@ -113,7 +153,8 @@ namespace LinearAlgebra
                 for (int i = 0; i < Length; i++) this[i] = float.NaN;
 #endif
                 Data.Dispose();
-                flags = Arena.ArrayFlags.isDisposed; // unset other flags.
+                flags.Ptr[0] = Arena.ArrayFlags.isDisposed; // unset other flags.
+                flags.Dispose();
             }
         }
 

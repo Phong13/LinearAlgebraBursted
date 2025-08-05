@@ -151,10 +151,125 @@ namespace LinearAlgebra
             Dispose(true);
         }
 
+        public unsafe bool CheckIntegrity()
+        {
+            // Check for duplicates and disposed
+            bool good = true;
+            //+copyReplace
+            {
+                NativeHashSet<fProxyN> allVecs = new NativeHashSet<fProxyN>(tempfProxyVectors.Length + fProxyVectors.Length, Allocator);
+                for (int srcIdx = 0; srcIdx < tempfProxyVectors.Length; srcIdx++)
+                {
+                    fProxyN v = tempfProxyVectors[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isTemp) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged temp");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allVecs.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allVecs.Add(v);
+                }
+
+                for (int srcIdx = 0; srcIdx < fProxyVectors.Length; srcIdx++)
+                {
+                    fProxyN v = fProxyVectors[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isPersistent) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged peristent");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allVecs.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allVecs.Add(v);
+                }
+
+                allVecs.Dispose();
+            }
+
+            {
+                NativeHashSet<fProxyMxN> allMats = new NativeHashSet<fProxyMxN>(tempfProxyMatrices.Length + fProxyMatrices.Length, Allocator);
+                for (int srcIdx = 0; srcIdx < tempfProxyMatrices.Length; srcIdx++)
+                {
+                    fProxyMxN v = tempfProxyMatrices[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isTemp) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged temp");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allMats.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allMats.Add(v);
+                }
+
+                for (int srcIdx = 0; srcIdx < fProxyMatrices.Length; srcIdx++)
+                {
+                    fProxyMxN v = fProxyMatrices[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isPersistent) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged peristent");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allMats.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allMats.Add(v);
+                }
+
+                allMats.Dispose();
+            }
+            //-copyReplace
+
+            return good;
+        }
+
         private void Dispose(bool disposing)
         {
             if (!isDisposed)
             {
+#if LINALG_DEBUG
+                CheckIntegrity();
+#endif
+
                 if (disposing)
                 {
                     Clear();

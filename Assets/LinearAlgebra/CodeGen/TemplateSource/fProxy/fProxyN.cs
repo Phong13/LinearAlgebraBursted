@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace LinearAlgebra
 {
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct fProxyN : IDisposable, IUnsafefProxyArray {
+    public partial struct fProxyN : IDisposable, IUnsafefProxyArray, IEquatable<fProxyN> {
 
         [NativeDisableUnsafePtrRestriction]
         internal unsafe Arena* _arenaPtr;
@@ -21,7 +21,7 @@ namespace LinearAlgebra
         /// buffers. We want all copies of this fProxyN to see the same changes. To accomplish this the flags needs
         /// to be a pointer.
         /// </summary>
-        public UnsafeList<Arena.ArrayFlags> fflags { get; private set; }
+        public UnsafeList<Arena.ArrayFlags> flags { get; private set; }
 
         /// <summary>
         /// Creates a new vector of dimension N
@@ -43,9 +43,9 @@ namespace LinearAlgebra
 
             Data = data;
 
-            fflags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
-            fflags.Resize(1);
-            fflags.Ptr[0] = Arena.ArrayFlags.None;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -69,9 +69,11 @@ namespace LinearAlgebra
 
             Data = data;
 
-            fflags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
-            fflags.Resize(1);
-            fflags.Ptr[0] = Arena.ArrayFlags.None;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
+
+            fProxyN nn;
         }
 
         /// <summary>
@@ -90,9 +92,9 @@ namespace LinearAlgebra
             
             Data = data;
 
-            fflags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
-            fflags.Resize(1);
-            fflags.Ptr[0] = Arena.ArrayFlags.None;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         public unsafe fProxyN CopyPersistent()
@@ -123,7 +125,31 @@ namespace LinearAlgebra
 
         public unsafe bool IsDisposed()
         {
-            return (fflags.Ptr[0] & Arena.ArrayFlags.isDisposed) != 0;
+            return (flags.Ptr[0] & Arena.ArrayFlags.isDisposed) != 0;
+        }
+
+        public unsafe bool Equals(fProxyN other)
+        {
+            if (Data.Ptr == other.Data.Ptr) return true;
+            return false;
+        }
+
+        public unsafe override int GetHashCode()
+        {
+            long dataPtrHash = 0;
+            if (Data.IsCreated)
+            {
+                dataPtrHash = (long)Data.Ptr;
+            }
+
+            long flagsPtrHash = 0;
+            if (flags.IsCreated)
+            {
+                flagsPtrHash = (long)flags.Ptr;
+            }
+
+            // Use HashCode.Combine to mix the hash codes of the pointers.
+            return HashCode.Combine((long)_arenaPtr, dataPtrHash, flagsPtrHash);
         }
 
         public void Dispose() 
@@ -147,8 +173,8 @@ namespace LinearAlgebra
                 for (int i = 0; i < N; i++) this[i] = float.NaN;
 #endif
                 Data.Dispose();
-                fflags.Ptr[0] = Arena.ArrayFlags.isDisposed; // unset other flags.
-                fflags.Dispose();
+                flags.Ptr[0] = Arena.ArrayFlags.isDisposed; // unset other flags.
+                flags.Dispose();
             }
         }
 
