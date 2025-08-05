@@ -4,7 +4,7 @@ using Unity.Burst;
 
 namespace LinearAlgebra
 {
-    public struct fProxy : IComparable<fProxy>
+    public struct fProxy : IComparable<fProxy>, IEquatable<fProxy>
     {
         private float value;
 
@@ -47,6 +47,11 @@ namespace LinearAlgebra
 
         public int CompareTo(fProxy other) {
             return value.CompareTo(other.value);
+        }
+
+        public bool Equals(fProxy other)
+        {
+            return this.value == other.value;
         }
     }
 

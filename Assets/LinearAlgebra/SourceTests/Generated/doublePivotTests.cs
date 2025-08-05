@@ -269,7 +269,7 @@ public class doublePivotTests
 
             Print.Log(vec);
 
-            var vecCopy = vec.Copy();
+            var vecCopy = vec.CopyPersistent();
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(vec == vecCopy, true));
 

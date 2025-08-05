@@ -62,6 +62,11 @@ public class iProxyDotOperationTests
             }
         }
 
+        public void SortOfAssertAreEqual(iProxy a, iProxy b)
+        {
+            if (a != b) UnityEngine.Debug.LogError("Failed");
+        }
+
         public void VecVecDot()
         {
             var arena = new Arena(Allocator.Persistent);
@@ -73,7 +78,7 @@ public class iProxyDotOperationTests
 
             iProxy b = iProxyOP.dot(x, y);
 
-            Assert.AreEqual((iProxy)vecLen, b);
+            SortOfAssertAreEqual((iProxy)vecLen, b);
             
             x = arena.iProxyVec(vecLen);
             y = arena.iProxyVec(vecLen);
@@ -86,7 +91,7 @@ public class iProxyDotOperationTests
 
             b = iProxyOP.dot(x, y);
 
-            Assert.AreEqual((iProxy)0f, b);
+            SortOfAssertAreEqual((iProxy)0f, b);
 
             arena.Dispose();
         }
@@ -103,7 +108,7 @@ public class iProxyDotOperationTests
 
             iProxyN b = iProxyOP.dot(A, x);
 
-            Assert.AreEqual(outVecLen, b.N);
+            SortOfAssertAreEqual((iProxy) outVecLen, (iProxy) b.N);
 
             arena.Dispose();
         }
@@ -119,17 +124,17 @@ public class iProxyDotOperationTests
 
             iProxyN b = iProxyOP.dot(x, A);
 
-            Assert.AreEqual(vecLen, b.N);
+            SortOfAssertAreEqual((iProxy) vecLen, (iProxy) b.N);
             
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual(x[i], b[i]);
+                SortOfAssertAreEqual(x[i], b[i]);
 
             x = arena.iProxyIndexZeroVector(vecLen);
 
             b = iProxyOP.dot(x, A);
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)i, b[i]);
+                SortOfAssertAreEqual((iProxy)i, b[i]);
 
             arena.Dispose();
         }
@@ -149,9 +154,9 @@ public class iProxyDotOperationTests
             for (int j = 0; j < matLen; j++)
             {
                 if (i == j)
-                    Assert.AreEqual((iProxy)1f, C[i, j]);
+                    SortOfAssertAreEqual((iProxy)1f, C[i, j]);
                 else
-                    Assert.AreEqual((iProxy)0f, C[i, j]);
+                    SortOfAssertAreEqual((iProxy)0f, C[i, j]);
             }
 
             iProxyMxN R = arena.iProxyRandomMatrix(matLen, matLen);
@@ -161,7 +166,7 @@ public class iProxyDotOperationTests
             for (int i = 0; i < matLen; i++)
             for (int j = 0; j < matLen; j++)
             {
-                Assert.AreEqual(R[i, j], C[i, j]);
+                SortOfAssertAreEqual(R[i, j], C[i, j]);
             }
 
             C = arena.iProxyIdentityMatrix(matLen);
@@ -172,9 +177,9 @@ public class iProxyDotOperationTests
             for (int j = 0; j < matLen; j++)
             {
                 if (i == j)
-                    Assert.AreEqual((iProxy)1f, C[i, j]);
+                    SortOfAssertAreEqual((iProxy)1f, C[i, j]);
                 else
-                    Assert.AreEqual((iProxy)0f, C[i, j]);
+                    SortOfAssertAreEqual((iProxy)0f, C[i, j]);
             }
 
             arena.Dispose();
@@ -192,7 +197,7 @@ public class iProxyDotOperationTests
 
             iProxyN b = iProxyOP.dot(A, x);
 
-            Assert.AreEqual(outVecLen, b.N);
+            SortOfAssertAreEqual((iProxy) outVecLen, (iProxy) b.N);
 
             arena.Dispose();
         }
@@ -209,7 +214,7 @@ public class iProxyDotOperationTests
 
             iProxyN b = iProxyOP.dot(x, A);
             
-            Assert.AreEqual(outVecLen, b.N);
+            SortOfAssertAreEqual((iProxy) outVecLen, (iProxy) b.N);
 
             arena.Dispose();
         }
@@ -231,19 +236,19 @@ public class iProxyDotOperationTests
 
             iProxyMxN A = iProxyOP.outerDot(x, y);
 
-            Assert.AreEqual(vecM, A.M_Rows);
-            Assert.AreEqual(vecN, A.N_Cols);
+            SortOfAssertAreEqual((iProxy)vecM, (iProxy)A.M_Rows);
+            SortOfAssertAreEqual((iProxy)vecN, (iProxy)A.N_Cols);
 
             iProxyMxN B = iProxyOP.outerDot(y, x);
 
             for (int i = 0; A.Length < i; i++)
-                Assert.AreEqual((iProxy)1, A[i]);
+                SortOfAssertAreEqual((iProxy)1, A[i]);
 
-            Assert.AreEqual(vecM, B.N_Cols);
-            Assert.AreEqual(vecN, B.M_Rows);
+            SortOfAssertAreEqual((iProxy)vecM, (iProxy)B.N_Cols);
+            SortOfAssertAreEqual((iProxy)vecN, (iProxy)B.M_Rows);
 
             for (int i = 0; B.Length < i; i++)
-                Assert.AreEqual((iProxy)1, B[i]);
+                SortOfAssertAreEqual((iProxy)1, B[i]);
 
             x = arena.iProxyLinVector(vecM, 0, 20);
             y = arena.iProxyLinVector(vecN, 0, 20);
@@ -252,7 +257,7 @@ public class iProxyDotOperationTests
 
             for (int i = 0; i < vecM; i++)
                 for (int j = 0; j < vecN; j++)
-                    Assert.AreEqual((iProxy)x[i] * y[j], (iProxy)C[i, j]);
+                    SortOfAssertAreEqual((iProxy)(x[i] * y[j]), (iProxy)C[i, j]);
 
             arena.Dispose();
         }

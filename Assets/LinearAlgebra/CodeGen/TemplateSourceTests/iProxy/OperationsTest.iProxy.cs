@@ -11,23 +11,28 @@ public class iProxyOperationsTest {
     [BurstCompile]
     public struct BasicVecOpTestJob : IJob
     {
+        public void SortOfAssertAreEqual(iProxy a, iProxy b)
+        {
+            if (a != b) UnityEngine.Debug.LogError("Failed");
+        }
+
         public void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
 
-            int vecLen = 16;
+            iProxy vecLen = 16;
 
             iProxy s = 1;
-            iProxyN a = arena.iProxyVec(vecLen, 10);
+            iProxyN a = arena.iProxyVec((int) vecLen, (iProxy) 10);
 
 
-            Assert.AreEqual(vecLen, a.N); 
+            SortOfAssertAreEqual(vecLen, (iProxy) a.N); 
 
-            iProxyN b = arena.iProxyVec(vecLen, 10);
+            iProxyN b = arena.iProxyVec((int) vecLen, (iProxy) 10);
 
-            Assert.AreEqual(a[vecLen/2], b[vecLen/2]);
+            SortOfAssertAreEqual(a[(int) vecLen/2], b[ (int) vecLen/2]);
             
-            Assert.AreEqual(2, arena.AllocationsCount);
+            SortOfAssertAreEqual((iProxy) 2, (iProxy) arena.AllocationsCount);
 
             iProxyN result = default;
 
@@ -38,7 +43,7 @@ public class iProxyOperationsTest {
             result = a - s;
             result = s - a;
 
-            Assert.AreEqual(4, arena.TempAllocationsCount);
+            SortOfAssertAreEqual(4, (iProxy) arena.TempAllocationsCount);
 
             result = ~a;
 
@@ -74,7 +79,7 @@ public class iProxyOperationsTest {
             result = a & b;
             result = a ^ b;
 
-            //Assert.AreEqual(11, arena.TempAllocationsCount);
+            //SortOfAssertAreEqual(11, arena.TempAllocationsCount);
 
             arena.Dispose();
         }
@@ -207,6 +212,11 @@ public class iProxyOperationsTest {
             }
         }
 
+        public void SortOfAssertAreEqual(iProxy a, iProxy b)
+        {
+            if (a != b) UnityEngine.Debug.LogError("Failed");
+        }
+
         public void SignFlipVec()
         {
             var arena = new Arena(Allocator.Persistent);
@@ -218,7 +228,7 @@ public class iProxyOperationsTest {
             a = -a;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual(-(iProxy)10f, a[i]);
+                SortOfAssertAreEqual(-(iProxy)10f, a[i]);
 
             arena.Dispose();
         }
@@ -232,19 +242,19 @@ public class iProxyOperationsTest {
             iProxyN a = arena.iProxyVec(vecLen, 10);
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)10d, a[i]);
+                SortOfAssertAreEqual((iProxy)10d, a[i]);
 
             a += 1;
             
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)11d, a[i]);
+                SortOfAssertAreEqual((iProxy)11d, a[i]);
 
             iProxyN r = arena.iProxyVec(vecLen, 5);
 
             a += r;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)16, a[i]);
+                SortOfAssertAreEqual((iProxy)16, a[i]);
 
             arena.Dispose();
         }
@@ -260,21 +270,21 @@ public class iProxyOperationsTest {
             a -= 1;
             
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)9f, a[i]);
+                SortOfAssertAreEqual((iProxy)9f, a[i]);
 
             iProxyN r = arena.iProxyVec(vecLen, 5);
 
             a -= r;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)4d, a[i]);
+                SortOfAssertAreEqual((iProxy)4d, a[i]);
 
             a = arena.iProxyVec(vecLen, 10);
             
             a = 1 - a;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual(-(iProxy)9d, a[i]);
+                SortOfAssertAreEqual(-(iProxy)9d, a[i]);
 
             arena.Dispose();
         }
@@ -290,19 +300,19 @@ public class iProxyOperationsTest {
             a *= 1;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)1d, a[i]);
+                SortOfAssertAreEqual((iProxy)1d, a[i]);
 
             a *= 2;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)2d, a[i]);
+                SortOfAssertAreEqual((iProxy)2d, a[i]);
                         
             a = arena.iProxyIndexZeroVector(vecLen);
 
             a *= 2;
             
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)(2d*i), a[i]);
+                SortOfAssertAreEqual((iProxy)(2d*i), a[i]);
 
             a = arena.iProxyIndexZeroVector(vecLen);
             iProxyN b = arena.iProxyIndexZeroVector(vecLen);
@@ -310,7 +320,7 @@ public class iProxyOperationsTest {
             var c = a * b;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)(i * i), c[i]);
+                SortOfAssertAreEqual((iProxy)(i * i), c[i]);
 
             arena.Dispose();
         }
@@ -326,19 +336,19 @@ public class iProxyOperationsTest {
             a /= 2;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)1, a[i]);
+                SortOfAssertAreEqual((iProxy)1, a[i]);
 
             a /= 1;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)1, a[i]);
+                SortOfAssertAreEqual((iProxy)1, a[i]);
 
             a = arena.iProxyIndexZeroVector(vecLen);
 
             a /= 2;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)(0.5 * i), a[i]);
+                SortOfAssertAreEqual((iProxy)(0.5 * i), a[i]);
 
             a = arena.iProxyIndexZeroVector(vecLen);
             iProxyN b = arena.iProxyIndexZeroVector(vecLen);
@@ -352,8 +362,8 @@ public class iProxyOperationsTest {
 
             for (int i = 0; i < vecLen; i++)
             {
-                Assert.AreEqual((iProxy)1, c0[i]);
-                Assert.AreEqual((iProxy)1, c1[i]);
+                SortOfAssertAreEqual((iProxy)1, c0[i]);
+                SortOfAssertAreEqual((iProxy)1, c1[i]);
             }
 
             a = arena.iProxyVec(vecLen, 2);
@@ -361,7 +371,7 @@ public class iProxyOperationsTest {
             a = 2 / a;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)1, a[i]);   
+                SortOfAssertAreEqual((iProxy)1, a[i]);   
 
             arena.Dispose();
         }
@@ -375,19 +385,19 @@ public class iProxyOperationsTest {
             iProxyN a = arena.iProxyVec(vecLen, 10);
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)10, a[i]);
+                SortOfAssertAreEqual((iProxy)10, a[i]);
 
             a %= 2;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)0, a[i]);
+                SortOfAssertAreEqual((iProxy)0, a[i]);
 
             a = arena.iProxyIndexZeroVector(vecLen);
 
             a %= 2;
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((iProxy)(i % (iProxy)2), a[i]);
+                SortOfAssertAreEqual((iProxy)(i % (iProxy)2), a[i]);
 
             a = arena.iProxyIndexZeroVector(vecLen);
             iProxyN b = arena.iProxyIndexZeroVector(vecLen);
@@ -401,8 +411,8 @@ public class iProxyOperationsTest {
 
             for (int i = 0; i < vecLen; i++)
             {
-                Assert.AreEqual((iProxy)0, c0[i]);
-                Assert.AreEqual((iProxy)0, c1[i]);
+                SortOfAssertAreEqual((iProxy)0, c0[i]);
+                SortOfAssertAreEqual((iProxy)0, c1[i]);
             }
 
             arena.Dispose();
@@ -419,7 +429,7 @@ public class iProxyOperationsTest {
             a = -a;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual(-(iProxy)10f, a[i]);
+                SortOfAssertAreEqual(-(iProxy)10f, a[i]);
 
             arena.Dispose();
         }
@@ -438,7 +448,7 @@ public class iProxyOperationsTest {
             a += 1;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)11f, a[i]);
+                SortOfAssertAreEqual((iProxy)11f, a[i]);
 
             arena.Dispose();
         }
@@ -457,7 +467,7 @@ public class iProxyOperationsTest {
             a -= 5;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)5f, a[i]);
+                SortOfAssertAreEqual((iProxy)5f, a[i]);
 
             arena.Dispose();
         }
@@ -476,12 +486,12 @@ public class iProxyOperationsTest {
             a *= 3;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)6f, a[i]);
+                SortOfAssertAreEqual((iProxy)6f, a[i]);
 
             a = 3 * a;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)18f, a[i]);
+                SortOfAssertAreEqual((iProxy)18f, a[i]);
 
             arena.Dispose();
         }
@@ -500,12 +510,12 @@ public class iProxyOperationsTest {
             a /= 2;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)5, a[i]);
+                SortOfAssertAreEqual((iProxy)5, a[i]);
 
             a = 5 / a;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)1, a[i]);
+                SortOfAssertAreEqual((iProxy)1, a[i]);
 
             arena.Dispose();
         }
@@ -524,14 +534,14 @@ public class iProxyOperationsTest {
             a %= 3;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)1f, a[i]);
+                SortOfAssertAreEqual((iProxy)1f, a[i]);
 
             a = arena.iProxyMat(rows, cols, 4);
 
             a = 4 % a;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)0f, a[i]);
+                SortOfAssertAreEqual((iProxy)0f, a[i]);
 
             a = arena.iProxyMat(rows, cols, 3);
             iProxyMxN b = arena.iProxyMat(rows, cols, 2);
@@ -539,7 +549,7 @@ public class iProxyOperationsTest {
             a = a % b;
 
             for (int i = 0; i < totalElements; i++)
-                Assert.AreEqual((iProxy)1f, a[i]);
+                SortOfAssertAreEqual((iProxy)1f, a[i]);
 
             arena.Dispose();
         }

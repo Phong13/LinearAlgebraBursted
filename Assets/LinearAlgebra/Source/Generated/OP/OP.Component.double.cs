@@ -193,6 +193,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double3 GetSubvecAsFloat3(this doubleN a, int index = 0)
         {
+            Arena.CheckValid(a);
             double3 v;
             unsafe
             {
@@ -207,6 +208,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double4 GetSubvecAsFloat4(this doubleN a, int index = 0)
         {
+            Arena.CheckValid(a);
             double4 v;
             unsafe
             {
@@ -222,7 +224,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN GetSubvec(this doubleN a, int index, int len, bool isTemp)
         {
-            
+            Arena.CheckValid(a);
             unsafe
             {
                 doubleN v;
@@ -243,10 +245,37 @@ namespace LinearAlgebra
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetSubvec(this doubleN a, doubleN from, int idx, int num)
+        {
+            Arena.CheckValid(a);
+            unsafe
+            {
+                for (int i = 0; i < num; i++)
+                {
+                    a[idx + i] = from[i];
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetSubvec(this doubleN a, float3 from, int idx)
+        {
+            Arena.CheckValid(a);
+            unsafe
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    a[idx + i] = from[i];
+                }
+            }
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double3 GetColAsFloat3(this doubleMxN a, int col, int rowIdx = 0)
         {
+            Arena.CheckValid(a);
             double3 c;
             unsafe
             {
@@ -261,6 +290,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double4 GetColAsFloat4(this doubleMxN a, int col, int rowIdx = 0)
         {
+            Arena.CheckValid(a);
             double4 c;
             unsafe
             {
@@ -279,6 +309,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN Col(this doubleMxN a, int col, int rowStartIdx = 0, bool isTemp = true)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 int len = a.M_Rows - rowStartIdx;
@@ -303,6 +334,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetCol(this doubleMxN a, double3 c, int colidx, int rowIdx = 0)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 a[rowIdx, colidx] = c.x;
@@ -326,6 +358,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetCol(this doubleMxN a, doubleN c, int colIdx, int rowStartIdx = 0)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 for (int i = 0; i < c.N; i++)
@@ -337,6 +370,7 @@ namespace LinearAlgebra
 
         public static doubleMxN GetSubMatrix(this doubleMxN a, int rowIdx, int numRows, int colIdx, int numCols, bool isTemp)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 doubleMxN m;
@@ -362,6 +396,7 @@ namespace LinearAlgebra
 
         public static double3x3 GetSubMatrixFloat3x3(this doubleMxN a, int rowIdx, int colIdx)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                 double3x3 m;
@@ -374,8 +409,29 @@ namespace LinearAlgebra
             }
         }
 
+        /// <summary>
+        /// Copies part of matrix from to part of target. No allocations
+        /// </summary>
+        public static void CopySubMatrix(this doubleMxN target, int targRowIdx, int targColIdx, doubleMxN from, int srcRowIdx, int numRows, int srcColIdx, int numCols)
+        {
+            Arena.CheckValid(target);
+            Arena.CheckValid(from);
+            unsafe
+            {
+                for (int i = 0; i < numRows; i++)
+                {
+                    for (int j = 0; j < numCols; j++)
+                    {
+                        target[targRowIdx + i, targColIdx + j] = from[srcRowIdx + i, srcColIdx + j];
+                    }
+                }
+            }
+        }
+
         public static void SetSubMatrix(this doubleMxN target, doubleMxN from, int targRowIdx, int targColIdx)
         {
+            Arena.CheckValid(target);
+            Arena.CheckValid(from);
             unsafe
             {
                 for (int i = 0; i < from.M_Rows; i++)
@@ -390,6 +446,8 @@ namespace LinearAlgebra
 
         public static void SetSubMatrix(this doubleMxN target, int targRowIdx, int targColIdx, doubleMxN from, int srcRow, int numRows, int srcCol, int numCols)
         {
+            Arena.CheckValid(target);
+            Arena.CheckValid(from);
             unsafe
             {
                 for (int i = 0; i < numRows; i++)
@@ -406,6 +464,7 @@ namespace LinearAlgebra
 
         public static void SetSubMatrix(this doubleMxN a, double3x3 from, int rowIdx, int colIdx)
         {
+            Arena.CheckValid(a);
             unsafe
             {
                  a[rowIdx    , colIdx] = from.c0.x; a[rowIdx    , colIdx + 1] = from.c1.x; a[rowIdx    , colIdx + 2] = from.c2.x;

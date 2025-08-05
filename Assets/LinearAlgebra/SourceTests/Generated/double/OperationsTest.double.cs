@@ -44,6 +44,9 @@ public class doubleOperationsTest {
 
             arena.ClearTemp();
 
+            Assert.IsTrue(arena.DB_isPersistant(a));
+            Assert.IsTrue(arena.DB_isPersistant(b));
+
             result = a * s;
             result = s * a;
 
@@ -64,6 +67,10 @@ public class doubleOperationsTest {
             // inpl operations should not move the vector or matrix that it is being called on.
             doubleN c = arena.doubleVec(vecLen, 0f);
             doubleN d = c; // both c and d point at the same buffer.
+
+            a = arena.doubleVec(vecLen, 10f);
+            b = arena.doubleVec(vecLen, 10f);
+
             Assert.IsTrue(arena.DB_isPersistant(in c));
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr);
             c.addInpl(a);
@@ -72,15 +79,25 @@ public class doubleOperationsTest {
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.signFlipInpl();
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
+            
             c.modInpl(3);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.divInpl(5);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
             c.compMulInpl(a);
             Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
-            c.compDivInpl(a);
+
+            doubleN nonZero = arena.tempdoubleVec(c.N, 4);
+            
+            c.compDivInpl(nonZero);
+
+            
+
+            Assert.IsTrue(c.Data.Ptr == d.Data.Ptr); // verify that c still points ot the same buffer.
 
             Assert.IsTrue(arena.DB_isPersistant(in c)); // verify c has not been converted
+            arena.Dispose();
+            arena.Dispose();
             arena.Dispose();
         }
     }
@@ -208,6 +225,11 @@ public class doubleOperationsTest {
     [BurstCompile]
     public struct BasicMatOpTestJob : IJob
     {
+        public void SortOfAssert(bool check)
+        {
+            if (!check) UnityEngine.Debug.LogError("failed");
+        }
+
         public unsafe void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
@@ -228,8 +250,8 @@ public class doubleOperationsTest {
 
             doubleMxN result = default;
 
-            Assert.IsTrue(arena.TempAllocationsCount == 0);
-            Assert.IsTrue(arena.AllocationsCount == 2);
+            SortOfAssert(arena.TempAllocationsCount == 0);
+            SortOfAssert(arena.AllocationsCount == 2);
             result = a + s;
 
             result = s + a;
@@ -250,12 +272,12 @@ public class doubleOperationsTest {
             result = a * b;
             result = a / b;
             result = a % b;
-            Assert.IsTrue(arena.TempAllocationsCount == 15);
-            Assert.IsTrue(arena.AllocationsCount == 2);
+            SortOfAssert(arena.TempAllocationsCount == 15);
+            SortOfAssert(arena.AllocationsCount == 2);
 
             // Check that the buffers a and b were not moved by any of these operations
-            Assert.IsTrue(aa.Data.Ptr == a.Data.Ptr);
-            Assert.IsTrue(bb.Data.Ptr == b.Data.Ptr);
+            SortOfAssert(aa.Data.Ptr == a.Data.Ptr);
+            SortOfAssert(bb.Data.Ptr == b.Data.Ptr);
 
             arena.Dispose();
         }

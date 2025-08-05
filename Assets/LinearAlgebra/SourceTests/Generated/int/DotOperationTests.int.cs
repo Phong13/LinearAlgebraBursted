@@ -62,6 +62,11 @@ public class intDotOperationTests
             }
         }
 
+        public void SortOfAssertAreEqual(int a, int b)
+        {
+            if (a != b) UnityEngine.Debug.LogError("Failed");
+        }
+
         public void VecVecDot()
         {
             var arena = new Arena(Allocator.Persistent);
@@ -73,7 +78,7 @@ public class intDotOperationTests
 
             int b = intOP.dot(x, y);
 
-            Assert.AreEqual((int)vecLen, b);
+            SortOfAssertAreEqual((int)vecLen, b);
             
             x = arena.intVec(vecLen);
             y = arena.intVec(vecLen);
@@ -86,7 +91,7 @@ public class intDotOperationTests
 
             b = intOP.dot(x, y);
 
-            Assert.AreEqual((int)0f, b);
+            SortOfAssertAreEqual((int)0f, b);
 
             arena.Dispose();
         }
@@ -103,7 +108,7 @@ public class intDotOperationTests
 
             intN b = intOP.dot(A, x);
 
-            Assert.AreEqual(outVecLen, b.N);
+            SortOfAssertAreEqual((int) outVecLen, (int) b.N);
 
             arena.Dispose();
         }
@@ -119,17 +124,17 @@ public class intDotOperationTests
 
             intN b = intOP.dot(x, A);
 
-            Assert.AreEqual(vecLen, b.N);
+            SortOfAssertAreEqual((int) vecLen, (int) b.N);
             
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual(x[i], b[i]);
+                SortOfAssertAreEqual(x[i], b[i]);
 
             x = arena.intIndexZeroVector(vecLen);
 
             b = intOP.dot(x, A);
 
             for (int i = 0; i < vecLen; i++)
-                Assert.AreEqual((int)i, b[i]);
+                SortOfAssertAreEqual((int)i, b[i]);
 
             arena.Dispose();
         }
@@ -149,9 +154,9 @@ public class intDotOperationTests
             for (int j = 0; j < matLen; j++)
             {
                 if (i == j)
-                    Assert.AreEqual((int)1f, C[i, j]);
+                    SortOfAssertAreEqual((int)1f, C[i, j]);
                 else
-                    Assert.AreEqual((int)0f, C[i, j]);
+                    SortOfAssertAreEqual((int)0f, C[i, j]);
             }
 
             intMxN R = arena.intRandomMatrix(matLen, matLen);
@@ -161,7 +166,7 @@ public class intDotOperationTests
             for (int i = 0; i < matLen; i++)
             for (int j = 0; j < matLen; j++)
             {
-                Assert.AreEqual(R[i, j], C[i, j]);
+                SortOfAssertAreEqual(R[i, j], C[i, j]);
             }
 
             C = arena.intIdentityMatrix(matLen);
@@ -172,9 +177,9 @@ public class intDotOperationTests
             for (int j = 0; j < matLen; j++)
             {
                 if (i == j)
-                    Assert.AreEqual((int)1f, C[i, j]);
+                    SortOfAssertAreEqual((int)1f, C[i, j]);
                 else
-                    Assert.AreEqual((int)0f, C[i, j]);
+                    SortOfAssertAreEqual((int)0f, C[i, j]);
             }
 
             arena.Dispose();
@@ -192,7 +197,7 @@ public class intDotOperationTests
 
             intN b = intOP.dot(A, x);
 
-            Assert.AreEqual(outVecLen, b.N);
+            SortOfAssertAreEqual((int) outVecLen, (int) b.N);
 
             arena.Dispose();
         }
@@ -209,7 +214,7 @@ public class intDotOperationTests
 
             intN b = intOP.dot(x, A);
             
-            Assert.AreEqual(outVecLen, b.N);
+            SortOfAssertAreEqual((int) outVecLen, (int) b.N);
 
             arena.Dispose();
         }
@@ -231,19 +236,19 @@ public class intDotOperationTests
 
             intMxN A = intOP.outerDot(x, y);
 
-            Assert.AreEqual(vecM, A.M_Rows);
-            Assert.AreEqual(vecN, A.N_Cols);
+            SortOfAssertAreEqual((int)vecM, (int)A.M_Rows);
+            SortOfAssertAreEqual((int)vecN, (int)A.N_Cols);
 
             intMxN B = intOP.outerDot(y, x);
 
             for (int i = 0; A.Length < i; i++)
-                Assert.AreEqual((int)1, A[i]);
+                SortOfAssertAreEqual((int)1, A[i]);
 
-            Assert.AreEqual(vecM, B.N_Cols);
-            Assert.AreEqual(vecN, B.M_Rows);
+            SortOfAssertAreEqual((int)vecM, (int)B.N_Cols);
+            SortOfAssertAreEqual((int)vecN, (int)B.M_Rows);
 
             for (int i = 0; B.Length < i; i++)
-                Assert.AreEqual((int)1, B[i]);
+                SortOfAssertAreEqual((int)1, B[i]);
 
             x = arena.intLinVector(vecM, 0, 20);
             y = arena.intLinVector(vecN, 0, 20);
@@ -252,7 +257,7 @@ public class intDotOperationTests
 
             for (int i = 0; i < vecM; i++)
                 for (int j = 0; j < vecN; j++)
-                    Assert.AreEqual((int)x[i] * y[j], (int)C[i, j]);
+                    SortOfAssertAreEqual((int)(x[i] * y[j]), (int)C[i, j]);
 
             arena.Dispose();
         }

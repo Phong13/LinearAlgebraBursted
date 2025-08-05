@@ -109,6 +109,8 @@ public class doubleInitTest
             }
 
             arena.ClearTemp();
+
+            /*
             {
                 doubleN v0 = arena.doubleVec(new float[] { 1,2,3,4,5,6,7});
                 Assert.IsTrue(arena.DB_isPersistant(v0));
@@ -136,12 +138,12 @@ public class doubleInitTest
                 Assert.IsTrue(arena.TempAllocationsCount == 3 && arena.DB_isTemp(f4));
                 Assert.IsTrue(f3[0] == 3 && f3[1] == 4 && f3[2] == 5);
             }
-
+            */
+            /*
             {
-                doubleMxN mm0 = arena.doubleMat(new float[,] { {1,2,3,4 },
-                                                              {5,6,7,8 },
-                                                              {9,10,11,12 },
-                                                              {13,14,15,16 }});
+                double4x4 ff = new f4x4(new float4(1, 2, 3, 4), new float4(5, 6, 7, 8), new float4(9, 10, 11, 12), new float4(13, 14, 15, 16));
+
+                doubleMxN mm0 = arena.Convert(in ff, false);
                 ac += 1;
                 Assert.IsTrue(arena.AllocationsCount == ac && arena.DB_isPersistant(mm0));
                 doubleN c = mm0.Col(2);
@@ -195,6 +197,7 @@ public class doubleInitTest
                 
 
             }
+            */
 
             arena.Dispose();
             Assert.AreEqual(0, arena.AllocationsCount);

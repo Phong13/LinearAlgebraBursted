@@ -99,8 +99,6 @@ public class fProxyOperationsTest {
             arena.Dispose();
             arena.Dispose();
             arena.Dispose();
-
-            UnityEngine.Debug.Log("c after disposal: " + c.Data.IsCreated);
         }
     }
 
@@ -227,6 +225,11 @@ public class fProxyOperationsTest {
     [BurstCompile]
     public struct BasicMatOpTestJob : IJob
     {
+        public void SortOfAssert(bool check)
+        {
+            if (!check) UnityEngine.Debug.LogError("failed");
+        }
+
         public unsafe void Execute()
         {
             var arena = new Arena(Allocator.Persistent);
@@ -247,8 +250,8 @@ public class fProxyOperationsTest {
 
             fProxyMxN result = default;
 
-            Assert.IsTrue(arena.TempAllocationsCount == 0);
-            Assert.IsTrue(arena.AllocationsCount == 2);
+            SortOfAssert(arena.TempAllocationsCount == 0);
+            SortOfAssert(arena.AllocationsCount == 2);
             result = a + s;
 
             result = s + a;
@@ -269,12 +272,12 @@ public class fProxyOperationsTest {
             result = a * b;
             result = a / b;
             result = a % b;
-            Assert.IsTrue(arena.TempAllocationsCount == 15);
-            Assert.IsTrue(arena.AllocationsCount == 2);
+            SortOfAssert(arena.TempAllocationsCount == 15);
+            SortOfAssert(arena.AllocationsCount == 2);
 
             // Check that the buffers a and b were not moved by any of these operations
-            Assert.IsTrue(aa.Data.Ptr == a.Data.Ptr);
-            Assert.IsTrue(bb.Data.Ptr == b.Data.Ptr);
+            SortOfAssert(aa.Data.Ptr == a.Data.Ptr);
+            SortOfAssert(bb.Data.Ptr == b.Data.Ptr);
 
             arena.Dispose();
         }

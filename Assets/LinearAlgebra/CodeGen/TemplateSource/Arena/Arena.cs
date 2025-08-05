@@ -294,7 +294,7 @@ namespace LinearAlgebra
                 BoolMatrices.Dispose();
                 TempBoolMatrices.Dispose();
                 TempBoolVectors.Dispose();
-
+                 
                 Initialized = false;
                 Allocator = Allocator.Invalid;
                 isDisposed = true;

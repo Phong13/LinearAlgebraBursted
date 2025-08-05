@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace LinearAlgebra
 {
     [StructLayout(LayoutKind.Sequential)]
-    public partial struct doubleN : IDisposable, IUnsafedoubleArray {
+    public partial struct doubleN : IDisposable, IUnsafedoubleArray, IEquatable<doubleN> {
 
         [NativeDisableUnsafePtrRestriction]
         internal unsafe Arena* _arenaPtr;
@@ -14,6 +14,14 @@ namespace LinearAlgebra
         public int N => Data.Length;
         
         public UnsafeList<double> Data { get; private set; }
+
+        /// <summary>
+        /// Why is this a container of length 1 and not a variable? Because fProxN's are structs. When the Arena
+        /// returns freshly allocated doubleN it is returning a copy of it's internal doubleN that points to the same
+        /// buffers. We want all copies of this doubleN to see the same changes. To accomplish this the flags needs
+        /// to be a pointer.
+        /// </summary>
+        public UnsafeList<Arena.ArrayFlags> flags { get; private set; }
 
         /// <summary>
         /// Creates a new vector of dimension N
@@ -34,6 +42,10 @@ namespace LinearAlgebra
             data.Resize(n, NativeArrayOptions.UninitializedMemory);
 
             Data = data;
+
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -56,6 +68,12 @@ namespace LinearAlgebra
             data.CopyFrom(orig.Data);
 
             Data = data;
+
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
+
+            doubleN nn;
         }
 
         /// <summary>
@@ -73,9 +91,13 @@ namespace LinearAlgebra
             data.Resize(n, uninit ? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory);
             
             Data = data;
+
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
-        public unsafe doubleN Copy()
+        public unsafe doubleN CopyPersistent()
         {
             return _arenaPtr->doubleVec(in this);
         }
@@ -101,11 +123,59 @@ namespace LinearAlgebra
             Data.CopyFrom(vec.Data);
         }
 
-        public void Dispose() {
+        public unsafe bool IsDisposed()
+        {
+            return (flags.Ptr[0] & Arena.ArrayFlags.isDisposed) != 0;
+        }
+
+        public unsafe bool Equals(doubleN other)
+        {
+            if (Data.Ptr == other.Data.Ptr) return true;
+            return false;
+        }
+
+        public unsafe override int GetHashCode()
+        {
+            long dataPtrHash = 0;
+            if (Data.IsCreated)
+            {
+                dataPtrHash = (long)Data.Ptr;
+            }
+
+            long flagsPtrHash = 0;
+            if (flags.IsCreated)
+            {
+                flagsPtrHash = (long)flags.Ptr;
+            }
+
+            // Use HashCode.Combine to mix the hash codes of the pointers.
+            return HashCode.Combine((long)_arenaPtr, dataPtrHash, flagsPtrHash);
+        }
+
+        public void Dispose() 
+        {
+            Dispose(true);
+        }
+
+        private unsafe void Dispose(bool disposing)
+        {
+            bool disposed = IsDisposed();
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose manged resources here
+                }
+
+                // Dispose unmanged resources here
+                if (N > 0 && float.IsNaN((float) Data[0])) UnityEngine.Debug.LogError("Vector data was NaN. Might be double freeing.");
 #if LINALG_DEBUG
-            for (int i = 0; i < N; i++) this[i] = float.NaN;
+                for (int i = 0; i < N; i++) this[i] = float.NaN;
 #endif
-            Data.Dispose();
+                Data.Dispose();
+                flags.Ptr[0] = Arena.ArrayFlags.isDisposed; // unset other flags.
+                flags.Dispose();
+            }
         }
 
         public override string ToString()

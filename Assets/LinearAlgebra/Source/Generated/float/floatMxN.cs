@@ -7,7 +7,7 @@ namespace LinearAlgebra
     // A m x n matrix
     // m = rows
     // n = cols
-    public partial struct floatMxN : IDisposable, IUnsafefloatArray, IMatrix<float> {
+    public partial struct floatMxN : IDisposable, IUnsafefloatArray, IMatrix<float>, IEquatable<floatMxN> {
         
         public int M_Rows;
         public int N_Cols;
@@ -18,6 +18,14 @@ namespace LinearAlgebra
         internal unsafe Arena* _arenaPtr;
 
         public readonly int Length;
+
+        /// <summary>
+        /// Why is this a container of length 1 and not a variable? Because fProxN's are structs. When the Arena
+        /// returns freshly allocated floatN it is returning a copy of it's internal floatN that points to the same
+        /// buffers. We want all copies of this floatN to see the same changes. To accomplish this the flags needs
+        /// to be a pointer.
+        /// </summary>
+        public UnsafeList<Arena.ArrayFlags> flags { get; private set; }
 
         public bool IsSquare => M_Rows == N_Cols;
 
@@ -34,6 +42,9 @@ namespace LinearAlgebra
             var data = new UnsafeList<float>(Length, allocator, uninit ? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory);
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             Data = data;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
         /// <summary>
         /// Creates a new matrix of dimension N
@@ -51,6 +62,9 @@ namespace LinearAlgebra
             var data = new UnsafeList<float>(Length, _arenaPtr->Allocator, uninit? NativeArrayOptions.UninitializedMemory : NativeArrayOptions.ClearMemory );
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             Data = data;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, _arenaPtr->Allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -70,6 +84,9 @@ namespace LinearAlgebra
             data.Resize(Length, NativeArrayOptions.UninitializedMemory);
             data.CopyFrom(orig.Data);
             Data = data;
+            flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
+            flags.Resize(1);
+            flags.Ptr[0] = Arena.ArrayFlags.None;
         }
 
         /// <summary>
@@ -88,11 +105,57 @@ namespace LinearAlgebra
             return _arenaPtr->tempfloatMat(in this);
         }
 
+        public unsafe bool Equals(floatMxN other)
+        {
+            if (Data.Ptr == other.Data.Ptr) return true;
+            return false;
+        }
+
+        public unsafe override int GetHashCode()
+        {
+            long dataPtrHash = 0;
+            if (Data.IsCreated)
+            {
+                dataPtrHash = (long)Data.Ptr;
+            }
+
+            long flagsPtrHash = 0;
+            if (flags.IsCreated)
+            {
+                flagsPtrHash = (long)flags.Ptr;
+            }
+
+            // Use HashCode.Combine to mix the hash codes of the pointers.
+            return HashCode.Combine((long)_arenaPtr, dataPtrHash, flagsPtrHash);
+        }
+
+        public unsafe bool IsDisposed()
+        {
+            return (flags.Ptr[0] & Arena.ArrayFlags.isDisposed) != 0 || !Data.IsCreated;
+        }
+
         public void Dispose() {
+            Dispose(true);
+        }
+
+        private unsafe void Dispose(bool disposing)
+        {
+            if (!IsDisposed())
+            {
+                if (disposing)
+                {
+                    // Dispose manged resources here
+                }
+
+                // Dispose unmanged resources here
+                if (Length > 0 && float.IsNaN((float) Data[0])) UnityEngine.Debug.LogError("Vector data was NaN. Might be double freeing.");
 #if LINALG_DEBUG
-            for (int i = 0; i < Length; i++) this[i] = float.NaN;
+                for (int i = 0; i < Length; i++) this[i] = float.NaN;
 #endif
-            Data.Dispose();
+                Data.Dispose();
+                flags.Ptr[0] = Arena.ArrayFlags.isDisposed; // unset other flags.
+                flags.Dispose();
+            }
         }
 
         void IMatrix<float>.CopyTo(IMatrix<float> destination) {

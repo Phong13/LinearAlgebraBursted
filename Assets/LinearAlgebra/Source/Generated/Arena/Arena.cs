@@ -1,12 +1,23 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
+using System;
+
 //singularFile//
 namespace LinearAlgebra
 {
     // Allocation helper
     [StructLayout(LayoutKind.Sequential)]
     public partial struct Arena : System.IDisposable {
+
+        [Flags]
+        public enum ArrayFlags : byte
+        {
+            None = 0,
+            isDisposed = 1 << 0, // 0b00000001
+            isPersistent = 1 << 1, // 0b00000010
+            isTemp = 1 << 2, // 0b00000100
+        }
 
         public int AllocationsCount => 
             
@@ -43,6 +54,9 @@ namespace LinearAlgebra
         public int AllAllocationsCount => AllocationsCount + TempAllocationsCount;
 
         public Allocator Allocator;
+
+        bool isDisposed;
+
         public bool Initialized { get; private set; }
 
         private UnsafeList<boolN> BoolVectors;
@@ -54,7 +68,8 @@ namespace LinearAlgebra
 
             Initialized = true;
             Allocator = allocator;
-            
+            isDisposed = false;
+
             
             floatVectors = new UnsafeList<floatN>(8, Allocator);
             floatMatrices = new UnsafeList<floatMxN>(8, Allocator);
@@ -208,44 +223,274 @@ namespace LinearAlgebra
 
         public void Dispose()
         {
-            Clear();
+            Dispose(true);
+        }
 
+        public unsafe bool CheckIntegrity()
+        {
+            // Check for duplicates and disposed
+            bool good = true;
             
-            floatVectors.Dispose();
-            floatMatrices.Dispose();
-            tempfloatMatrices.Dispose();
-            tempfloatVectors.Dispose();
+            {
+                NativeHashSet<floatN> allVecs = new NativeHashSet<floatN>(tempfloatVectors.Length + floatVectors.Length, Allocator);
+                for (int srcIdx = 0; srcIdx < tempfloatVectors.Length; srcIdx++)
+                {
+                    floatN v = tempfloatVectors[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isTemp) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged temp");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allVecs.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allVecs.Add(v);
+                }
+
+                for (int srcIdx = 0; srcIdx < floatVectors.Length; srcIdx++)
+                {
+                    floatN v = floatVectors[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isPersistent) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged peristent");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allVecs.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allVecs.Add(v);
+                }
+
+                allVecs.Dispose();
+            }
+
+            {
+                NativeHashSet<floatMxN> allMats = new NativeHashSet<floatMxN>(tempfloatMatrices.Length + floatMatrices.Length, Allocator);
+                for (int srcIdx = 0; srcIdx < tempfloatMatrices.Length; srcIdx++)
+                {
+                    floatMxN v = tempfloatMatrices[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isTemp) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged temp");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allMats.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allMats.Add(v);
+                }
+
+                for (int srcIdx = 0; srcIdx < floatMatrices.Length; srcIdx++)
+                {
+                    floatMxN v = floatMatrices[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isPersistent) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged peristent");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allMats.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allMats.Add(v);
+                }
+
+                allMats.Dispose();
+            }
             
-            doubleVectors.Dispose();
-            doubleMatrices.Dispose();
-            tempdoubleMatrices.Dispose();
-            tempdoubleVectors.Dispose();
+            {
+                NativeHashSet<doubleN> allVecs = new NativeHashSet<doubleN>(tempdoubleVectors.Length + doubleVectors.Length, Allocator);
+                for (int srcIdx = 0; srcIdx < tempdoubleVectors.Length; srcIdx++)
+                {
+                    doubleN v = tempdoubleVectors[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isTemp) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged temp");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allVecs.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allVecs.Add(v);
+                }
+
+                for (int srcIdx = 0; srcIdx < doubleVectors.Length; srcIdx++)
+                {
+                    doubleN v = doubleVectors[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isPersistent) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged peristent");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allVecs.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allVecs.Add(v);
+                }
+
+                allVecs.Dispose();
+            }
+
+            {
+                NativeHashSet<doubleMxN> allMats = new NativeHashSet<doubleMxN>(tempdoubleMatrices.Length + doubleMatrices.Length, Allocator);
+                for (int srcIdx = 0; srcIdx < tempdoubleMatrices.Length; srcIdx++)
+                {
+                    doubleMxN v = tempdoubleMatrices[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isTemp) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged temp");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allMats.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allMats.Add(v);
+                }
+
+                for (int srcIdx = 0; srcIdx < doubleMatrices.Length; srcIdx++)
+                {
+                    doubleMxN v = doubleMatrices[srcIdx];
+                    if ((v.flags.Ptr[0] & ArrayFlags.isPersistent) == 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena temp vector was not flagged peristent");
+                        good = false;
+                    }
+                    if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0)
+                    {
+                        UnityEngine.Debug.LogError("Arena had disposed vector");
+                        good = false;
+                    }
+
+                    if (allMats.Contains(v))
+                    {
+                        UnityEngine.Debug.LogError("Arena had duplicate vector");
+                        good = false;
+                    }
+
+                    allMats.Add(v);
+                }
+
+                allMats.Dispose();
+            }
             
 
-            
-            intVectors.Dispose();
-            intMatrices.Dispose();
-            tempintMatrices.Dispose();
-            tempintVectors.Dispose();
-            
-            shortVectors.Dispose();
-            shortMatrices.Dispose();
-            tempshortMatrices.Dispose();
-            tempshortVectors.Dispose();
-            
-            longVectors.Dispose();
-            longMatrices.Dispose();
-            templongMatrices.Dispose();
-            templongVectors.Dispose();
-            
+            return good;
+        }
 
-            BoolVectors.Dispose();
-            BoolMatrices.Dispose();
-            TempBoolMatrices.Dispose();
-            TempBoolVectors.Dispose();
+        private void Dispose(bool disposing)
+        {
+            if (!isDisposed)
+            {
+#if LINALG_DEBUG
+                CheckIntegrity();
+#endif
 
-            Initialized = false;
-            Allocator = Allocator.Invalid;
+                if (disposing)
+                {
+                    Clear();
+                }
+
+                // Dispose unmanged resources here
+                
+                floatVectors.Dispose();
+                floatMatrices.Dispose();
+                tempfloatMatrices.Dispose();
+                tempfloatVectors.Dispose();
+                
+                doubleVectors.Dispose();
+                doubleMatrices.Dispose();
+                tempdoubleMatrices.Dispose();
+                tempdoubleVectors.Dispose();
+                
+
+                
+                intVectors.Dispose();
+                intMatrices.Dispose();
+                tempintMatrices.Dispose();
+                tempintVectors.Dispose();
+                
+                shortVectors.Dispose();
+                shortMatrices.Dispose();
+                tempshortMatrices.Dispose();
+                tempshortVectors.Dispose();
+                
+                longVectors.Dispose();
+                longMatrices.Dispose();
+                templongMatrices.Dispose();
+                templongVectors.Dispose();
+                
+
+                BoolVectors.Dispose();
+                BoolMatrices.Dispose();
+                TempBoolMatrices.Dispose();
+                TempBoolVectors.Dispose();
+                 
+                Initialized = false;
+                Allocator = Allocator.Invalid;
+                isDisposed = true;
+            }
         }
     }
 }

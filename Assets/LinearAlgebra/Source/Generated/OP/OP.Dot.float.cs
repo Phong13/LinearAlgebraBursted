@@ -13,6 +13,8 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float dot(floatN a, floatN b)
         {
+            Arena.CheckValid(a);
+            Arena.CheckValid(b);
             if (a.N != b.N)
                 throw new ArgumentException("dot: Vector must have same dimension");
 
@@ -23,6 +25,8 @@ namespace LinearAlgebra
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float dot(floatN a, floatN b, int start, int end = -1) {
+            Arena.CheckValid(a);
+            Arena.CheckValid(b);
             if (a.N != b.N)
                 throw new ArgumentException("dot: Vector must have same dimension");
 
@@ -37,6 +41,8 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN outerDot(floatN a, floatN b)
         {
+            Arena.CheckValid(a);
+            Arena.CheckValid(b);
             floatMxN result = a.tempfloatMat(a.N, b.N, true);
 
             unsafe
@@ -50,6 +56,8 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN dot(floatMxN A, floatN x)
         {
+            Arena.CheckValid(A);
+            Arena.CheckValid(x);
             Assume.SameDim(A.N_Cols, x.N);
 
             floatN result = x.tempfloatVec(A.M_Rows);
@@ -65,6 +73,8 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN dot(floatN y, floatMxN A)
         {
+            Arena.CheckValid(y);
+            Arena.CheckValid(A);
             Assume.SameDim(A.M_Rows, y.N);
 
             floatN result = y.tempfloatVec(A.N_Cols);
@@ -79,7 +89,9 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN dot(floatMxN a, floatMxN b, bool transposeA = false)
         {
-            if(transposeA)
+            Arena.CheckValid(a);
+            Arena.CheckValid(b);
+            if (transposeA)
                 Assume.SameDim(a.N_Cols, b.N_Cols);
             else
                 Assume.SameDim(a.N_Cols, b.M_Rows);
@@ -112,6 +124,9 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void dotCompInpl(this floatMxN target, floatMxN a, floatMxN b, bool transposeA = false)
         {
+            Arena.CheckValid(a);
+            Arena.CheckValid(b);
+            Arena.CheckValid(target);
             if (transposeA)
                 Assume.SameDim(a.N_Cols, b.N_Cols);
             else
@@ -147,6 +162,9 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void dotCompInpl(this floatN target, floatMxN A, floatN x, bool transposeA = false)
         {
+            Arena.CheckValid(target);
+            Arena.CheckValid(A);
+            Arena.CheckValid(x);
             Assume.SameDim(A.N_Cols, x.N);
             unsafe
             {
@@ -158,6 +176,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN trans(floatMxN A)
         {
+            Arena.CheckValid(A);
             var T = A.tempfloatMat(A.N_Cols, A.M_Rows, true);
 
             unsafe

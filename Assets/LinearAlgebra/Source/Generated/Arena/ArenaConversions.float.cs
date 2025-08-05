@@ -144,7 +144,8 @@ namespace LinearAlgebra
         #endregion
 
         #region CONVERSIONS_TO_MATH
-        public static float2 ConvertToLen2(this ref Arena arena, in floatN mathVec) {
+        public static float2 ToLen2(this ref Arena arena, in floatN mathVec) {
+            Arena.CheckValid(mathVec);
             float2 vec = new float2();
 
             vec.x = mathVec[0];
@@ -152,6 +153,68 @@ namespace LinearAlgebra
 
             return vec;
         }
+
+        public static float3 ToLen3(this floatN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float3 vec = new float3();
+
+            vec.x = mathVec[0];
+            vec.y = mathVec[1];
+            vec.z = mathVec[2];
+
+            return vec;
+        }
+
+        public static float4 ToLen4(this floatN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float4 vec = new float4();
+
+            vec.x = mathVec[0];
+            vec.y = mathVec[1];
+            vec.z = mathVec[2];
+            vec.w = mathVec[3];
+
+            return vec;
+        }
+
+        public static float2x2 To2x2(this floatMxN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float2x2 vec = new float2x2();
+
+            vec.c0.x = mathVec[0, 0]; vec.c1.x = mathVec[0, 1];
+            vec.c0.y = mathVec[1, 0]; vec.c1.y = mathVec[1, 1];
+
+            return vec;
+        }
+
+        public static float3x3 To3x3(this floatMxN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float3x3 vec = new float3x3();
+
+            vec.c0.x = mathVec[0, 0]; vec.c1.x = mathVec[0, 1]; vec.c2.x = mathVec[0, 2];
+            vec.c0.y = mathVec[1, 0]; vec.c1.y = mathVec[1, 1]; vec.c2.y = mathVec[1, 2];
+            vec.c0.z = mathVec[2, 0]; vec.c1.z = mathVec[2, 1]; vec.c2.z = mathVec[2, 2];
+
+            return vec;
+        }
+
+        public static float4x4 To4x4(this floatMxN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float4x4 vec = new float4x4();
+
+            vec.c0.x = mathVec[0, 0]; vec.c1.x = mathVec[0, 1]; vec.c2.x = mathVec[0, 2]; vec.c3.x = mathVec[0, 3];
+            vec.c0.y = mathVec[1, 0]; vec.c1.y = mathVec[1, 1]; vec.c2.y = mathVec[1, 2]; vec.c3.y = mathVec[1, 3];
+            vec.c0.z = mathVec[2, 0]; vec.c1.z = mathVec[2, 1]; vec.c2.z = mathVec[2, 2]; vec.c3.z = mathVec[2, 3];
+            vec.c0.w = mathVec[3, 0]; vec.c1.w = mathVec[3, 1]; vec.c2.w = mathVec[3, 2]; vec.c3.w = mathVec[3, 3];
+
+            return vec;
+        }
+
         #endregion
 
 
