@@ -19,6 +19,23 @@ To use library in your own project:
 
 Here's a simple example:
 
+This fork has a lot of changes to the floatN, floatMxN, doubleN, doubleMxN code from the upstream repository. The integer and bool vectors and matrices have hardly been touched.
+
+I would recommend adding the  LINALG_DEBUG  define to your debug build. It adds a lot of checks.
+
+Be very careful with memory management when using this library. It stores vectors and matrices in two buffers: persistent and temporary. Be aware which of your variables are persistent and temporary.
+
+It is fast but I would recommend sticking to some careful patterns/rules. 
+
+1. Do not call vector or matrix constructors directly. Alwayse Create them through the Arena or via operations.
+2. Do not dispose of vectors or matrices yourself. Call the arena directly.
+3. Be aware which of your variables are temp and persistent (Assert this). If you have a temporary result that you want to be persistent then make a persistent copy.
+3. Check that arena.AllocationCount is not growing unexpectedly. This is persistent memory. You
+should be able to account for all allocations.
+4. ClearTemp frequently. This deallocates memory. Don't access any old temp allocated variables after ClearTemp.
+5. Don't use the assignement operator with persistent variables other than for Arena creation. Use in-place (_inpl) functions to assign results to these variables. 
+
+
 ```csharp
     // memory management struct
     var arena = new Arena(Allocator.Persistent);
@@ -38,7 +55,7 @@ Here's a simple example:
     floatMxN matI = arena.floatIdentityMatrix(16);
     floatMxN matRand = arena.floatRandomMatrix(16, 16);
 
-    // per component sum, allocates new matrix
+    // per component sum, allocates new temporary matrix
     floatMxN compSumMat = matI + matRand;
 
     // adds 1f to compSumMat inplace, allocating nothing
@@ -51,9 +68,46 @@ Here's a simple example:
     floatMxN A = arena.floatRandomDiagonalMatrix(dim, -3f, 3f);
     floatMxN B = arena.floatRandomDiagonalMatrix(dim, -3f, 3f);
 
-    // dot multiply A and B, will allocate new matrix
-    floatMxN C = floatOP.dot(A, B);
-
+    // dot multiply A and B, will allocate new temporary matrix
+    floatMxN Ctmp = floatOP.dot(A, B);
+    
+    // make a persistent copy of this result
+    floatMxN C = arena.CopyPersistent(Ctmp);
+    
+    {
+        // DON'T DO THIS
+        // Don't use assignement operator  =  with persistent mats and vecs. It can 
+        // quietly convert them from persistent allocated to temp allocated or leak memory.
+        C = A + B;  // C used to point to persistent allocated matrix. Now it points to temporary.
+        arent.ClearTemp() // C's new memory just got freed
+        C[0,1] = 5;    // now we are writing to unallocated memory. Very very bad.
+    }
+    
+    {
+        // Best Practice. Allocate all persistent variables ahead of time
+        floatMxN AA = arena.floatMat(1,2);
+        floatMxN BB = arena.floatMat(1,2);
+        floatMxN CC = arena.floatMat(1,2);
+        
+        // Record number of allocations
+        int expectedAllocations = arena.AllocationCount;
+        ...
+        {
+            // Use temporary allocations for intermediate results
+            // scope the tempoary variable in {} so the variables disappear out of scope
+            // after calcs.
+            floatMxN Dtmp = AA * CC + BB * CC;
+            ... some calculations ...
+            
+            // Copy temporary result to persistent
+            CC.Copy(Dtmp);
+            
+            // Clean up temporary variables
+            arena.ClearTemp();
+            Assert(arena.AllocationCount == expectedAllocations);
+        }
+    }
+    
     // adds 5f to element on [0, 0] coords
     C[0, 0] += 5f;
 
