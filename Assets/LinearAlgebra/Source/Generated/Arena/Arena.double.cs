@@ -394,7 +394,11 @@ namespace LinearAlgebra
 #if LINALG_DEBUG
             if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0) throw new System.Exception("Call on disposed vector");
             if (!v.Data.IsCreated) throw new System.Exception("Call on disposed vector");
-            if ((v.N > 0 && float.IsNaN((float) v[0]))) throw new System.Exception("Vector data was NaN. This is likely a disposed vector.");
+            if ((v.N > 0 && float.IsNaN((float) v[0]))) UnityEngine.Debug.LogError("Vector data was NaN. This is likely a disposed vector.");
+            bool t = v.IsTemp();
+            bool p = v.IsPersistent();
+            if (t && p) throw new System.Exception("Vector shouldn't be persistent and temp");
+            if (!t && !p) throw new System.Exception("Vector must be temp or persistent");
 #endif
         }
 
@@ -402,9 +406,13 @@ namespace LinearAlgebra
         public static unsafe void CheckValid(doubleMxN v)
         {
 #if LINALG_DEBUG
-            if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0) throw new System.Exception("Call on disposed vector");
-            if (!v.Data.IsCreated) throw new System.Exception("Call on disposed vector");
-            if ((v.Length > 0 && float.IsNaN((float)v[0]))) throw new System.Exception("Vector data was NaN. This is likely a disposed vector.");
+            if ((v.flags.Ptr[0] & ArrayFlags.isDisposed) != 0) throw new System.Exception("Call on disposed matrix");
+            if (!v.Data.IsCreated) throw new System.Exception("Call on disposed matrix");
+            if ((v.Length > 0 && float.IsNaN((float)v[0]))) UnityEngine.Debug.LogError("Matrix data was NaN. This is likely a disposed vector.");
+            bool t = v.IsTemp();
+            bool p = v.IsPersistent();
+            if (t && p) throw new System.Exception("Matrix shouldn't be persistent and temp");
+            if (!t && !p) throw new System.Exception("Matrix must be temp or persistent");
 #endif
         }
         #endregion

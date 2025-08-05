@@ -29,7 +29,7 @@ It is fast but I would recommend sticking to some careful patterns/rules.
 
 1. Do not call vector or matrix constructors directly. Alwayse Create them through the Arena or via operations.
 2. Do not dispose of vectors or matrices yourself. Call the arena directly.
-3. Be aware which of your variables are temp and persistent (Assert this). If you have a temporary result that you want to be persistent then make a persistent copy.
+3. Be aware which of your variables are temp and persistent (Assert this). If you have a temporary result that you want to be persistent then copy the result to a persistent variable.
 3. Check that arena.AllocationCount is not growing unexpectedly. This is persistent memory. You
 should be able to account for all allocations.
 4. ClearTemp frequently. This deallocates memory. Don't access any old temp allocated variables after ClearTemp.
@@ -79,7 +79,7 @@ should be able to account for all allocations.
         // Don't use assignement operator  =  with persistent mats and vecs. It can 
         // quietly convert them from persistent allocated to temp allocated or leak memory.
         C = A + B;  // C used to point to persistent allocated matrix. Now it points to temporary.
-        arent.ClearTemp() // C's new memory just got freed
+        arena.ClearTemp() // C's new memory just got freed
         C[0,1] = 5;    // now we are writing to unallocated memory. Very very bad.
     }
     

@@ -19,6 +19,30 @@ namespace LinearAlgebra
     public static partial class doubleOP {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsTemp(this doubleN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isTemp) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsPersistent(this doubleN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isPersistent) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsTemp(this doubleMxN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isTemp) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsPersistent(this doubleMxN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isPersistent) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void addInpl<T>(T place, double s) where T : unmanaged, IUnsafedoubleArray {
 
             unsafe {

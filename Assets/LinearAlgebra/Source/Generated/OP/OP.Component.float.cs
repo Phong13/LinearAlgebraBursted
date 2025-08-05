@@ -19,6 +19,30 @@ namespace LinearAlgebra
     public static partial class floatOP {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsTemp(this floatN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isTemp) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsPersistent(this floatN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isPersistent) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsTemp(this floatMxN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isTemp) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsPersistent(this floatMxN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isPersistent) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void addInpl<T>(T place, float s) where T : unmanaged, IUnsafefloatArray {
 
             unsafe {

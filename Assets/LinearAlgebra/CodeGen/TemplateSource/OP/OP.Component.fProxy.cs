@@ -21,6 +21,30 @@ namespace LinearAlgebra
     public static partial class fProxyOP {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsTemp(this fProxyN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isTemp) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsPersistent(this fProxyN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isPersistent) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsTemp(this fProxyMxN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isTemp) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static bool IsPersistent(this fProxyMxN v)
+        {
+            return (v.flags.Ptr[0] & Arena.ArrayFlags.isPersistent) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void addInpl<T>(T place, fProxy s) where T : unmanaged, IUnsafefProxyArray {
 
             unsafe {
