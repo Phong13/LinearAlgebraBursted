@@ -337,7 +337,7 @@ public class fProxyCompareTests
         {
             int dim = 64;
 
-            fProxyN v = arena.fProxyRandomVector(dim, -1f, 1f, 1451);
+            fProxyN v = arena.fProxyRandomVector(dim, -1f, 1f, 1451, true);
             // set first element to zero
             v[0] = 0f;
 
@@ -365,7 +365,7 @@ public class fProxyCompareTests
         {
             int dim = 32;
 
-            fProxyMxN m = arena.fProxyRandomMatrix(dim, dim, -1f, 1f, 1451);
+            fProxyMxN m = arena.fProxyRandomMatrix(dim, dim, -1f, 1f, 1451, true);
             // set first element to zero
             m[0,0] = 0f;
 
@@ -393,7 +393,7 @@ public class fProxyCompareTests
         {
             int dim = 32;
 
-            fProxyMxN m0 = arena.fProxyDiagonalMatrix(dim, 1f);
+            fProxyMxN m0 = arena.fProxyDiagonalMatrix(dim, 1f, true);
             
             var boolMat = m0 == 1f;
 
@@ -406,8 +406,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            fProxyN v1 = arena.fProxyLinVector(dim, 0f, 1f);
+            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            fProxyN v1 = arena.fProxyLinVector(dim, 0f, 1f, true);
 
             var boolVec = v0 == v1;
 
@@ -424,8 +424,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f);
+            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 != v1;
 
@@ -443,8 +443,8 @@ public class fProxyCompareTests
 
             int dim = 16;
             
-            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f);
+            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 < v1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, true));
@@ -459,8 +459,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f);
+            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 <= v1;
 
@@ -472,8 +472,8 @@ public class fProxyCompareTests
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, true));
 
-            v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            v1 = arena.fProxyLinVector(dim, 1f, 0f);
+            v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            v1 = arena.fProxyLinVector(dim, 1f, 0f, true);
 
             boolVec = v0 <= v1;
 
@@ -484,8 +484,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f);
+            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 > v1;
 
@@ -497,8 +497,8 @@ public class fProxyCompareTests
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, false));
 
-            v0 = arena.fProxyLinVector(dim, 1f, 0f);
-            v1 = arena.fProxyLinVector(dim, 0f, 1f);
+            v0 = arena.fProxyLinVector(dim, 1f, 0f, true);
+            v1 = arena.fProxyLinVector(dim, 0f, 1f, true);
 
             boolVec = v0 > v1;
             Assert.IsFalse(BoolAnalysis.IsAllSame(boolVec));
@@ -511,8 +511,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f);
-            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f);
+            fProxyN v0 = arena.fProxyLinVector(dim, 0f, 1f, true);
+            fProxyN v1 = arena.fProxyLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 >= v1;
 
@@ -522,7 +522,7 @@ public class fProxyCompareTests
             boolVec = v0 >= v1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, true));
 
-            v0 = arena.fProxyLinVector(dim, 1f, 0f);
+            v0 = arena.fProxyLinVector(dim, 1f, 0f, true);
 
             boolVec = v0 >= v1;
             Assert.IsTrue(BoolAnalysis.IsAllSame(boolVec));
@@ -532,8 +532,8 @@ public class fProxyCompareTests
         {
             int dim = 64;
 
-            fProxyN v0 = arena.fProxyRandomVector(dim, -1f, 1f, 1451);
-            fProxyN v1 = arena.fProxyRandomVector(dim, -1f, 1f, 6421);
+            fProxyN v0 = arena.fProxyRandomVector(dim, -1f, 1f, 1451, true);
+            fProxyN v1 = arena.fProxyRandomVector(dim, -1f, 1f, 6421, true);
 
             v0[0] = v1[0];
             v0[1] = 1f-v1[1];
@@ -561,8 +561,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 12343, true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 12343, true);
 
             var boolMat = m0 == m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
@@ -580,13 +580,13 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
 
             var boolMat = m0 != m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
 
-            m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131);
+            m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             boolMat = m0 != m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
@@ -596,8 +596,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 < m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
@@ -612,8 +612,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131,true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 <= m1;
 
@@ -624,8 +624,8 @@ public class fProxyCompareTests
             boolMat = m0 <= m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
 
-            m0 = arena.fProxyRandomMatrix(dim, dim, 1f, 0f, 2131);
-            m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
+            m0 = arena.fProxyRandomMatrix(dim, dim, 1f, 0f, 2131, true);
+            m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
 
             boolMat = m0 <= m1;
 
@@ -636,8 +636,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 > m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
@@ -647,8 +647,8 @@ public class fProxyCompareTests
             boolMat = m0 > m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
 
-            m0 = arena.fProxyRandomMatrix(dim, dim, 1f, 0f, 2131);
-            m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
+            m0 = arena.fProxyRandomMatrix(dim, dim, 1f, 0f, 2131, true);
+            m1 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
 
             boolMat = m0 > m1;
             Assert.IsFalse(BoolAnalysis.IsAllSame(boolMat));
@@ -661,8 +661,8 @@ public class fProxyCompareTests
         {
             int dim = 16;
             
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 >= m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
@@ -672,7 +672,7 @@ public class fProxyCompareTests
             boolMat = m0 >= m1;
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
-            m0 = arena.fProxyRandomMatrix(dim, dim, 1f, 0f, 2131);
+            m0 = arena.fProxyRandomMatrix(dim, dim, 1f, 0f, 2131, true);
 
             boolMat = m0 >= m1;
             Assert.IsTrue(BoolAnalysis.IsAllSame(boolMat));
@@ -682,8 +682,8 @@ public class fProxyCompareTests
         {
             int dim = 32;
 
-            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, -1f, 1f, 1451);
-            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, -1f, 1f, 6421);
+            fProxyMxN m0 = arena.fProxyRandomMatrix(dim, dim, -1f, 1f, 1451, true);
+            fProxyMxN m1 = arena.fProxyRandomMatrix(dim, dim, -1f, 1f, 6421, true);
 
             m0[0,0] = m1[0,0];
             m0[0,1] = 1f - m1[0,1];

@@ -132,7 +132,7 @@ public class floatDotOperationTests
             int vecLen = 20;
 
             floatN x = arena.floatRandomUnitVector(vecLen);
-            floatMxN A = arena.floatIdentityMatrix(vecLen);
+            floatMxN A = arena.floatIdentityMatrix(vecLen, true);
 
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             floatN b = floatOP.dot(x, A);
@@ -144,7 +144,7 @@ public class floatDotOperationTests
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual(x[i], b[i]);
 
-            x = arena.floatIndexZeroVector(vecLen);
+            x = arena.floatIndexZeroVector(vecLen, true);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
             Assert.IsTrue(arena.DB_isTemp(b));
@@ -174,7 +174,7 @@ public class floatDotOperationTests
 
             floatN b = arena.floatVec(2);
 
-            b.dotCompInpl(A, x);
+            b.dotInpl(A, x);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
             Assert.IsTrue(arena.DB_isPersistant(b));
@@ -202,7 +202,7 @@ public class floatDotOperationTests
             floatMxN C = arena.floatMat(2, 2, 7);
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
 
-            C.dotCompInpl(A, B);
+            C.dotInpl(A, B);
 
             // no new allocations;
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
@@ -224,8 +224,8 @@ public class floatDotOperationTests
 
             int matLen = 16;
 
-            floatMxN A = arena.floatIdentityMatrix(matLen);
-            floatMxN B = arena.floatIdentityMatrix(matLen);
+            floatMxN A = arena.floatIdentityMatrix(matLen, true);
+            floatMxN B = arena.floatIdentityMatrix(matLen, true);
 
             floatMxN AA = A;
             floatMxN BB = B;
@@ -257,7 +257,7 @@ public class floatDotOperationTests
                 Assert.AreEqual(R[i, j], C[i, j]);
             }
 
-            C = arena.floatIdentityMatrix(matLen);
+            C = arena.floatIdentityMatrix(matLen, true);
 
             floatMxN D = floatOP.dot(C, C);
 
@@ -347,8 +347,8 @@ public class floatDotOperationTests
             for (int i = 0; B.Length < i; i++)
                 Assert.AreEqual((float)1f, B[i]);
 
-            x = arena.floatLinVector(vecM, 0f, 2f);
-            y = arena.floatLinVector(vecN, 0f, 2f);
+            x = arena.floatLinVector(vecM, 0f, 2f, true);
+            y = arena.floatLinVector(vecN, 0f, 2f, true);
 
             floatMxN C = floatOP.outerDot(x, y);
 

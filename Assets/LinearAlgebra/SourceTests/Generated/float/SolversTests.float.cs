@@ -42,7 +42,7 @@ public class floatSolversTests {
 
             int dim = 8;
 
-            var Q = arena.floatIdentityMatrix(dim);
+            var Q = arena.floatIdentityMatrix(dim, true);
             var R = arena.floatMat(dim);
 
             var A = Q.CopyPersistent();

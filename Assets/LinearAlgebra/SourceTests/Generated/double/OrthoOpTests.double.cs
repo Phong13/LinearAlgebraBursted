@@ -84,7 +84,7 @@ public class doubleOrthoOpTests
 
             int dim = 8;
 
-            var Q = arena.doubleIdentityMatrix(dim);
+            var Q = arena.doubleIdentityMatrix(dim,  true);
             var R = arena.doubleMat(dim);
 
             var A = Q.CopyPersistent();
@@ -188,7 +188,7 @@ public class doubleOrthoOpTests
 
             int dim = 20;
 
-            var Q = arena.doubleHilbertMatrix(dim);
+            var Q = arena.doubleHilbertMatrix(dim, true);
             var R = arena.doubleMat(dim);
 
             var A = Q.CopyPersistent();
@@ -221,7 +221,7 @@ public class doubleOrthoOpTests
                     p1 = rand.NextInt(0, dim);
                 }
 
-                var Q = arena.doublePermutationMatrix(dim, p0, p1);
+                var Q = arena.doublePermutationMatrix(dim, p0, p1, true);
 
                 p0 = rand.NextInt(0, dim);
                 p1 = rand.NextInt(0, dim);
@@ -230,7 +230,7 @@ public class doubleOrthoOpTests
                     p1 = rand.NextInt(0, dim);
                 }
 
-                Q = doubleOP.dot(arena.doublePermutationMatrix(dim, p0, p1), Q);
+                Q = doubleOP.dot(arena.doublePermutationMatrix(dim, p0, p1, true), Q);
 
                 var R = arena.doubleMat(dim);
 

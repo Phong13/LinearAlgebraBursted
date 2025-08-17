@@ -215,6 +215,97 @@ namespace LinearAlgebra
             return vec;
         }
 
+        public static double[,] ToDoubleArray(this floatMxN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            double[,] vec = new double[mathVec.M_Rows, mathVec.N_Cols];
+
+            for (int i = 0; i < mathVec.M_Rows; i++)
+            {
+                for (int j = 0; j < mathVec.N_Cols; j++)
+                {
+                    vec[i, j] = mathVec[i, j];
+                }
+            }
+
+            return vec;
+        }
+
+        public static float[,] ToFloatArray(this floatMxN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float[,] vec = new float[mathVec.M_Rows, mathVec.N_Cols];
+
+            for (int i = 0; i < mathVec.M_Rows; i++)
+            {
+                for (int j = 0; j < mathVec.N_Cols; j++)
+                {
+                    vec[i, j] = (float) mathVec[i, j];
+                }
+            }
+
+            return vec;
+        }
+
+        /// <summary>
+        /// Matricies are stored in row-major format but some libraries want column major format
+        /// </summary>
+        public static void FlattenColumnMajorInpl(this floatMxN srcMat, floatN toHereFlat)
+        {
+            Arena.CheckValid(srcMat);
+            Arena.CheckValid(toHereFlat);
+            Assume.IsTrue(toHereFlat.N == srcMat.Length);
+            for (int cIdx = 0; cIdx < srcMat.N_Cols; cIdx++)       // iterate over columns first
+            {
+                for (int rIdx = 0; rIdx < srcMat.M_Rows; rIdx++)   // then rows
+                {
+                    int flatIndex = cIdx * srcMat.M_Rows + rIdx;
+                    toHereFlat[flatIndex] = srcMat[rIdx, cIdx];
+                }
+            }
+        }
+
+        public static void UnFlattenFromColumnMajorInpl(this floatN srcFlat, floatMxN toHere)
+        {
+            Arena.CheckValid(srcFlat);
+            Arena.CheckValid(toHere);
+            Assume.IsTrue(srcFlat.N == toHere.Length);
+            for (int cIdx = 0; cIdx < toHere.N_Cols; cIdx++)       // iterate over columns first
+            {
+                for (int rIdx = 0; rIdx < toHere.M_Rows; rIdx++)   // then rows
+                {
+                    int flatIndex = cIdx * toHere.M_Rows + rIdx;
+                    toHere[rIdx, cIdx] = srcFlat[flatIndex];
+                }
+            }
+        }
+
+        public static float[] ToFloatArray(this floatN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            float[] vec = new float[mathVec.N];
+
+            for (int i = 0; i < mathVec.N; i++)
+            {
+                vec[i] = (float) mathVec[i];
+            }
+
+            return vec;
+        }
+
+        public static double[] ToDoubleArray(this floatN mathVec)
+        {
+            Arena.CheckValid(mathVec);
+            double[] vec = new double[mathVec.N];
+
+            for (int i = 0; i < mathVec.N; i++)
+            {
+                vec[i] = (float)mathVec[i];
+            }
+
+            return vec;
+        }
+
         #endregion
 
 

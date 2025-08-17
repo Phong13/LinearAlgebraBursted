@@ -95,7 +95,7 @@ public class doubleSpecialConstructorsTests {
         {
             var arena = new Arena(Allocator.Persistent);
 
-            var v = arena.doubleBasisVector(10, 0);
+            var v = arena.doubleBasisVector(10, 0, true);
 
             Assert.AreEqual((double)1, v[0]);
 
@@ -103,7 +103,7 @@ public class doubleSpecialConstructorsTests {
                 Assert.AreEqual((double)0, v[i]);
             }
 
-            v = arena.doubleBasisVector(10, 9);
+            v = arena.doubleBasisVector(10, 9, true);
 
             Assert.AreEqual((double)1, v[9]);
 
@@ -118,7 +118,7 @@ public class doubleSpecialConstructorsTests {
         {
             var arena = new Arena(Allocator.Persistent);
 
-            var v = arena.doubleIndexZeroVector(16);
+            var v = arena.doubleIndexZeroVector(16, true);
 
             for(int i = 0; i < v.N; i++) {
                 Assert.AreEqual((double)i, v[i]);
@@ -130,7 +130,7 @@ public class doubleSpecialConstructorsTests {
         public void IndexOneVec()
         {
             var arena = new Arena(Allocator.Persistent);
-            var v = arena.doubleIndexOneVector(16);
+            var v = arena.doubleIndexOneVector(16, true);
 
             for (int i = 0; i < v.N; i++) {
                 Assert.AreEqual((double)i + 1, v[i]);
@@ -173,12 +173,12 @@ public class doubleSpecialConstructorsTests {
         public void LinVec()
         {
             var arena = new Arena(Allocator.Persistent);
-            var v = arena.doubleLinVector(16, (double)0, (double)15);
+            var v = arena.doubleLinVector(16, (double)0, (double)15, true);
 
             for (int i = 0; i < v.N; i++)
                 Assert.IsTrue(math.abs(i- v[i]) < 0.0001f);
 
-            v = arena.doubleLinVector(16, 15, 0);
+            v = arena.doubleLinVector(16, 15, 0, true);
 
             for (int i = 0; i < v.N; i++)
                 Assert.IsTrue(math.abs((15f-i) - v[i]) < 0.0001f);
@@ -190,7 +190,7 @@ public class doubleSpecialConstructorsTests {
         public void IndexZeroMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleIndexZeroMatrix(16, 16);
+            var m = arena.doubleIndexZeroMatrix(16, 16, true);
 
             for(int i = 0; i < m.Length; i++)
                 Assert.AreEqual((double)i, m[i]);
@@ -199,7 +199,7 @@ public class doubleSpecialConstructorsTests {
         public void IndexOneMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleIndexOneMatrix(16, 16);
+            var m = arena.doubleIndexOneMatrix(16, 16, true);
 
             for (int i = 0; i < m.Length; i++)
                 Assert.AreEqual((double)i + 1, m[i]);
@@ -209,7 +209,7 @@ public class doubleSpecialConstructorsTests {
         public void IdentityMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleIdentityMatrix(16);
+            var m = arena.doubleIdentityMatrix(16, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(in m));
             Assert.IsTrue(Analysis.IsIdentity(in m));
@@ -229,7 +229,7 @@ public class doubleSpecialConstructorsTests {
         public void DiagonalMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleDiagonalMatrix(16, 2f);
+            var m = arena.doubleDiagonalMatrix(16, 2f, true);
             
             Assert.IsTrue(Analysis.IsDiagonal(in m));
 
@@ -291,7 +291,7 @@ public class doubleSpecialConstructorsTests {
         public void RotationMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleRotationMatrix(16, 1, 14, math.PI/4f);
+            var m = arena.doubleRotationMatrix(16, 1, 14, math.PI/4f, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
             Assert.IsFalse(Analysis.IsIdentity(in m, 0.00001f));
@@ -299,7 +299,7 @@ public class doubleSpecialConstructorsTests {
             var mTm = doubleOP.dot(m, m, true);
             Analysis.IsIdentity(in mTm, 0.00001f);
 
-            m = arena.doubleRotationMatrix(2, 0, 1, math.PI/4f);
+            m = arena.doubleRotationMatrix(2, 0, 1, math.PI/4f, true);
 
             Assert.IsTrue(math.abs((double)0.70710678118654752440084436210485d - m[0, 0]) < 0.00001f);
             Assert.IsTrue(math.abs((double)0.70710678118654752440084436210485d - m[1, 1]) < 0.00001f);
@@ -312,7 +312,7 @@ public class doubleSpecialConstructorsTests {
         public void PermutationMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doublePermutationMatrix(16, 1, 14);
+            var m = arena.doublePermutationMatrix(16, 1, 14, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
             Assert.IsFalse(Analysis.IsIdentity(in m, 0.00001f));
@@ -320,7 +320,7 @@ public class doubleSpecialConstructorsTests {
             var mTm = doubleOP.dot(m, m, true);
             Analysis.IsIdentity(in mTm, 0.00001f);
 
-            m = arena.doublePermutationMatrix(2, 0, 1);
+            m = arena.doublePermutationMatrix(2, 0, 1, true);
 
             Assert.AreEqual((double)0, m[0, 0]);
             Assert.AreEqual((double)0, m[1, 1]);
@@ -334,7 +334,7 @@ public class doubleSpecialConstructorsTests {
         {
             var arena = new Arena(Allocator.Persistent);
             var v = arena.doubleRandomUnitVector(16);
-            var m = arena.doubleHouseholderMatrix(16, v);
+            var m = arena.doubleHouseholderMatrix(16, v, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
             Assert.IsFalse(Analysis.IsIdentity(in m, 0.00001f));
@@ -342,8 +342,8 @@ public class doubleSpecialConstructorsTests {
             var mTm = doubleOP.dot(m, m, true);
             Analysis.IsIdentity(in mTm, 0.00001f);
 
-            v = arena.doubleBasisVector(2, 0);
-            m = arena.doubleHouseholderMatrix(2, v);
+            v = arena.doubleBasisVector(2, 0, true);
+            m = arena.doubleHouseholderMatrix(2, v, true);
 
 
 

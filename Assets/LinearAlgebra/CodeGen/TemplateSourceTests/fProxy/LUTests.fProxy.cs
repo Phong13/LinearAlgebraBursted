@@ -74,7 +74,7 @@ public class fProxyLUTests
 
         private fProxyMxN GetRandomMatrix(ref Arena arena, int dim, fProxy min, fProxy max, uint seed) {
 
-            var mat = arena.fProxyRandomMatrix(dim, dim, min, max, seed);
+            var mat = arena.fProxyRandomMatrix(dim, dim, min, max, seed, true);
 
             return mat;
         }
@@ -85,8 +85,8 @@ public class fProxyLUTests
 
             int dim = 8;
 
-            var U = arena.fProxyIdentityMatrix(dim);
-            var L = arena.fProxyIdentityMatrix(dim);
+            var U = arena.fProxyIdentityMatrix(dim, true);
+            var L = arena.fProxyIdentityMatrix(dim, true);
 
             var A = U.CopyPersistent();
 
@@ -102,8 +102,8 @@ public class fProxyLUTests
 
             int dim = 8;
 
-            var U = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f);
-            var L = arena.fProxyIdentityMatrix(dim);
+            var U = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f, 12345, true);
+            var L = arena.fProxyIdentityMatrix(dim, true);
 
             var A = U.CopyPersistent();
 
@@ -122,7 +122,7 @@ public class fProxyLUTests
             var dim = 5;
 
             var U = arena.fProxyMat(dim);
-            var L = arena.fProxyIdentityMatrix(dim);
+            var L = arena.fProxyIdentityMatrix(dim, true);
             
             var pivot = new Pivot(dim, Allocator.Temp);
 
@@ -178,8 +178,8 @@ public class fProxyLUTests
 
             int dim = 18;
 
-            var U = arena.fProxyRandomMatrix(dim, dim, 1f, 10f, 314221);
-            var L = arena.fProxyIdentityMatrix(dim);
+            var U = arena.fProxyRandomMatrix(dim, dim, 1f, 10f, 314221, true);
+            var L = arena.fProxyIdentityMatrix(dim, true);
             
             // add to diagonals of U
             for(int d = 0; d < dim; d++)
@@ -324,7 +324,7 @@ public class fProxyLUTests
 
             int dim = 512; 
 
-            var A = arena.fProxyRandomMatrix(dim, dim, -10f, 10f, 314221);
+            var A = arena.fProxyRandomMatrix(dim, dim, -10f, 10f, 314221, false);
 
             if (!(arena.AllocationsCount == 1 && arena.TempAllocationsCount == 0)) UnityEngine.Debug.LogError("FAILED");
 
@@ -334,14 +334,14 @@ public class fProxyLUTests
                     A[d, d] *= 10f;
             }
 
-            var x_Known = arena.fProxyRandomVector(dim, 1f, 10f, 901);
+            var x_Known = arena.fProxyRandomVector(dim, 1f, 10f, 901, false);
 
             if (!(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0)) Debug.LogError("failed");
 
             var b = fProxyOP.dot(A, x_Known);
 
             var U = A.CopyPersistent();
-            var L = arena.fProxyIdentityMatrix(dim);
+            var L = arena.fProxyIdentityMatrix(dim, false);
 
             SortOfAssert(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1);
             SortOfAssert(arena.DB_isPersistant(U) && arena.DB_isPersistant(L) && arena.DB_isTemp(b));
@@ -379,7 +379,7 @@ public class fProxyLUTests
 
             int dim = 512; 
 
-            var A = arena.fProxyRandomMatrix(dim, dim, -10f, 10f, 314221);
+            var A = arena.fProxyRandomMatrix(dim, dim, -10f, 10f, 314221, false);
 
             SortOfAssert(arena.AllocationsCount == 1 && arena.TempAllocationsCount == 0);
 
@@ -389,7 +389,7 @@ public class fProxyLUTests
                     A[d, d] *= 10f;
             }
 
-            var x_Known = arena.fProxyRandomVector(dim, 1f, 10f, 901);
+            var x_Known = arena.fProxyRandomVector(dim, 1f, 10f, 901, false);
             
             SortOfAssert(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
 

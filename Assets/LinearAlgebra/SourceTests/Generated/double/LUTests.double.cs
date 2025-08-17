@@ -85,8 +85,8 @@ public class doubleLUTests
 
             int dim = 8;
 
-            var U = arena.doubleIdentityMatrix(dim);
-            var L = arena.doubleIdentityMatrix(dim);
+            var U = arena.doubleIdentityMatrix(dim, true);
+            var L = arena.doubleIdentityMatrix(dim, true);
 
             var A = U.CopyPersistent();
 
@@ -103,7 +103,7 @@ public class doubleLUTests
             int dim = 8;
 
             var U = arena.doubleRandomDiagonalMatrix(dim, 1f, 3f);
-            var L = arena.doubleIdentityMatrix(dim);
+            var L = arena.doubleIdentityMatrix(dim, true);
 
             var A = U.CopyPersistent();
 
@@ -122,7 +122,7 @@ public class doubleLUTests
             var dim = 5;
 
             var U = arena.doubleMat(dim);
-            var L = arena.doubleIdentityMatrix(dim);
+            var L = arena.doubleIdentityMatrix(dim, true);
             
             var pivot = new Pivot(dim, Allocator.Temp);
 
@@ -179,7 +179,7 @@ public class doubleLUTests
             int dim = 18;
 
             var U = arena.doubleRandomMatrix(dim, dim, 1f, 10f, 314221);
-            var L = arena.doubleIdentityMatrix(dim);
+            var L = arena.doubleIdentityMatrix(dim, true);
             
             // add to diagonals of U
             for(int d = 0; d < dim; d++)
@@ -341,7 +341,7 @@ public class doubleLUTests
             var b = doubleOP.dot(A, x_Known);
 
             var U = A.CopyPersistent();
-            var L = arena.doubleIdentityMatrix(dim);
+            var L = arena.doubleIdentityMatrix(dim, true);
 
             SortOfAssert(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1);
             SortOfAssert(arena.DB_isPersistant(U) && arena.DB_isPersistant(L) && arena.DB_isTemp(b));

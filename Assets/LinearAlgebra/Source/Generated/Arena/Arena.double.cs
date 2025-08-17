@@ -84,6 +84,20 @@ namespace LinearAlgebra
             return vec;
         }
 
+        public unsafe doubleN doubleVec(double[] orig)
+        {
+            if (isDisposed) throw new System.Exception("Call on disposed Arena");
+            var vec = doubleVec(orig.Length);
+            vec.flags.Ptr[0] |= ArrayFlags.isPersistent;
+            for (int i = 0; i < orig.Length; i++)
+            {
+                vec[i] = (double) orig[i];
+            }
+
+            return vec;
+        }
+
+
         public unsafe doubleN tempdoubleVec(int N, bool uninit = false)
         {
             if (isDisposed) throw new System.Exception("Call on disposed Arena");
@@ -271,6 +285,21 @@ namespace LinearAlgebra
                 for (int j = 0; j < m.N_Cols; j++)
                 {
                     m[i, j] = orig[i, j];
+                }
+            }
+
+            return m;
+        }
+
+        public unsafe doubleMxN doubleMat(double[,] orig)
+        {
+            if (isDisposed) throw new System.Exception("Call on disposed Arena");
+            doubleMxN m = doubleMat(orig.GetLength(0), orig.GetLength(1));
+            for (int i = 0; i < m.M_Rows; i++)
+            {
+                for (int j = 0; j < m.N_Cols; j++)
+                {
+                    m[i, j] = (double) orig[i, j];
                 }
             }
 

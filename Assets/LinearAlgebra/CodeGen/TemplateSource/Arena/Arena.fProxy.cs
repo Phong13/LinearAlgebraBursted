@@ -86,6 +86,20 @@ namespace LinearAlgebra
             return vec;
         }
 
+        public unsafe fProxyN fProxyVec(double[] orig)
+        {
+            if (isDisposed) throw new System.Exception("Call on disposed Arena");
+            var vec = fProxyVec(orig.Length);
+            vec.flags.Ptr[0] |= ArrayFlags.isPersistent;
+            for (int i = 0; i < orig.Length; i++)
+            {
+                vec[i] = (fProxy) orig[i];
+            }
+
+            return vec;
+        }
+
+
         public unsafe fProxyN tempfProxyVec(int N, bool uninit = false)
         {
             if (isDisposed) throw new System.Exception("Call on disposed Arena");
@@ -273,6 +287,21 @@ namespace LinearAlgebra
                 for (int j = 0; j < m.N_Cols; j++)
                 {
                     m[i, j] = orig[i, j];
+                }
+            }
+
+            return m;
+        }
+
+        public unsafe fProxyMxN fProxyMat(double[,] orig)
+        {
+            if (isDisposed) throw new System.Exception("Call on disposed Arena");
+            fProxyMxN m = fProxyMat(orig.GetLength(0), orig.GetLength(1));
+            for (int i = 0; i < m.M_Rows; i++)
+            {
+                for (int j = 0; j < m.N_Cols; j++)
+                {
+                    m[i, j] = (fProxy) orig[i, j];
                 }
             }
 

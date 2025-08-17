@@ -7,7 +7,7 @@ namespace LinearAlgebra
 
     public static partial class Analysis {
 
-        public static bool IsAnyNan(in doubleN a) {
+        public static bool IsAnyNan(this in doubleN a) {
             
             for (int i = 0; i < a.N; i++) {
                 if (a[i] != a[i])
@@ -16,7 +16,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsAnyNan(in doubleMxN m) {
+        public static bool IsAnyNan(this in doubleMxN m) {
             
             for (int i = 0; i < m.Length; i++) {
                 if (m[i] != m[i])
@@ -26,7 +26,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsAnyInf(in doubleN a) {
+        public static bool IsAnyInf(this in doubleN a) {
                         
             for (int i = 0; i < a.N; i++) {
                 if (math.isinf(a[i]))
@@ -36,7 +36,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsAnyInf(in doubleMxN m) {
+        public static bool IsAnyInf(this in doubleMxN m) {
 
             for (int i = 0; i < m.Length; i++) {
                 if (math.isinf(m[i]))
@@ -46,7 +46,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsZero(in doubleN a, double epsilon)
+        public static bool IsZero(this in doubleN a, double epsilon)
         {
             for (int i = 0; i < a.N; i++) {
                 if (math.abs(a[i]) > epsilon)
@@ -56,7 +56,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsZero(in doubleMxN m, double epsilon)
+        public static bool IsZero(this in doubleMxN m, double epsilon)
         {
             for (int i = 0; i < m.Length; i++) {
                 if (math.abs(m[i]) > epsilon)
@@ -66,7 +66,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static double MaxZeroError(in doubleMxN m)
+        public static double MaxZeroError(this in doubleMxN m)
         {
             double maxError = 0f;
             for (int i = 0; i < m.Length; i++)
@@ -75,7 +75,7 @@ namespace LinearAlgebra
             return maxError;
         }
 
-        public static double MaxZeroError(in doubleN v)
+        public static double MaxZeroError(this in doubleN v)
         {
             double maxError = 0f;
             for (int i = 0; i < v.N; i++)
@@ -84,7 +84,7 @@ namespace LinearAlgebra
             return maxError;
         }
 
-        public static bool IsIdentity(in doubleMxN A)
+        public static bool IsIdentity(this in doubleMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -103,7 +103,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsIdentity(in doubleMxN A, double epsilon)
+        public static bool IsIdentity(this in doubleMxN A, double epsilon)
         {
             if (A.M_Rows != A.N_Cols)
                 return false;
@@ -121,7 +121,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsSymmetric(in doubleMxN A)
+        public static bool IsSymmetric(this in doubleMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -135,7 +135,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsSymmetric(in doubleMxN A, double epsilon)
+        public static bool IsSymmetric(this in doubleMxN A, double epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -149,7 +149,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsDiagonal(in doubleMxN A)
+        public static bool IsDiagonal(this in doubleMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -163,7 +163,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsDiagonal(in doubleMxN A, double epsilon)
+        public static bool IsDiagonal(this in doubleMxN A, double epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -177,7 +177,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsUpperTriangular(in doubleMxN A)
+        public static bool IsUpperTriangular(this in doubleMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -191,7 +191,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsUpperTriangular(in doubleMxN A, double epsilon)
+        public static bool IsUpperTriangular(this in doubleMxN A, double epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -205,7 +205,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsLowerTriangular(in doubleMxN A)
+        public static bool IsLowerTriangular(this in doubleMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -219,7 +219,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsLowerTriangular(in doubleMxN A, double epsilon)
+        public static bool IsLowerTriangular(this in doubleMxN A, double epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -235,7 +235,7 @@ namespace LinearAlgebra
         }
 
         // could be done in-place with dot products and comparisons
-        public static bool IsOrthogonal(in doubleMxN A, double epsilon)
+        public static bool IsOrthogonal(this in doubleMxN A, double epsilon)
         {
             /*if (A.M_Rows != A.N_Cols)
                 return false;*/

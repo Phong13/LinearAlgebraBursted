@@ -42,14 +42,14 @@ public class fProxySolversTests {
 
             int dim = 8;
 
-            var Q = arena.fProxyIdentityMatrix(dim);
+            var Q = arena.fProxyIdentityMatrix(dim, true);
             var R = arena.fProxyMat(dim);
 
             var A = Q.CopyPersistent();
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
-            var b = arena.fProxyRandomVector(dim, -1f, 1f);
+            var b = arena.fProxyRandomVector(dim, -1f, 1f, 12324, true);
 
             var y = fProxyOP.dot(b, Q);
             

@@ -20,7 +20,7 @@ public class fProxyOrthoOpTests
 
             int dim = 16;
 
-            var Q = arena.fProxyRandomMatrix(dim*2, dim);
+            var Q = arena.fProxyRandomMatrix(dim*2, dim, 12343, true);
             var R = arena.fProxyMat(dim);
 
             OrthoOP.qrDecomposition(ref Q, ref R);
@@ -84,7 +84,7 @@ public class fProxyOrthoOpTests
 
             int dim = 8;
 
-            var Q = arena.fProxyIdentityMatrix(dim);
+            var Q = arena.fProxyIdentityMatrix(dim,  true);
             var R = arena.fProxyMat(dim);
 
             var A = Q.CopyPersistent();
@@ -128,7 +128,7 @@ public class fProxyOrthoOpTests
 
             int dim = 8;
 
-            var Q = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f);
+            var Q = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f, 12343, true);
             var R = arena.fProxyMat(dim);
 
             var A = Q.CopyPersistent();
@@ -151,7 +151,7 @@ public class fProxyOrthoOpTests
             int dim = 8;
 
             var R = arena.fProxyMat(dim);
-            var Q = arena.fProxyRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221);
+            var Q = arena.fProxyRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221, true);
             
             var A = Q.CopyPersistent();
 
@@ -171,7 +171,7 @@ public class fProxyOrthoOpTests
             int dim = 512;
 
             var R = arena.fProxyMat(dim);
-            var Q = arena.fProxyRandomMatrix(dim * 2, dim, -5f, 5f, 9612221);
+            var Q = arena.fProxyRandomMatrix(dim * 2, dim, -5f, 5f, 9612221, true);
 
             var A = Q.CopyPersistent();
 
@@ -188,7 +188,7 @@ public class fProxyOrthoOpTests
 
             int dim = 20;
 
-            var Q = arena.fProxyHilbertMatrix(dim);
+            var Q = arena.fProxyHilbertMatrix(dim, true);
             var R = arena.fProxyMat(dim);
 
             var A = Q.CopyPersistent();
@@ -221,7 +221,7 @@ public class fProxyOrthoOpTests
                     p1 = rand.NextInt(0, dim);
                 }
 
-                var Q = arena.fProxyPermutationMatrix(dim, p0, p1);
+                var Q = arena.fProxyPermutationMatrix(dim, p0, p1, true);
 
                 p0 = rand.NextInt(0, dim);
                 p1 = rand.NextInt(0, dim);
@@ -230,7 +230,7 @@ public class fProxyOrthoOpTests
                     p1 = rand.NextInt(0, dim);
                 }
 
-                Q = fProxyOP.dot(arena.fProxyPermutationMatrix(dim, p0, p1), Q);
+                Q = fProxyOP.dot(arena.fProxyPermutationMatrix(dim, p0, p1, true), Q);
 
                 var R = arena.fProxyMat(dim);
 
@@ -310,9 +310,9 @@ public class fProxyOrthoOpTests
                 fProxyMxN A; 
                 
                 if(Type == TestType.RandomDiagonal)
-                    A = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f, 21410 + i*i + i*7);
+                    A = arena.fProxyRandomDiagonalMatrix(dim, 1f, 3f, 21410 + i*i + i*7, true);
                 else
-                    A = arena.fProxyRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7);
+                    A = arena.fProxyRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7, true);
                 
                 var Q = A.CopyPersistent();
                 var R = arena.fProxyMat(dim);
@@ -394,7 +394,7 @@ public class fProxyOrthoOpTests
 
             for (uint i = 0; i < randomMatTests; i++) {
 
-                fProxyMxN A = arena.fProxyRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7);
+                fProxyMxN A = arena.fProxyRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7, true);
 
                 for(int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f*random.NextFProxy();
@@ -406,7 +406,7 @@ public class fProxyOrthoOpTests
 
                 for(uint j = 0; j < randomVecTests; j++) {
 
-                    fProxyN xOrig = arena.fProxyRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5);
+                    fProxyN xOrig = arena.fProxyRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5, true);
                     fProxyN b = fProxyOP.dot(A, xOrig);
                     fProxyN y = fProxyOP.dot(b, Q);
 
@@ -444,7 +444,7 @@ public class fProxyOrthoOpTests
             for (uint i = 0; i < randomMatTests; i++) {
 
                 var arena = new Arena(Allocator.Persistent);
-                fProxyMxN A = arena.fProxyRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7);
+                fProxyMxN A = arena.fProxyRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextFProxy();
@@ -456,7 +456,7 @@ public class fProxyOrthoOpTests
 
                 for (uint j = 0; j < randomVecTests; j++) {
 
-                    fProxyN xOrig = arena.fProxyRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5);
+                    fProxyN xOrig = arena.fProxyRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5, true);
                     fProxyN b = fProxyOP.dot(A, xOrig);
                     fProxyN y = fProxyOP.dot(b, Q);
 
@@ -492,12 +492,12 @@ public class fProxyOrthoOpTests
 
             for (uint i = 0; i < randomMatTests; i++) {
 
-                fProxyMxN A = arena.fProxyRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7);
+                fProxyMxN A = arena.fProxyRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f * random.NextFProxy();
 
-                fProxyN xOrig = arena.fProxyRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5);
+                fProxyN xOrig = arena.fProxyRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5, true);
                 fProxyN b = fProxyOP.dot(A, xOrig);
                 fProxyN x = arena.fProxyVec(systemDim);
 
@@ -535,12 +535,12 @@ public class fProxyOrthoOpTests
             for (uint i = 0; i < randomMatTests; i++) {
 
                 var arena = new Arena(Allocator.Persistent);
-                fProxyMxN A = arena.fProxyRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7);
+                fProxyMxN A = arena.fProxyRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextFProxy();
 
-                fProxyN xOrig = arena.fProxyRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5);
+                fProxyN xOrig = arena.fProxyRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5, true);
                 fProxyN b = fProxyOP.dot(A, xOrig);
                 fProxyN x = arena.fProxyVec(sysDimN);
 

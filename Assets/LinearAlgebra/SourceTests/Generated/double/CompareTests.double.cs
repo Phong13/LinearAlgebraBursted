@@ -393,7 +393,7 @@ public class doubleCompareTests
         {
             int dim = 32;
 
-            doubleMxN m0 = arena.doubleDiagonalMatrix(dim, 1f);
+            doubleMxN m0 = arena.doubleDiagonalMatrix(dim, 1f, true);
             
             var boolMat = m0 == 1f;
 
@@ -406,8 +406,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f);
-            doubleN v1 = arena.doubleLinVector(dim, 0f, 1f);
+            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            doubleN v1 = arena.doubleLinVector(dim, 0f, 1f, true);
 
             var boolVec = v0 == v1;
 
@@ -424,8 +424,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f);
-            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f);
+            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 != v1;
 
@@ -443,8 +443,8 @@ public class doubleCompareTests
 
             int dim = 16;
             
-            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f);
-            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f);
+            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 < v1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, true));
@@ -459,8 +459,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f);
-            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f);
+            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 <= v1;
 
@@ -472,8 +472,8 @@ public class doubleCompareTests
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, true));
 
-            v0 = arena.doubleLinVector(dim, 0f, 1f);
-            v1 = arena.doubleLinVector(dim, 1f, 0f);
+            v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            v1 = arena.doubleLinVector(dim, 1f, 0f, true);
 
             boolVec = v0 <= v1;
 
@@ -484,8 +484,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f);
-            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f);
+            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 > v1;
 
@@ -497,8 +497,8 @@ public class doubleCompareTests
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, false));
 
-            v0 = arena.doubleLinVector(dim, 1f, 0f);
-            v1 = arena.doubleLinVector(dim, 0f, 1f);
+            v0 = arena.doubleLinVector(dim, 1f, 0f, true);
+            v1 = arena.doubleLinVector(dim, 0f, 1f, true);
 
             boolVec = v0 > v1;
             Assert.IsFalse(BoolAnalysis.IsAllSame(boolVec));
@@ -511,8 +511,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f);
-            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f);
+            doubleN v0 = arena.doubleLinVector(dim, 0f, 1f, true);
+            doubleN v1 = arena.doubleLinVector(dim, 2f, 3f, true);
 
             var boolVec = v0 >= v1;
 
@@ -522,7 +522,7 @@ public class doubleCompareTests
             boolVec = v0 >= v1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolVec, true));
 
-            v0 = arena.doubleLinVector(dim, 1f, 0f);
+            v0 = arena.doubleLinVector(dim, 1f, 0f, true);
 
             boolVec = v0 >= v1;
             Assert.IsTrue(BoolAnalysis.IsAllSame(boolVec));

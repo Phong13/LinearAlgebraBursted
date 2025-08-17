@@ -132,7 +132,7 @@ public class doubleDotOperationTests
             int vecLen = 20;
 
             doubleN x = arena.doubleRandomUnitVector(vecLen);
-            doubleMxN A = arena.doubleIdentityMatrix(vecLen);
+            doubleMxN A = arena.doubleIdentityMatrix(vecLen, true);
 
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             doubleN b = doubleOP.dot(x, A);
@@ -144,7 +144,7 @@ public class doubleDotOperationTests
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual(x[i], b[i]);
 
-            x = arena.doubleIndexZeroVector(vecLen);
+            x = arena.doubleIndexZeroVector(vecLen, true);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
             Assert.IsTrue(arena.DB_isTemp(b));
@@ -174,7 +174,7 @@ public class doubleDotOperationTests
 
             doubleN b = arena.doubleVec(2);
 
-            b.dotCompInpl(A, x);
+            b.dotInpl(A, x);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
             Assert.IsTrue(arena.DB_isPersistant(b));
@@ -202,7 +202,7 @@ public class doubleDotOperationTests
             doubleMxN C = arena.doubleMat(2, 2, 7);
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
 
-            C.dotCompInpl(A, B);
+            C.dotInpl(A, B);
 
             // no new allocations;
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
@@ -224,8 +224,8 @@ public class doubleDotOperationTests
 
             int matLen = 16;
 
-            doubleMxN A = arena.doubleIdentityMatrix(matLen);
-            doubleMxN B = arena.doubleIdentityMatrix(matLen);
+            doubleMxN A = arena.doubleIdentityMatrix(matLen, true);
+            doubleMxN B = arena.doubleIdentityMatrix(matLen, true);
 
             doubleMxN AA = A;
             doubleMxN BB = B;
@@ -257,7 +257,7 @@ public class doubleDotOperationTests
                 Assert.AreEqual(R[i, j], C[i, j]);
             }
 
-            C = arena.doubleIdentityMatrix(matLen);
+            C = arena.doubleIdentityMatrix(matLen, true);
 
             doubleMxN D = doubleOP.dot(C, C);
 
@@ -347,8 +347,8 @@ public class doubleDotOperationTests
             for (int i = 0; B.Length < i; i++)
                 Assert.AreEqual((double)1f, B[i]);
 
-            x = arena.doubleLinVector(vecM, 0f, 2f);
-            y = arena.doubleLinVector(vecN, 0f, 2f);
+            x = arena.doubleLinVector(vecM, 0f, 2f, true);
+            y = arena.doubleLinVector(vecN, 0f, 2f, true);
 
             doubleMxN C = doubleOP.outerDot(x, y);
 

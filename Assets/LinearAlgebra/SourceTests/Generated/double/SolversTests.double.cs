@@ -42,7 +42,7 @@ public class doubleSolversTests {
 
             int dim = 8;
 
-            var Q = arena.doubleIdentityMatrix(dim);
+            var Q = arena.doubleIdentityMatrix(dim, true);
             var R = arena.doubleMat(dim);
 
             var A = Q.CopyPersistent();

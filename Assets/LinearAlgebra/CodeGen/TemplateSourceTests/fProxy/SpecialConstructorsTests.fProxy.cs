@@ -95,7 +95,7 @@ public class fProxySpecialConstructorsTests {
         {
             var arena = new Arena(Allocator.Persistent);
 
-            var v = arena.fProxyBasisVector(10, 0);
+            var v = arena.fProxyBasisVector(10, 0, true);
 
             Assert.AreEqual((fProxy)1, v[0]);
 
@@ -103,7 +103,7 @@ public class fProxySpecialConstructorsTests {
                 Assert.AreEqual((fProxy)0, v[i]);
             }
 
-            v = arena.fProxyBasisVector(10, 9);
+            v = arena.fProxyBasisVector(10, 9, true);
 
             Assert.AreEqual((fProxy)1, v[9]);
 
@@ -118,7 +118,7 @@ public class fProxySpecialConstructorsTests {
         {
             var arena = new Arena(Allocator.Persistent);
 
-            var v = arena.fProxyIndexZeroVector(16);
+            var v = arena.fProxyIndexZeroVector(16, true);
 
             for(int i = 0; i < v.N; i++) {
                 Assert.AreEqual((fProxy)i, v[i]);
@@ -130,7 +130,7 @@ public class fProxySpecialConstructorsTests {
         public void IndexOneVec()
         {
             var arena = new Arena(Allocator.Persistent);
-            var v = arena.fProxyIndexOneVector(16);
+            var v = arena.fProxyIndexOneVector(16, true);
 
             for (int i = 0; i < v.N; i++) {
                 Assert.AreEqual((fProxy)i + 1, v[i]);
@@ -145,7 +145,7 @@ public class fProxySpecialConstructorsTests {
 
             for (uint seed = 0; seed < 16; seed++)
             {
-                var v = arena.fProxyRandomUnitVector(16, 332*seed+17);
+                var v = arena.fProxyRandomUnitVector(16, 332*seed+17, true);
 
                 var len = fProxyNormsOP.L2(in v);
 
@@ -161,7 +161,7 @@ public class fProxySpecialConstructorsTests {
 
             for (uint seed = 0; seed < 16; seed++)
             {
-                var v = arena.fProxyRandomVector(16, -3f, 3f, 351*seed+19);
+                var v = arena.fProxyRandomVector(16, -3f, 3f, 351*seed+19, true);
 
                 for (int i = 0; i < v.N; i++)
                     Assert.IsFalse(v[i] < -(fProxy)3 || v[i] > (fProxy)3);
@@ -173,12 +173,12 @@ public class fProxySpecialConstructorsTests {
         public void LinVec()
         {
             var arena = new Arena(Allocator.Persistent);
-            var v = arena.fProxyLinVector(16, (fProxy)0, (fProxy)15);
+            var v = arena.fProxyLinVector(16, (fProxy)0, (fProxy)15, true);
 
             for (int i = 0; i < v.N; i++)
                 Assert.IsTrue(math.abs(i- v[i]) < 0.0001f);
 
-            v = arena.fProxyLinVector(16, 15, 0);
+            v = arena.fProxyLinVector(16, 15, 0, true);
 
             for (int i = 0; i < v.N; i++)
                 Assert.IsTrue(math.abs((15f-i) - v[i]) < 0.0001f);
@@ -190,7 +190,7 @@ public class fProxySpecialConstructorsTests {
         public void IndexZeroMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyIndexZeroMatrix(16, 16);
+            var m = arena.fProxyIndexZeroMatrix(16, 16, true);
 
             for(int i = 0; i < m.Length; i++)
                 Assert.AreEqual((fProxy)i, m[i]);
@@ -199,7 +199,7 @@ public class fProxySpecialConstructorsTests {
         public void IndexOneMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyIndexOneMatrix(16, 16);
+            var m = arena.fProxyIndexOneMatrix(16, 16, true);
 
             for (int i = 0; i < m.Length; i++)
                 Assert.AreEqual((fProxy)i + 1, m[i]);
@@ -209,7 +209,7 @@ public class fProxySpecialConstructorsTests {
         public void IdentityMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyIdentityMatrix(16);
+            var m = arena.fProxyIdentityMatrix(16, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(in m));
             Assert.IsTrue(Analysis.IsIdentity(in m));
@@ -229,7 +229,7 @@ public class fProxySpecialConstructorsTests {
         public void DiagonalMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyDiagonalMatrix(16, 2f);
+            var m = arena.fProxyDiagonalMatrix(16, 2f, true);
             
             Assert.IsTrue(Analysis.IsDiagonal(in m));
 
@@ -248,7 +248,7 @@ public class fProxySpecialConstructorsTests {
         public void RandomDiagonalMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyRandomDiagonalMatrix(16, -3f, 3f);
+            var m = arena.fProxyRandomDiagonalMatrix(16, -3f, 3f, 12343, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(in m));
 
@@ -267,7 +267,7 @@ public class fProxySpecialConstructorsTests {
         public void RandomMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyRandomMatrix(16, 16);
+            var m = arena.fProxyRandomMatrix(16, 16, 12343, true);
 
             for (int i = 0; i < m.M_Rows; i++)
             for (int j = 0; j < m.N_Cols; j++)
@@ -279,7 +279,7 @@ public class fProxySpecialConstructorsTests {
         public void RandomRangeMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyRandomMatrix(16, 16, -6f, 6f);
+            var m = arena.fProxyRandomMatrix(16, 16, -6f, 6f, 12343, true);
 
             for (int i = 0; i < m.M_Rows; i++)
             for (int j = 0; j < m.N_Cols; j++)
@@ -291,7 +291,7 @@ public class fProxySpecialConstructorsTests {
         public void RotationMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyRotationMatrix(16, 1, 14, math.PI/4f);
+            var m = arena.fProxyRotationMatrix(16, 1, 14, math.PI/4f, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
             Assert.IsFalse(Analysis.IsIdentity(in m, 0.00001f));
@@ -299,7 +299,7 @@ public class fProxySpecialConstructorsTests {
             var mTm = fProxyOP.dot(m, m, true);
             Analysis.IsIdentity(in mTm, 0.00001f);
 
-            m = arena.fProxyRotationMatrix(2, 0, 1, math.PI/4f);
+            m = arena.fProxyRotationMatrix(2, 0, 1, math.PI/4f, true);
 
             Assert.IsTrue(math.abs((fProxy)0.70710678118654752440084436210485d - m[0, 0]) < 0.00001f);
             Assert.IsTrue(math.abs((fProxy)0.70710678118654752440084436210485d - m[1, 1]) < 0.00001f);
@@ -312,7 +312,7 @@ public class fProxySpecialConstructorsTests {
         public void PermutationMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.fProxyPermutationMatrix(16, 1, 14);
+            var m = arena.fProxyPermutationMatrix(16, 1, 14, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
             Assert.IsFalse(Analysis.IsIdentity(in m, 0.00001f));
@@ -320,7 +320,7 @@ public class fProxySpecialConstructorsTests {
             var mTm = fProxyOP.dot(m, m, true);
             Analysis.IsIdentity(in mTm, 0.00001f);
 
-            m = arena.fProxyPermutationMatrix(2, 0, 1);
+            m = arena.fProxyPermutationMatrix(2, 0, 1, true);
 
             Assert.AreEqual((fProxy)0, m[0, 0]);
             Assert.AreEqual((fProxy)0, m[1, 1]);
@@ -333,8 +333,8 @@ public class fProxySpecialConstructorsTests {
         public void HouseholderMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var v = arena.fProxyRandomUnitVector(16);
-            var m = arena.fProxyHouseholderMatrix(16, v);
+            var v = arena.fProxyRandomUnitVector(16, 34215, true);
+            var m = arena.fProxyHouseholderMatrix(16, v, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
             Assert.IsFalse(Analysis.IsIdentity(in m, 0.00001f));
@@ -342,8 +342,8 @@ public class fProxySpecialConstructorsTests {
             var mTm = fProxyOP.dot(m, m, true);
             Analysis.IsIdentity(in mTm, 0.00001f);
 
-            v = arena.fProxyBasisVector(2, 0);
-            m = arena.fProxyHouseholderMatrix(2, v);
+            v = arena.fProxyBasisVector(2, 0, true);
+            m = arena.fProxyHouseholderMatrix(2, v, true);
 
 
 

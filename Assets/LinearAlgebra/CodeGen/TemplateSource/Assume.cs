@@ -1,10 +1,25 @@
 using Unity.Mathematics;
 using System;
+using Unity.Collections;
 
 namespace LinearAlgebra
 {
     internal static partial class Assume
     {
+        internal static void IsTrue(bool b)
+        {
+            if (!b)
+                throw new ArgumentException("Failed");
+
+        }
+
+        internal static void IsTrue(bool b, FixedString128Bytes msg)
+        {
+            if (!b)
+                throw new ArgumentException(msg.ToString());
+
+        }
+
         internal static void SameDim(int a, int b)
         {
             if (a != b)

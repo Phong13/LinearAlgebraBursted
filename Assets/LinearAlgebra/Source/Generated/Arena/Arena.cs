@@ -63,12 +63,16 @@ namespace LinearAlgebra
         private UnsafeList<boolMxN> BoolMatrices;
         private UnsafeList<boolN> TempBoolVectors;
         private UnsafeList<boolMxN> TempBoolMatrices;
-        
+
+        private int expectedPersistentAllocations;
+
         public Arena(Allocator allocator) {
 
             Initialized = true;
             Allocator = allocator;
             isDisposed = false;
+
+            expectedPersistentAllocations = -1;
 
             
             floatVectors = new UnsafeList<floatN>(8, Allocator);
@@ -107,7 +111,12 @@ namespace LinearAlgebra
         }
 
         public void Clear() {
+            ClearPersistent();
+            ClearTemp();
+        }
 
+        public void ClearPersistent()
+        {
             
             for (int i = 0; i < floatVectors.Length; i++)
                 floatVectors[i].Dispose();
@@ -159,8 +168,6 @@ namespace LinearAlgebra
             for (int i = 0; i < BoolMatrices.Length; i++)
                 BoolMatrices[i].Dispose();
             BoolMatrices.Clear();
-
-            ClearTemp();
         }
 
         /// <summary>
@@ -221,9 +228,26 @@ namespace LinearAlgebra
             TempBoolMatrices.Clear();
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Call this once all persistent matricies and vectors have been allocated
+        /// </summary>
+        public void SetExpectedPersistentAllocationCount()
         {
-            Dispose(true);
+            expectedPersistentAllocations = AllocationsCount;
+        }
+
+        /// <summary>
+        /// Call this to check allocations.
+        /// </summary>
+        public bool CheckPersistentAllocationCount()
+        {
+            if (expectedPersistentAllocations != AllocationsCount)
+            {
+                UnityEngine.Debug.LogError($"Persistent allocations {AllocationsCount} did not match expected {expectedPersistentAllocations}");
+                return false;
+            }
+
+            return true;
         }
 
         public unsafe bool CheckIntegrity()
@@ -437,6 +461,16 @@ namespace LinearAlgebra
             
 
             return good;
+        }
+
+        public bool IsInitializedAndNotDisposed()
+        {
+            return !isDisposed && Initialized;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
 
         private void Dispose(bool disposing)

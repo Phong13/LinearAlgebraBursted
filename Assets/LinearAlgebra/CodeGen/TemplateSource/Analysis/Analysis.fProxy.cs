@@ -7,7 +7,7 @@ namespace LinearAlgebra
 
     public static partial class Analysis {
 
-        public static bool IsAnyNan(in fProxyN a) {
+        public static bool IsAnyNan(this in fProxyN a) {
             
             for (int i = 0; i < a.N; i++) {
                 if (a[i] != a[i])
@@ -16,7 +16,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsAnyNan(in fProxyMxN m) {
+        public static bool IsAnyNan(this in fProxyMxN m) {
             
             for (int i = 0; i < m.Length; i++) {
                 if (m[i] != m[i])
@@ -26,7 +26,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsAnyInf(in fProxyN a) {
+        public static bool IsAnyInf(this in fProxyN a) {
                         
             for (int i = 0; i < a.N; i++) {
                 if (math.isinf(a[i]))
@@ -36,7 +36,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsAnyInf(in fProxyMxN m) {
+        public static bool IsAnyInf(this in fProxyMxN m) {
 
             for (int i = 0; i < m.Length; i++) {
                 if (math.isinf(m[i]))
@@ -46,7 +46,7 @@ namespace LinearAlgebra
             return false;
         }
 
-        public static bool IsZero(in fProxyN a, fProxy epsilon)
+        public static bool IsZero(this in fProxyN a, fProxy epsilon)
         {
             for (int i = 0; i < a.N; i++) {
                 if (math.abs(a[i]) > epsilon)
@@ -56,7 +56,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsZero(in fProxyMxN m, fProxy epsilon)
+        public static bool IsZero(this in fProxyMxN m, fProxy epsilon)
         {
             for (int i = 0; i < m.Length; i++) {
                 if (math.abs(m[i]) > epsilon)
@@ -66,7 +66,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static fProxy MaxZeroError(in fProxyMxN m)
+        public static fProxy MaxZeroError(this in fProxyMxN m)
         {
             fProxy maxError = 0f;
             for (int i = 0; i < m.Length; i++)
@@ -75,7 +75,7 @@ namespace LinearAlgebra
             return maxError;
         }
 
-        public static fProxy MaxZeroError(in fProxyN v)
+        public static fProxy MaxZeroError(this in fProxyN v)
         {
             fProxy maxError = 0f;
             for (int i = 0; i < v.N; i++)
@@ -84,7 +84,7 @@ namespace LinearAlgebra
             return maxError;
         }
 
-        public static bool IsIdentity(in fProxyMxN A)
+        public static bool IsIdentity(this in fProxyMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -103,7 +103,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsIdentity(in fProxyMxN A, fProxy epsilon)
+        public static bool IsIdentity(this in fProxyMxN A, fProxy epsilon)
         {
             if (A.M_Rows != A.N_Cols)
                 return false;
@@ -121,7 +121,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsSymmetric(in fProxyMxN A)
+        public static bool IsSymmetric(this in fProxyMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -135,7 +135,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsSymmetric(in fProxyMxN A, fProxy epsilon)
+        public static bool IsSymmetric(this in fProxyMxN A, fProxy epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -149,7 +149,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsDiagonal(in fProxyMxN A)
+        public static bool IsDiagonal(this in fProxyMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -163,7 +163,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsDiagonal(in fProxyMxN A, fProxy epsilon)
+        public static bool IsDiagonal(this in fProxyMxN A, fProxy epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -177,7 +177,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsUpperTriangular(in fProxyMxN A)
+        public static bool IsUpperTriangular(this in fProxyMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -191,7 +191,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsUpperTriangular(in fProxyMxN A, fProxy epsilon)
+        public static bool IsUpperTriangular(this in fProxyMxN A, fProxy epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -205,7 +205,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsLowerTriangular(in fProxyMxN A)
+        public static bool IsLowerTriangular(this in fProxyMxN A)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -219,7 +219,7 @@ namespace LinearAlgebra
             return true;
         }
 
-        public static bool IsLowerTriangular(in fProxyMxN A, fProxy epsilon)
+        public static bool IsLowerTriangular(this in fProxyMxN A, fProxy epsilon)
         {
             if(A.M_Rows != A.N_Cols)
                 return false;
@@ -235,7 +235,7 @@ namespace LinearAlgebra
         }
 
         // could be done in-place with dot products and comparisons
-        public static bool IsOrthogonal(in fProxyMxN A, fProxy epsilon)
+        public static bool IsOrthogonal(this in fProxyMxN A, fProxy epsilon)
         {
             /*if (A.M_Rows != A.N_Cols)
                 return false;*/

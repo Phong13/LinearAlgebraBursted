@@ -107,7 +107,7 @@ public class fProxyDotOperationTests
             int outVecLen = 5;
 
             fProxyN x = arena.fProxyVec(inVecLen, 1f);
-            fProxyMxN A = arena.fProxyRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
+            fProxyMxN A = arena.fProxyRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f, 12343, false);
 
             fProxyN xx = x;
             fProxyMxN AA = A;
@@ -131,8 +131,8 @@ public class fProxyDotOperationTests
 
             int vecLen = 20;
 
-            fProxyN x = arena.fProxyRandomUnitVector(vecLen);
-            fProxyMxN A = arena.fProxyIdentityMatrix(vecLen);
+            fProxyN x = arena.fProxyRandomUnitVector(vecLen, 12343, false);
+            fProxyMxN A = arena.fProxyIdentityMatrix(vecLen, false);
 
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             fProxyN b = fProxyOP.dot(x, A);
@@ -144,7 +144,7 @@ public class fProxyDotOperationTests
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual(x[i], b[i]);
 
-            x = arena.fProxyIndexZeroVector(vecLen);
+            x = arena.fProxyIndexZeroVector(vecLen, false);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
             Assert.IsTrue(arena.DB_isTemp(b));
@@ -174,7 +174,7 @@ public class fProxyDotOperationTests
 
             fProxyN b = arena.fProxyVec(2);
 
-            b.dotCompInpl(A, x);
+            b.dotInpl(A, x);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 0);
             Assert.IsTrue(arena.DB_isPersistant(b));
@@ -202,7 +202,7 @@ public class fProxyDotOperationTests
             fProxyMxN C = arena.fProxyMat(2, 2, 7);
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
 
-            C.dotCompInpl(A, B);
+            C.dotInpl(A, B);
 
             // no new allocations;
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 1);
@@ -224,8 +224,8 @@ public class fProxyDotOperationTests
 
             int matLen = 16;
 
-            fProxyMxN A = arena.fProxyIdentityMatrix(matLen);
-            fProxyMxN B = arena.fProxyIdentityMatrix(matLen);
+            fProxyMxN A = arena.fProxyIdentityMatrix(matLen, false);
+            fProxyMxN B = arena.fProxyIdentityMatrix(matLen, false);
 
             fProxyMxN AA = A;
             fProxyMxN BB = B;
@@ -247,7 +247,7 @@ public class fProxyDotOperationTests
                     Assert.AreEqual((fProxy)0f, C[i, j]);
             }
 
-            fProxyMxN R = arena.fProxyRandomMatrix(matLen, matLen);
+            fProxyMxN R = arena.fProxyRandomMatrix(matLen, matLen, 12343, true);
             
             C = fProxyOP.dot(A, R);
 
@@ -257,7 +257,7 @@ public class fProxyDotOperationTests
                 Assert.AreEqual(R[i, j], C[i, j]);
             }
 
-            C = arena.fProxyIdentityMatrix(matLen);
+            C = arena.fProxyIdentityMatrix(matLen, true);
 
             fProxyMxN D = fProxyOP.dot(C, C);
 
@@ -281,7 +281,7 @@ public class fProxyDotOperationTests
             int outVecLen = 16;
 
             fProxyN x = arena.fProxyVec(inVecLen, 1f);
-            fProxyMxN A = arena.fProxyRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
+            fProxyMxN A = arena.fProxyRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f, 12343, false);
 
             fProxyN xx = x;
             fProxyMxN AA = A;
@@ -307,7 +307,7 @@ public class fProxyDotOperationTests
             int outVecLen = 16;
 
             fProxyN x = arena.fProxyVec(inVecLen, 1f);
-            fProxyMxN A = arena.fProxyRandomMatrix(inVecLen, outVecLen, -0.01f, 0.01f);
+            fProxyMxN A = arena.fProxyRandomMatrix(inVecLen, outVecLen, -0.01f, 0.01f, 12343, true);
 
             fProxyN b = fProxyOP.dot(x, A);
             
@@ -347,8 +347,8 @@ public class fProxyDotOperationTests
             for (int i = 0; B.Length < i; i++)
                 Assert.AreEqual((fProxy)1f, B[i]);
 
-            x = arena.fProxyLinVector(vecM, 0f, 2f);
-            y = arena.fProxyLinVector(vecN, 0f, 2f);
+            x = arena.fProxyLinVector(vecM, 0f, 2f, true);
+            y = arena.fProxyLinVector(vecN, 0f, 2f, true);
 
             fProxyMxN C = fProxyOP.outerDot(x, y);
 

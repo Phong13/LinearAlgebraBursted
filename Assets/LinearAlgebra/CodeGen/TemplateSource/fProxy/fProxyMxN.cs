@@ -12,6 +12,11 @@ namespace LinearAlgebra
         public int M_Rows;
         public int N_Cols;
 
+        public int RowCount => M_Rows; // Compatibility with Math.Net code
+
+        public int ColumnCount => N_Cols; // Compatibility with Math.Net code
+
+
         public UnsafeList<fProxy> Data { get; private set; }
 
         [NativeDisableUnsafePtrRestriction]
@@ -127,6 +132,24 @@ namespace LinearAlgebra
 
             // Use HashCode.Combine to mix the hash codes of the pointers.
             return HashCode.Combine((long)_arenaPtr, dataPtrHash, flagsPtrHash);
+        }
+
+        public unsafe bool CheckValid()
+        {
+            if (_arenaPtr == null) return false;
+            if (IsDisposed()) return false;
+            if (!Data.IsCreated) return false;
+            return true;
+        }
+
+        public unsafe bool CheckValid(bool expectPersistent)
+        {
+            if (_arenaPtr == null) return false;
+            if (IsDisposed()) return false;
+            if (!Data.IsCreated) return false;
+            if (expectPersistent && (flags.Ptr[0] & Arena.ArrayFlags.isPersistent) == 0) return false; // must be persistent
+            else if ((flags.Ptr[0] & Arena.ArrayFlags.isTemp) == 0) return false; // must be temp
+            return true;
         }
 
         public unsafe bool IsDisposed()

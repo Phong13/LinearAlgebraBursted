@@ -95,7 +95,7 @@ public class floatPivotTests
             pivot.Swap(0, 1);
             pivot.Swap(2, 3);
 
-            var identity = arena.floatIdentityMatrix(4);
+            var identity = arena.floatIdentityMatrix(4, true);
 
             pivot.ApplyRow(ref identity);
 
@@ -126,7 +126,7 @@ public class floatPivotTests
                 pivot.Swap(rand.NextInt(0, dim), rand.NextInt(0, dim));
             }
 
-            var identity = arena.floatIdentityMatrix(dim);
+            var identity = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsIdentity(identity));
 
@@ -156,7 +156,7 @@ public class floatPivotTests
             pivot.Swap(0, 1);
             pivot.Swap(2, 3);
 
-            var identity = arena.floatIdentityMatrix(4);
+            var identity = arena.floatIdentityMatrix(4, true);
 
             pivot.ApplyColumn(ref identity);
 
@@ -187,7 +187,7 @@ public class floatPivotTests
                 pivot.Swap(rand.NextInt(0, dim), rand.NextInt(0, dim));
             }
 
-            var identity = arena.floatIdentityMatrix(dim);
+            var identity = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsIdentity(identity));
 
@@ -212,11 +212,11 @@ public class floatPivotTests
 
         void RowPermutationMatTest(ref Arena arena) {
 
-            var permutationMatrix = arena.floatPermutationMatrix(8, 2, 3);
+            var permutationMatrix = arena.floatPermutationMatrix(8, 2, 3, true);
 
-            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 3, 6));
-            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 6, 7));
-            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 1, 4));
+            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 3, 6, true));
+            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 6, 7, true));
+            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 1, 4, true));
 
             Pivot pivot = new Pivot(8, Allocator.Temp);
 
@@ -235,11 +235,11 @@ public class floatPivotTests
 
         void ColumnPermutationMatTest(ref Arena arena) {
 
-            var permutationMatrix = arena.floatPermutationMatrix(8, 2, 3);
+            var permutationMatrix = arena.floatPermutationMatrix(8, 2, 3, true);
 
-            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 3, 6));
-            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 6, 7));
-            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 1, 4));
+            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 3, 6, true));
+            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 6, 7, true));
+            permutationMatrix = floatOP.dot(permutationMatrix, arena.floatPermutationMatrix(8, 1, 4, true));
 
             permutationMatrix = floatOP.trans(permutationMatrix);
 
@@ -265,7 +265,7 @@ public class floatPivotTests
             pivot.Swap(1, 2);
 
             // [1, 0, 0, 0]
-            var vec = arena.floatBasisVector(4, 0);
+            var vec = arena.floatBasisVector(4, 0, true);
 
             Print.Log(vec);
 

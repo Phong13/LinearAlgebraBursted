@@ -12,7 +12,12 @@ namespace LinearAlgebra
         internal unsafe Arena* _arenaPtr;
 
         public int N => Data.Length;
-        
+
+        public int Length => Data.Length;
+
+        public int Count => Data.Length; // Compatibility with Math.Net
+
+
         public UnsafeList<fProxy> Data { get; private set; }
 
         /// <summary>
@@ -150,6 +155,24 @@ namespace LinearAlgebra
 
             // Use HashCode.Combine to mix the hash codes of the pointers.
             return HashCode.Combine((long)_arenaPtr, dataPtrHash, flagsPtrHash);
+        }
+
+        public unsafe bool CheckValid()
+        {
+            if (_arenaPtr == null) return false;
+            if (IsDisposed()) return false;
+            if (!Data.IsCreated) return false;
+            return true;
+        }
+
+        public unsafe bool CheckValid(bool expectPersistent)
+        {
+            if (_arenaPtr == null) return false;
+            if (IsDisposed()) return false;
+            if (!Data.IsCreated) return false;
+            if (expectPersistent && (flags.Ptr[0] & Arena.ArrayFlags.isPersistent) == 0) return false; // must be persistent
+            else if ((flags.Ptr[0] & Arena.ArrayFlags.isTemp) == 0) return false; // must be temp
+            return true;
         }
 
         public void Dispose() 

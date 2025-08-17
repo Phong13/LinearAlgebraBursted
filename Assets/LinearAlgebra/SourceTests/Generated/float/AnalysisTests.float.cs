@@ -72,7 +72,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsIdentity(A));
 
@@ -85,7 +85,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsIdentity(A, 0.0001f));
 
@@ -102,7 +102,7 @@ public class floatAnalysisTests
 
             int dim = 8;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(A));
 
@@ -121,7 +121,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(A, 0.000001f));
 
@@ -144,7 +144,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A));
 
@@ -161,7 +161,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.000001f));
 
@@ -182,7 +182,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A));
             
@@ -190,7 +190,7 @@ public class floatAnalysisTests
 
             Assert.IsFalse(Analysis.IsUpperTriangular(A));
 
-            A = arena.floatIdentityMatrix(dim);
+            A = arena.floatIdentityMatrix(dim, true);
 
             for (int c = 1; c < dim; c++)
             for (int r = 0; r < c; r++)
@@ -207,7 +207,7 @@ public class floatAnalysisTests
 
             int dim = 16;
             
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.000001f));
 
@@ -215,7 +215,7 @@ public class floatAnalysisTests
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.002f));
 
-            A = arena.floatIdentityMatrix(dim);
+            A = arena.floatIdentityMatrix(dim, true);
 
             for(int c = 1; c < dim; c++)
             for(int r = 0; r < c; r++)
@@ -234,7 +234,7 @@ public class floatAnalysisTests
 
             int dim = 16;
 
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsLowerTriangular(A));
 
@@ -242,7 +242,7 @@ public class floatAnalysisTests
             Assert.IsFalse(Analysis.IsLowerTriangular(A));
 
             // Reset A to the identity matrix
-            A = arena.floatIdentityMatrix(dim);
+            A = arena.floatIdentityMatrix(dim, true);
 
             // Fill elements above the diagonal with a non-zero value and check if it's still lower triangular (it shouldn't be)
             for (int r = 1; r < dim; r++)
@@ -261,7 +261,7 @@ public class floatAnalysisTests
 
             int dim = 16;
 
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             // Test if an identity matrix is lower triangular within the epsilon tolerance
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.000001f));
@@ -271,7 +271,7 @@ public class floatAnalysisTests
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.002f));
 
             // Reset A to the identity matrix
-            A = arena.floatIdentityMatrix(dim);
+            A = arena.floatIdentityMatrix(dim, true);
 
             // Fill elements above the diagonal with a non-zero value
             for (int r = 1; r < dim; r++)
@@ -293,26 +293,26 @@ public class floatAnalysisTests
 
             int dim = 16;
 
-            floatMxN A = arena.floatIdentityMatrix(dim);
+            floatMxN A = arena.floatIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            A = floatOP.dot(arena.floatPermutationMatrix(dim, 5, 13), A);
+            A = floatOP.dot(arena.floatPermutationMatrix(dim, 5, 13, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            A = floatOP.dot(arena.floatRotationMatrix(dim, 3, 15, math.PI/4f ), A);
+            A = floatOP.dot(arena.floatRotationMatrix(dim, 3, 15, math.PI/4f, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
             floatN reflect = arena.floatRandomVector(dim, -1f, 1f);
 
-            A = floatOP.dot(arena.floatHouseholderMatrix(dim, reflect), A);
+            A = floatOP.dot(arena.floatHouseholderMatrix(dim, reflect, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
             reflect = arena.floatRandomVector(dim, -1f, 1f, 50301);
-            A = floatOP.dot(arena.floatHouseholderMatrix(dim, reflect), A);
+            A = floatOP.dot(arena.floatHouseholderMatrix(dim, reflect, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 

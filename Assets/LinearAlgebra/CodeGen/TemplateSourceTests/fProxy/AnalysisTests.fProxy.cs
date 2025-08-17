@@ -72,7 +72,7 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsIdentity(A));
 
@@ -85,11 +85,11 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsIdentity(A, 0.0001f));
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsIdentity(A, 0.002f));
 
@@ -102,11 +102,11 @@ public class fProxyAnalysisTests
 
             int dim = 8;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(A));
 
-            A = arena.fProxyRandomMatrix(dim, dim * 2);
+            A = arena.fProxyRandomMatrix(dim, dim * 2, 12343, true);
 
             fProxyMxN C = fProxyOP.dot(A, A, true);
 
@@ -121,17 +121,17 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(A, 0.000001f));
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(A, 0.002f));
 
             fProxyMxN C = fProxyOP.dot(A, A, true);
 
-            C += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            C += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(C, 0.002f));
 
@@ -144,11 +144,11 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A));
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsFalse(Analysis.IsDiagonal(A));
 
@@ -161,15 +161,15 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.000001f));
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.002f));
 
-            A = arena.fProxyRandomDiagonalMatrix(dim, -1f, -1f);
+            A = arena.fProxyRandomDiagonalMatrix(dim, -1f, -1f, 12343, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.000001f));
 
@@ -182,15 +182,15 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A));
             
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsFalse(Analysis.IsUpperTriangular(A));
 
-            A = arena.fProxyIdentityMatrix(dim);
+            A = arena.fProxyIdentityMatrix(dim, true);
 
             for (int c = 1; c < dim; c++)
             for (int r = 0; r < c; r++)
@@ -207,21 +207,21 @@ public class fProxyAnalysisTests
 
             int dim = 16;
             
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.000001f));
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.002f));
 
-            A = arena.fProxyIdentityMatrix(dim);
+            A = arena.fProxyIdentityMatrix(dim, true);
 
             for(int c = 1; c < dim; c++)
             for(int r = 0; r < c; r++)
                 A[r, c] = 5f;
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.002f));
                         
@@ -234,15 +234,15 @@ public class fProxyAnalysisTests
 
             int dim = 16;
 
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsLowerTriangular(A));
 
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
             Assert.IsFalse(Analysis.IsLowerTriangular(A));
 
             // Reset A to the identity matrix
-            A = arena.fProxyIdentityMatrix(dim);
+            A = arena.fProxyIdentityMatrix(dim, true);
 
             // Fill elements above the diagonal with a non-zero value and check if it's still lower triangular (it shouldn't be)
             for (int r = 1; r < dim; r++)
@@ -261,17 +261,17 @@ public class fProxyAnalysisTests
 
             int dim = 16;
 
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             // Test if an identity matrix is lower triangular within the epsilon tolerance
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.000001f));
 
             // Add small random values and test if it's still lower triangular within a higher tolerance
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.002f));
 
             // Reset A to the identity matrix
-            A = arena.fProxyIdentityMatrix(dim);
+            A = arena.fProxyIdentityMatrix(dim, true);
 
             // Fill elements above the diagonal with a non-zero value
             for (int r = 1; r < dim; r++)
@@ -279,7 +279,7 @@ public class fProxyAnalysisTests
                     A[r, c] = 5f;
 
             // Add small random values again
-            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.fProxyRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             // Test if the modified matrix is still lower triangular within the higher epsilon tolerance
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.002f));
@@ -293,26 +293,26 @@ public class fProxyAnalysisTests
 
             int dim = 16;
 
-            fProxyMxN A = arena.fProxyIdentityMatrix(dim);
+            fProxyMxN A = arena.fProxyIdentityMatrix(dim, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            A = fProxyOP.dot(arena.fProxyPermutationMatrix(dim, 5, 13), A);
+            A = fProxyOP.dot(arena.fProxyPermutationMatrix(dim, 5, 13, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            A = fProxyOP.dot(arena.fProxyRotationMatrix(dim, 3, 15, math.PI/4f ), A);
+            A = fProxyOP.dot(arena.fProxyRotationMatrix(dim, 3, 15, math.PI/4f, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            fProxyN reflect = arena.fProxyRandomVector(dim, -1f, 1f);
+            fProxyN reflect = arena.fProxyRandomVector(dim, -1f, 1f, 12343, true);
 
-            A = fProxyOP.dot(arena.fProxyHouseholderMatrix(dim, reflect), A);
+            A = fProxyOP.dot(arena.fProxyHouseholderMatrix(dim, reflect, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            reflect = arena.fProxyRandomVector(dim, -1f, 1f, 50301);
-            A = fProxyOP.dot(arena.fProxyHouseholderMatrix(dim, reflect), A);
+            reflect = arena.fProxyRandomVector(dim, -1f, 1f, 50301, true);
+            A = fProxyOP.dot(arena.fProxyHouseholderMatrix(dim, reflect, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 

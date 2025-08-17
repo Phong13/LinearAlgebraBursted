@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using System;
+using Unity.Mathematics;
 
 namespace LinearAlgebra
 {
@@ -53,6 +54,13 @@ namespace LinearAlgebra
             return result;
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static doubleN dot(this in doubleMxN A, doubleN x)
+        {
+            return dot(A, x);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN dot(doubleMxN A, doubleN x)
         {
@@ -84,6 +92,12 @@ namespace LinearAlgebra
             }
 
             return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static doubleMxN dot(this in doubleMxN a, doubleMxN b, bool transposeA = false)
+        {
+            return dot(a, b, transposeA);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -122,7 +136,7 @@ namespace LinearAlgebra
         /// No allocations, stores result in this matrix
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void dotCompInpl(this doubleMxN target, doubleMxN a, doubleMxN b, bool transposeA = false)
+        public static void dotInpl(this doubleMxN target, doubleMxN a, doubleMxN b, bool transposeA = false)
         {
             Arena.CheckValid(a);
             Arena.CheckValid(b);
@@ -160,7 +174,7 @@ namespace LinearAlgebra
         /// No allocations, stores result in this matrix
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void dotCompInpl(this doubleN target, doubleMxN A, doubleN x, bool transposeA = false)
+        public static void dotInpl(this doubleN target, doubleMxN A, doubleN x, bool transposeA = false)
         {
             Arena.CheckValid(target);
             Arena.CheckValid(A);
@@ -185,6 +199,29 @@ namespace LinearAlgebra
             }
 
             return T;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double l2Norm(this in doubleN v)
+        {
+            Arena.CheckValid(v);
+            return math.sqrt(v.sumSqr());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double sumSqr(this in doubleN v)
+        {
+            Arena.CheckValid(v);
+            unsafe
+            {
+                double sumSqr = 0;
+                for (int i = 0; i < v.N; i++)
+                {
+                    sumSqr += v[i] * v[i];
+                }
+
+                return sumSqr;
+            }
         }
     }
 }

@@ -145,6 +145,10 @@ namespace LinearAlgebra
             return matrix;
         }
 
+
+        /*
+        The * operator is way to easy to confuse with dot(). Make the user be explicit about what kind of multiply they want.
+         
         /// <summary>
         /// Component-wise multiplication
         /// Matrixs have to be same dimensions
@@ -177,6 +181,7 @@ namespace LinearAlgebra
             doubleOP.compDivInpl(newDividendMatrix, divisor);
             return newDividendMatrix;
         }
+        */
 
         /// <summary>
         /// Component-wise modulo
