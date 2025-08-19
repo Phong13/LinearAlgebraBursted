@@ -32,7 +32,7 @@ namespace LinearAlgebra.MathNet.Numerics
     /// <summary>
     /// A collection of frequently used mathematical constants.
     /// </summary>
-    public static unsafe class Constants
+    public static unsafe class ConstantsfProxy
     {
         #region Mathematical Constants
 

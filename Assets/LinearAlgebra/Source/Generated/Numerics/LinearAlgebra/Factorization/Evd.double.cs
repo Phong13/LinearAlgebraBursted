@@ -1,4 +1,4 @@
-﻿// <copyright file="Evd.cs" company="Math.NET">
+// <copyright file="Evd.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
@@ -50,20 +50,20 @@ namespace LinearAlgebra.MathNet.Numerics
     /// A = V*D*Inverse(V) depends upon V.Condition().
     /// </remarks>
     /// <typeparam name="T">Supported data types are double, single, <see cref="Complex"/>, and <see cref="Complex32"/>.</typeparam>
-    public class Evd
+    public class Evddouble
     {
-        public fProxyMxN EigenVectors;
-        public fProxyN EigenValuesReal;
-        public fProxyN EigenValuesImaginary;
-        public fProxyMxN D;
+        public doubleMxN EigenVectors;
+        public doubleN EigenValuesReal;
+        public doubleN EigenValuesImaginary;
+        public doubleMxN D;
         public bool IsSymmetric;
 
-        public Evd()
+        public Evddouble()
         {
 
         }
 
-        protected Evd(fProxyMxN eigenVectors, fProxyN eigenValuesReal, fProxyN eigenValuesImaginary, fProxyMxN blockDiagonal, bool isSymmetric)
+        protected Evddouble(doubleMxN eigenVectors, doubleN eigenValuesReal, doubleN eigenValuesImaginary, doubleMxN blockDiagonal, bool isSymmetric)
         {
             EigenVectors = eigenVectors;
             EigenValuesReal = eigenValuesReal;

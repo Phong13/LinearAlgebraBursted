@@ -1,4 +1,4 @@
-﻿// <copyright file="ManagedLinearAlgebraProvider.Double.cs" company="Math.NET">
+// <copyright file="ManagedLinearAlgebraProvider.Double.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
@@ -34,214 +34,15 @@ using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
+using Unity.Burst;
+using Complex = System.Numerics.Complex;
 
-namespace LinearAlgebra
+namespace LinearAlgebra.MathNet.Numerics
 {       
-
-    public static partial class SVDbursted 
+    /// The managed linear algebra provider.
+    /// </summary>
+    public partial class ManagedLinearAlgebraProviderdouble 
     {
-        public static class Precision
-        {
-            public const double DoublePrecision = 1.11022302462516E-16;
-            public const double SinglePrecision = 5.96046447753906E-08;
-
-            /// <summary>
-            /// Compares two doubles and determines if they are equal within
-            /// the specified maximum error.
-            /// </summary>
-            /// <param name="a">The first value.</param>
-            /// <param name="b">The second value.</param>
-            /// <param name="maximumError">The accuracy required for being almost equal.</param>
-            public static bool AlmostEqualRelative(double a, double b, int decimalPlaces)
-            {
-                return AlmostEqualNormRelative(a, b, a - b, decimalPlaces);
-            }
-
-            /// <summary>
-            /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not. If the numbers
-            /// are very close to zero an absolute difference is compared, otherwise the relative difference is compared.
-            /// </summary>
-            /// <remarks>
-            /// <para>
-            /// The values are equal if the difference between the two numbers is smaller than 10^(-numberOfDecimalPlaces). We divide by
-            /// two so that we have half the range on each side of the numbers, e.g. if <paramref name="decimalPlaces"/> == 2, then 0.01 will equal between
-            /// 0.005 and 0.015, but not 0.02 and not 0.00
-            /// </para>
-            /// </remarks>
-            /// <param name="a">The norm of the first value (can be negative).</param>
-            /// <param name="b">The norm of the second value (can be negative).</param>
-            /// <param name="diff">The norm of the difference of the two values (can be negative).</param>
-            /// <param name="decimalPlaces">The number of decimal places.</param>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown if <paramref name="decimalPlaces"/> is smaller than zero.</exception>
-            public static bool AlmostEqualNormRelative(double a, double b, double diff, int decimalPlaces)
-            {
-                if (decimalPlaces < 0)
-                {
-                    // Can't have a negative number of decimal places
-                    throw new System.ArgumentOutOfRangeException(nameof(decimalPlaces));
-                }
-
-                // If A or B are a NAN, return false. NANs are equal to nothing,
-                // not even themselves.
-                if (double.IsNaN(a) || double.IsNaN(b))
-                {
-                    return false;
-                }
-
-                // If A or B are infinity (positive or negative) then
-                // only return true if they are exactly equal to each other -
-                // that is, if they are both infinities of the same sign.
-                if (double.IsInfinity(a) || double.IsInfinity(b))
-                {
-                    return a == b;
-                }
-
-                // If both numbers are equal, get out now. This should remove the possibility of both numbers being zero
-                // and any problems associated with that.
-                if (a.Equals(b))
-                {
-                    return true;
-                }
-
-                // If one is almost zero, fall back to absolute equality
-                if (math.abs(a) < DoublePrecision || math.abs(b) < DoublePrecision)
-                {
-                    // The values are equal if the difference between the two numbers is smaller than
-                    // 10^(-numberOfDecimalPlaces). We divide by two so that we have half the range
-                    // on each side of the numbers, e.g. if decimalPlaces == 2,
-                    // then 0.01 will equal between 0.005 and 0.015, but not 0.02 and not 0.00
-                    return math.abs(diff) < Pow10(-decimalPlaces) * 0.5;
-                }
-
-                // If the magnitudes of the two numbers are equal to within one magnitude the numbers could potentially be equal
-                int magnitudeOfFirst = Magnitude(a);
-                int magnitudeOfSecond = Magnitude(b);
-                int magnitudeOfMax = math.max(magnitudeOfFirst, magnitudeOfSecond);
-                if (magnitudeOfMax > (math.min(magnitudeOfFirst, magnitudeOfSecond) + 1))
-                {
-                    return false;
-                }
-
-                // The values are equal if the difference between the two numbers is smaller than
-                // 10^(-numberOfDecimalPlaces). We divide by two so that we have half the range
-                // on each side of the numbers, e.g. if decimalPlaces == 2,
-                // then 0.01 will equal between 0.00995 and 0.01005, but not 0.0015 and not 0.0095
-                return math.abs(diff) < Pow10(magnitudeOfMax - decimalPlaces) * 0.5;
-            }
-
-            /// <summary>
-            /// Returns the magnitude of the number.
-            /// </summary>
-            /// <param name="value">The value.</param>
-            /// <returns>The magnitude of the number.</returns>
-            public static int Magnitude(double value)
-            {
-                // Can't do this with zero because the 10-log of zero doesn't exist.
-                if (value.Equals(0.0))
-                {
-                    return 0;
-                }
-
-                // Note that we need the absolute value of the input because Log10 doesn't
-                // work for negative numbers (obviously).
-                double magnitude = math.log10(math.abs(value));
-                var truncated = (int)Truncate(magnitude);
-
-                // To get the right number we need to know if the value is negative or positive
-                // truncating a positive number will always give use the correct magnitude
-                // truncating a negative number will give us a magnitude that is off by 1 (unless integer)
-                return magnitude < 0d && truncated != magnitude
-                    ? truncated - 1
-                    : truncated;
-            }
-
-
-            /// <summary>
-            /// Returns the magnitude of the number.
-            /// </summary>
-            /// <param name="value">The value.</param>
-            /// <returns>The magnitude of the number.</returns>
-            public static int Magnitude(float value)
-            {
-                // Can't do this with zero because the 10-log of zero doesn't exist.
-                if (value.Equals(0.0f))
-                {
-                    return 0;
-                }
-
-                // Note that we need the absolute value of the input because Log10 doesn't
-                // work for negative numbers (obviously).
-                var magnitude = System.Convert.ToSingle(math.log10(math.abs(value)));
-                var truncated = (int)Truncate(magnitude);
-
-                // To get the right number we need to know if the value is negative or positive
-                // truncating a positive number will always give use the correct magnitude
-                // truncating a negative number will give us a magnitude that is off by 1 (unless integer)
-                return magnitude < 0f && truncated != magnitude
-                    ? truncated - 1
-                    : truncated;
-            }
-
-            static double Truncate(double value)
-            {
-                return System.Math.Truncate(value);
-            }
-
-            static readonly double[] NegativePowersOf10 = new double[]
-                {
-            1, 0.1, 0.01, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9,
-            1e-10, 1e-11, 1e-12, 1e-13, 1e-14, 1e-15, 1e-16,
-            1e-17, 1e-18, 1e-19, 1e-20
-                };
-
-            static double Pow10(int y)
-            {
-                return -NegativePowersOf10.Length < y && y <= 0
-                   ? NegativePowersOf10[-y]
-                   : math.pow(10.0, y);
-            }
-        }
-
-
-        public static class Constants
-        {
-            public const int SizeOfDouble = sizeof(double);
-        }
-
-
-
-        public static class SpecialFunctions
-        {
-            /// <summary>
-            /// Numerically stable hypotenuse of a right angle triangle, i.e. <code>(a,b) -> sqrt(a^2 + b^2)</code>
-            /// </summary>
-            /// <param name="a">The length of side a of the triangle.</param>
-            /// <param name="b">The length of side b of the triangle.</param>
-            /// <returns>Returns <code>sqrt(a<sup>2</sup> + b<sup>2</sup>)</code> without underflow/overflow.</returns>
-            public static double Hypotenuse(double a, double b)
-            {
-                if (double.IsNaN(a) || double.IsNaN(b))
-                {
-                    return double.NaN;
-                }
-
-                if (math.abs(a) > math.abs(b))
-                {
-                    double r = b / a;
-                    return math.abs(a) * math.sqrt(1 + (r * r));
-                }
-
-                if (b != 0.0)
-                {
-                    // NOTE (ruegg): not "!b.AlmostZero()" to avoid convergence issues (e.g. in SVD algorithm)
-                    double r = a / b;
-                    return math.abs(b) * math.sqrt(1 + (r * r));
-                }
-
-                return 0d;
-            }
-        }
-
         /*
         /// <summary>
         /// Adds a scaled vector to another: <c>result = y + alpha*x</c>.
@@ -599,10 +400,10 @@ namespace LinearAlgebra
             switch (norm)
             {
                 case Norm.OneNorm:
-                    var norm1 = 0d;
+                    double norm1 = 0d;
                     for (var j = 0; j < columns; j++)
                     {
-                        var s = 0.0;
+                        double s = 0.0;
                         for (var i = 0; i < rows; i++)
                         {
                             s += math.abs(matrix[(j * rows) + i]);
@@ -611,7 +412,7 @@ namespace LinearAlgebra
                     }
                     return norm1;
                 case Norm.LargestAbsoluteValue:
-                    var normMax = 0d;
+                    double normMax = 0d;
                     for (var j = 0; j < columns; j++)
                     {
                         for (var i = 0; i < rows; i++)
@@ -642,7 +443,7 @@ namespace LinearAlgebra
                 case Norm.FrobeniusNorm:
                     var aat = new double[rows * rows];
                     MatrixMultiplyWithUpdate(Transpose.DontTranspose, Transpose.Transpose, 1.0, matrix, rows, columns, matrix, rows, columns, 0.0, aat);
-                    var normF = 0d;
+                    double normF = 0d;
                     for (var i = 0; i < rows; i++)
                     {
                         normF += math.abs(aat[(i * rows) + i]);
@@ -1863,23 +1664,11 @@ namespace LinearAlgebra
         }
         */
 
-        public static void SingularValueDecomposition(ref Arena arena, bool computeVectors, doubleMxN a, doubleN s, doubleMxN u, doubleMxN vt)
-        {
-            // LinearAlgebraBursted stores mats as row major order. 
-            // These  Math.Net want column first order. We need to transpose.
-            Assume.IsTrue(a.N_Cols == a.M_Rows);
-
-            doubleMxN aTr = doubleOP.trans(a);
-            doubleMxN uu = arena.tempdoubleMat(u.N_Cols, u.M_Rows);
-            doubleMxN vvt = arena.tempdoubleMat(u.N_Cols, u.M_Rows);
-
-            SingularValueDecomposition(computeVectors, aTr.Data, aTr.M_Rows, aTr.N_Cols, s.Data, uu.Data, vvt.Data);
-            doubleOP.transCopyInpl(u, uu);
-            doubleOP.transCopyInpl(vt, vvt);
-        }
-
         /// <summary>
         /// Computes the singular value decomposition of A.
+        /// 
+        /// MATRICES ARE IN COLUMN MAJOR FORMAT. NEED TO USE matrix.ToFlatColumnMajor() and ToUnflatColumnMajor()
+        /// 
         /// </summary>
         /// <param name="computeVectors">Compute the singular U and VT vectors or not.</param>
         /// <param name="a">On entry, the M by N matrix to decompose. On exit, A may be overwritten.</param>
@@ -1887,12 +1676,17 @@ namespace LinearAlgebra
         /// <param name="columnsA">The number of columns in the A matrix.</param>
         /// <param name="s">The singular values of A in ascending value.</param>
         /// <param name="u">If <paramref name="computeVectors"/> is <c>true</c>, on exit U contains the left
-        /// singular vectors.</param>
+        /// singular vectors packed in Column major order.</param>
         /// <param name="vt">If <paramref name="computeVectors"/> is <c>true</c>, on exit VT contains the transposed
-        /// right singular vectors.</param>
+        /// right singular vectors. Packed in column major order.</param>
         /// <remarks>This is equivalent to the GESVD LAPACK routine.</remarks>
-        public static unsafe void SingularValueDecomposition(bool computeVectors, UnsafeList<double> a, int rowsA, int columnsA, UnsafeList<double> s, UnsafeList<double> u, UnsafeList<double> vt)
+        [BurstCompile]
+        public static unsafe void SingularValueDecomposition(ref Arena arena, bool computeVectors, doubleN aa, int rowsA, int columnsA, doubleN ss, doubleN uu, doubleN vvt)
         {
+            UnsafeList<double> a = aa.Data;
+            UnsafeList<double> s = ss.Data;
+            UnsafeList<double> u = uu.Data;
+            UnsafeList<double> vt = vvt.Data;
             if (u.Length != rowsA * rowsA)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(u));
@@ -1908,13 +1702,13 @@ namespace LinearAlgebra
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(s));
             }
 
-            var work = new double[rowsA];
+            doubleN work = arena.tempdoubleVec(rowsA, 0);
 
             const int maxiter = 1000;
 
-            var e = new double[columnsA];
-            var v = new double[vt.Length];
-            var stemp = new double[math.min(rowsA + 1, columnsA)];
+            doubleN e = arena.tempdoubleVec(columnsA, 0);
+            doubleN v = arena.tempdoubleVec(vt.Length, 0);
+            doubleN stemp = arena.tempdoubleVec(math.min(rowsA + 1, columnsA), 0);
 
             int i, j, l, lp1;
 
@@ -1935,7 +1729,7 @@ namespace LinearAlgebra
                 {
                     // Compute the transformation for the l-th column and
                     // place the l-th diagonal in vector s[l].
-                    var sum = 0.0;
+                    double sum = 0.0;
                     for (var i1 = l; i1 < rowsA; i1++)
                     {
                         sum += a[(l * rowsA) + i1] * a[(l * rowsA) + i1];
@@ -2004,8 +1798,8 @@ namespace LinearAlgebra
                 }
 
                 // Compute the l-th row transformation and place the l-th super-diagonal in e(l).
-                var enorm = 0.0;
-                for (i = lp1; i < e.Length; i++)
+                double enorm = 0.0;
+                for (i = lp1; i < e.N; i++)
                 {
                     enorm += e[i] * e[i];
                 }
@@ -2019,7 +1813,7 @@ namespace LinearAlgebra
                     }
 
                     // Scale vector "e" from "lp1" by 1.0 / e[l]
-                    for (i = lp1; i < e.Length; i++)
+                    for (i = lp1; i < e.N; i++)
                     {
                         e[i] = e[i] * (1.0 / e[l]);
                     }
@@ -2185,7 +1979,7 @@ namespace LinearAlgebra
             for (i = 0; i < m; i++)
             {
                 double r;
-                if (stemp[i] != 0.0)
+                if (stemp[i] != 0)
                 {
                     t = stemp[i];
                     r = stemp[i] / t;
@@ -2211,7 +2005,7 @@ namespace LinearAlgebra
                     break;
                 }
 
-                if (e[i] == 0.0)
+                if (e[i] == 0)
                 {
                     continue;
                 }
@@ -2258,7 +2052,7 @@ namespace LinearAlgebra
                     test = math.abs(stemp[l]) + math.abs(stemp[l + 1]);
                     ztest = test + math.abs(e[l]);
                     
-                    if (Precision.AlmostEqualRelative(ztest, test, 15))
+                    if (Precisiondouble.AlmostEqualRelative(ztest, test, 15))
                     {
                         e[l] = 0.0;
                         break;
@@ -2287,7 +2081,7 @@ namespace LinearAlgebra
                         }
 
                         ztest = test + math.abs(stemp[ls]);
-                        if (Precision.AlmostEqualRelative(ztest , test, 15))
+                        if (Precisiondouble.AlmostEqualRelative(ztest , test, 15))
                         {
                             stemp[ls] = 0.0;
                             break;
@@ -2379,20 +2173,20 @@ namespace LinearAlgebra
                     case 3:
 
                         // calculate the shift.
-                        var scale = 0.0;
+                        double scale = 0.0;
                         scale = math.max(scale, math.abs(stemp[m - 1]));
                         scale = math.max(scale, math.abs(stemp[m - 2]));
                         scale = math.max(scale, math.abs(e[m - 2]));
                         scale = math.max(scale, math.abs(stemp[l]));
                         scale = math.max(scale, math.abs(e[l]));
-                        var sm = stemp[m - 1] / scale;
-                        var smm1 = stemp[m - 2] / scale;
-                        var emm1 = e[m - 2] / scale;
-                        var sl = stemp[l] / scale;
-                        var el = e[l] / scale;
-                        var b = (((smm1 + sm) * (smm1 - sm)) + (emm1 * emm1)) / 2.0;
-                        var c = (sm * emm1) * (sm * emm1);
-                        var shift = 0.0;
+                        double sm = stemp[m - 1] / scale;
+                        double smm1 = stemp[m - 2] / scale;
+                        double emm1 = e[m - 2] / scale;
+                        double sl = stemp[l] / scale;
+                        double el = e[l] / scale;
+                        double b = (((smm1 + sm) * (smm1 - sm)) + (emm1 * emm1)) / 2.0;
+                        double c = (sm * emm1) * (sm * emm1);
+                        double shift = 0.0;
                         if (b != 0.0 || c != 0.0)
                         {
                             shift = math.sqrt((b * b) + c);
@@ -2405,7 +2199,7 @@ namespace LinearAlgebra
                         }
 
                         f = ((sl + sm) * (sl - sm)) + shift;
-                        var g = sl * el;
+                        double g = sl * el;
 
                         // Chase zeros
                         for (k = l; k < m - 1; k++)
@@ -2424,7 +2218,7 @@ namespace LinearAlgebra
                             {
                                 for (i = 0; i < columnsA; i++)
                                 {
-                                    var z = (cs * v[(k * columnsA) + i]) + (sn * v[((k + 1) * columnsA) + i]);
+                                    double z = (cs * v[(k * columnsA) + i]) + (sn * v[((k + 1) * columnsA) + i]);
                                     v[((k + 1) * columnsA) + i] = (cs * v[((k + 1) * columnsA) + i]) - (sn * v[(k * columnsA) + i]);
                                     v[(k * columnsA) + i] = z;
                                 }
@@ -2440,7 +2234,7 @@ namespace LinearAlgebra
                             {
                                 for (i = 0; i < rowsA; i++)
                                 {
-                                    var z = (cs * u[(k * rowsA) + i]) + (sn * u[((k + 1) * rowsA) + i]);
+                                    double z = (cs * u[(k * rowsA) + i]) + (sn * u[((k + 1) * rowsA) + i]);
                                     u[((k + 1) * rowsA) + i] = (cs * u[((k + 1) * rowsA) + i]) - (sn * u[(k * rowsA) + i]);
                                     u[(k * rowsA) + i] = z;
                                 }
@@ -2539,19 +2333,20 @@ namespace LinearAlgebra
         /// <param name="c">Contains the parameter c associated with the Givens rotation</param>
         /// <param name="s">Contains the parameter s associated with the Givens rotation</param>
         /// <remarks>This is equivalent to the DROTG LAPACK routine.</remarks>
+        [BurstCompile]
         static void Drotg(ref double da, ref double db, out double c, out double s)
         {
             double r, z;
 
-            var roe = db;
-            var absda = math.abs(da);
-            var absdb = math.abs(db);
+            double roe = db;
+            double absda = math.abs(da);
+            double absdb = math.abs(db);
             if (absda > absdb)
             {
                 roe = da;
             }
 
-            var scale = absda + absdb;
+            double scale = absda + absdb;
             if (scale == 0.0)
             {
                 c = 1.0;
@@ -2561,8 +2356,8 @@ namespace LinearAlgebra
             }
             else
             {
-                var sda = da / scale;
-                var sdb = db / scale;
+                double sda = da / scale;
+                double sdb = db / scale;
                 r = scale * math.sqrt((sda * sda) + (sdb * sdb));
                 if (roe < 0.0)
                 {
@@ -2587,52 +2382,48 @@ namespace LinearAlgebra
             db = z;
         }
 
-        /*
         /// <summary>
         /// Solves A*X=B for X using the singular value decomposition of A.
+        /// ALL MATRICES IN COLUMN MAJOR FORMAT
         /// </summary>
-        /// <param name="a">On entry, the M by N matrix to decompose.</param>
+        /// <param name="a">On entry, the M by N matrix to decompose. IN COLUMN MAJOR FORMAT</param>
         /// <param name="rowsA">The number of rows in the A matrix.</param>
         /// <param name="columnsA">The number of columns in the A matrix.</param>
         /// <param name="b">The B matrix.</param>
         /// <param name="columnsB">The number of columns of B.</param>
         /// <param name="x">On exit, the solution matrix.</param>
-        public static void SvdSolve(double[] a, int rowsA, int columnsA, double[] b, int columnsB, double[] x)
+        /// <param name="tolerance">if -1 then it is ignored. If positive then we truncate singular values that are smaller than tolerence. This is very important
+        /// for numerical stability. Otherwise very small singular values (noise) explode when we 1/s and the noise dominates the solution.</param>
+        [BurstCompile]
+        public static void SvdSolve(ref Arena arena, doubleN a, int rowsA, int columnsA, doubleN b, int columnsB, doubleN x, double epsilon)
         {
-            if (a == null)
-            {
-                throw new System.ArgumentNullException(nameof(a));
-            }
-
-            if (b == null)
-            {
-                throw new System.ArgumentNullException(nameof(b));
-            }
-
-            if (x == null)
-            {
-                throw new System.ArgumentNullException(nameof(x));
-            }
-
-            if (b.Length != rowsA * columnsB)
+            if (b.N != rowsA * columnsB)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(b));
             }
 
-            if (x.Length != columnsA * columnsB)
+            if (x.N != columnsA * columnsB)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(b));
             }
-            var s = new double[math.min(rowsA, columnsA)];
-            var u = new double[rowsA * rowsA];
-            var vt = new double[columnsA * columnsA];
 
-            var clone = new double[a.Length];
-            System.Buffer.BlockCopy(a, 0, clone, 0, a.Length * Constants.SizeOfDouble);
-            SingularValueDecomposition(true, clone, rowsA, columnsA, s, u, vt);
-            SvdSolveFactored(rowsA, columnsA, s, u, vt, b, columnsB, x);
+            var s = arena.tempdoubleVec(math.min(rowsA, columnsA));
+            var u = arena.tempdoubleVec(rowsA * rowsA);
+            var vt = arena.tempdoubleVec(columnsA * columnsA);
+
+            var clone = a.TempCopy();
+            SingularValueDecomposition(ref arena, true, clone, rowsA, columnsA, s, u, vt);
+            double tolerance;
+            if (epsilon == -1)
+            {
+                tolerance = -1; // disable tolerance
+            } else
+            {
+                tolerance = System.Math.Max(rowsA, columnsA) * s.l2Norm() * epsilon;
+            }
+
+            SvdSolveFactored(rowsA, columnsA, s, u, vt, b, columnsB, x, tolerance);
         }
-        */
 
         /// <summary>
         /// Solves A*X=B for X using a previously SVD decomposed matrix.
@@ -2645,61 +2436,44 @@ namespace LinearAlgebra
         /// <param name="b">The B matrix.</param>
         /// <param name="columnsB">The number of columns of B.</param>
         /// <param name="x">On exit, the solution matrix.</param>
-        public static void SvdSolveFactored(int rowsA, int columnsA, double[] s, double[] u, double[] vt, double[] b, int columnsB, double[] x)
+        /// <param name="tolerance">if -1 then it is ignored. If positive then we truncate singular values that are smaller than tolerence. This is very important
+        /// for numerical stability. Otherwise very small singular values (noise) explode when we 1/s and the noise dominates the solution.</param>
+        [BurstCompile]
+        public static void SvdSolveFactored(int rowsA, int columnsA, doubleN ss, doubleN uu, doubleN vvt, doubleN bb, int columnsB, doubleN xx, double tolerance)
         {
-            if (s == null)
-            {
-                throw new System.ArgumentNullException(nameof(s));
-            }
+            UnsafeList<double> s = ss.Data;
+            UnsafeList<double> u = uu.Data;
+            UnsafeList<double> vt = vvt.Data;
+            UnsafeList<double> b = bb.Data;
+            UnsafeList<double> x = xx.Data;
 
-            if (u == null)
-            {
-                throw new System.ArgumentNullException(nameof(u));
-            }
-
-            if (vt == null)
-            {
-                throw new System.ArgumentNullException(nameof(vt));
-            }
-
-            if (b == null)
-            {
-                throw new System.ArgumentNullException(nameof(b));
-            }
-
-            if (x == null)
-            {
-                throw new System.ArgumentNullException(nameof(x));
-            }
-
-            if (u.Length != rowsA * rowsA)
+            if (uu.N != rowsA * rowsA)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(u));
             }
 
-            if (vt.Length != columnsA * columnsA)
+            if (vvt.N != columnsA * columnsA)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(vt));
             }
 
-            if (s.Length != math.min(rowsA, columnsA))
+            if (ss.N != math.min(rowsA, columnsA))
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(s));
             }
 
-            if (b.Length != rowsA * columnsB)
+            if (bb.N != rowsA * columnsB)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(b));
             }
 
-            if (x.Length != columnsA * columnsB)
+            if (xx.N != columnsA * columnsB)
             {
                 throw new System.ArgumentException("The array arguments must have the same length.", nameof(b));
             }
 
             var mn = math.min(rowsA, columnsA);
             var tmp = new double[columnsA];
-
             for (var k = 0; k < columnsB; k++)
             {
                 for (var j = 0; j < columnsA; j++)
@@ -2707,12 +2481,29 @@ namespace LinearAlgebra
                     double value = 0;
                     if (j < mn)
                     {
-                        for (var i = 0; i < rowsA; i++)
+                        if (tolerance == -1)
                         {
-                            value += u[(j * rowsA) + i] * b[(k * rowsA) + i];
-                        }
+                            // ignore tolerence
+                            for (var i = 0; i < rowsA; i++)
+                            {
+                                value += u[(j * rowsA) + i] * b[(k * rowsA) + i];
+                            }
 
-                        value /= s[j];
+                            value /= s[j];
+                        }
+                        else
+                        {
+                            // Truncate small singular values to avoid exploding solutions.
+                            if (math.abs(s[j]) > tolerance)
+                            {
+                                for (var i = 0; i < rowsA; i++)
+                                {
+                                    value += u[(j * rowsA) + i] * b[(k * rowsA) + i];
+                                }
+
+                                value /= s[j];
+                            }
+                        }
                     }
 
                     tmp[j] = value;
@@ -2731,7 +2522,6 @@ namespace LinearAlgebra
             }
         }
 
-        /*
         /// <summary>
         /// Computes the eigenvalues and eigenvectors of a matrix.
         /// </summary>
@@ -2741,9 +2531,9 @@ namespace LinearAlgebra
         /// <param name="matrixEv">On output, the matrix contains the eigen vectors. The length of the array must be order * order.</param>
         /// <param name="vectorEv">On output, the eigen values (λ) of matrix in ascending value. The length of the array must <paramref name="order"/>.</param>
         /// <param name="matrixD">On output, the block diagonal eigenvalue matrix. The length of the array must be order * order.</param>
-        public static void EigenDecomp(bool isSymmetric, int order, double[] matrix, double[] matrixEv, Complex[] vectorEv, double[] matrixD)
+        public static void EigenDecomp(ref Arena arena, bool isSymmetric, int order, doubleN matrix, doubleN matrixEv, doubleN vectorEvReal, doubleN vectorEvImaginary, doubleN matrixD)
         {
-            if (matrix == null)
+            if (!matrix.CheckValid())
             {
                 throw new System.ArgumentNullException(nameof(matrix));
             }
@@ -2753,42 +2543,45 @@ namespace LinearAlgebra
                 throw new System.ArgumentException($"The given array has the wrong length. Should be {order * order}.", nameof(matrix));
             }
 
-            if (matrixEv == null)
+            
+            if (!matrixEv.CheckValid())
             {
                 throw new System.ArgumentNullException(nameof(matrixEv));
             }
-
+           
             if (matrixEv.Length != order * order)
             {
                 throw new System.ArgumentException($"The given array has the wrong length. Should be {order * order}.", nameof(matrixEv));
             }
 
-            if (vectorEv == null)
+
+            if (!vectorEvReal.CheckValid())
             {
-                throw new System.ArgumentNullException(nameof(vectorEv));
+                throw new System.ArgumentNullException(nameof(vectorEvReal));
             }
 
-            if (vectorEv.Length != order)
+            if (vectorEvImaginary.Length != order)
             {
-                throw new System.ArgumentException($"The given array has the wrong length. Should be {order}.", nameof(vectorEv));
+                throw new System.ArgumentException($"The given array has the wrong length. Should be {order}.", nameof(vectorEvImaginary));
             }
 
-            if (matrixD == null)
+            if (!matrixD.CheckValid())
             {
                 throw new System.ArgumentNullException(nameof(matrixD));
             }
 
-            if (matrixD.Length != order * order)
+            if (matrixD.N != order * order)
             {
                 throw new System.ArgumentException($"The given array has the wrong length. Should be {order * order}.", nameof(matrixD));
             }
 
-            var d = new double[order];
-            var e = new double[order];
+            doubleN d = vectorEvReal;
+            doubleN e = vectorEvImaginary;
 
             if (isSymmetric)
             {
-                Buffer.BlockCopy(matrix, 0, matrixEv, 0, matrix.Length * Constants.SizeOfDouble);
+                // Buffer.BlockCopy(matrix, 0, matrixEv, 0, matrix.Length * Constants.SizeOfDouble);
+                doubleOP.copyInpl(matrixEv, matrix);
                 var om1 = order - 1;
                 for (var i = 0; i < order; i++)
                 {
@@ -2800,15 +2593,16 @@ namespace LinearAlgebra
             }
             else
             {
-                var matrixH = new double[matrix.Length];
-                Buffer.BlockCopy(matrix, 0, matrixH, 0, matrix.Length * Constants.SizeOfDouble);
+                doubleN matrixH = arena.tempdoubleVec(matrix.Length);
+                //System.Buffer.BlockCopy(matrix, 0, matrixH, 0, matrix.Length * Constants.SizeOfDouble);
+                doubleOP.copyInpl(matrixH, matrix);
                 NonsymmetricReduceToHessenberg(matrixEv, matrixH, order);
                 NonsymmetricReduceHessenberToRealSchur(matrixEv, matrixH, d, e, order);
             }
 
             for (var i = 0; i < order; i++)
             {
-                vectorEv[i] = new Complex(d[i], e[i]);
+                // vectorEv[i] = new Complex(d[i], e[i]);
 
                 var io = i * order;
                 matrixD[io + i] = d[i];
@@ -2824,7 +2618,6 @@ namespace LinearAlgebra
                 }
             }
         }
-        */
 
         /// <summary>
         /// Symmetric Householder reduction to tridiagonal form.
@@ -2837,14 +2630,14 @@ namespace LinearAlgebra
         /// Bowdler, Martin, Reinsch, and Wilkinson, Handbook for
         /// Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutine in EISPACK.</remarks>
-        internal static void SymmetricTridiagonalize(double[] a, double[] d, double[] e, int order)
+        internal static void SymmetricTridiagonalize(doubleN a, doubleN d, doubleN e, int order)
         {
             // Householder reduction to tridiagonal form.
             for (var i = order - 1; i > 0; i--)
             {
                 // Scale to avoid under/overflow.
-                var scale = 0.0;
-                var h = 0.0;
+                double scale = 0.0;
+                double h = 0.0;
 
                 for (var k = 0; k < i; k++)
                 {
@@ -2870,8 +2663,8 @@ namespace LinearAlgebra
                         h += d[k] * d[k];
                     }
 
-                    var f = d[i - 1];
-                    var g = math.sqrt(h);
+                    double f = d[i - 1];
+                    double g = math.sqrt(h);
                     if (f > 0)
                     {
                         g = -g;
@@ -2910,7 +2703,7 @@ namespace LinearAlgebra
                         f += e[j] * d[j];
                     }
 
-                    var hh = f / (h + h);
+                    double hh = f / (h + h);
 
                     for (var j = 0; j < i; j++)
                     {
@@ -2940,7 +2733,7 @@ namespace LinearAlgebra
             {
                 a[(i * order) + order - 1] = a[(i * order) + i];
                 a[(i * order) + i] = 1.0;
-                var h = d[i + 1];
+                double h = d[i + 1];
                 if (h != 0.0)
                 {
                     for (var k = 0; k <= i; k++)
@@ -2950,7 +2743,7 @@ namespace LinearAlgebra
 
                     for (var j = 0; j <= i; j++)
                     {
-                        var g = 0.0;
+                        double g = 0.0;
                         for (var k = 0; k <= i; k++)
                         {
                             g += a[((i + 1) * order) + k] * a[(j * order) + k];
@@ -2991,7 +2784,7 @@ namespace LinearAlgebra
         /// Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutine in EISPACK.</remarks>
         /// <exception cref="NonConvergenceException"></exception>
-        internal static void SymmetricDiagonalize(double[] a, double[] d, double[] e, int order)
+        internal static void SymmetricDiagonalize(doubleN a, doubleN d, doubleN e, int order)
         {
             const int maxiter = 1000;
 
@@ -3002,9 +2795,9 @@ namespace LinearAlgebra
 
             e[order - 1] = 0.0;
 
-            var f = 0.0;
-            var tst1 = 0.0;
-            var eps = Precision.DoublePrecision;
+            double f = 0.0;
+            double tst1 = 0.0;
+            double eps = Precisiondouble.DoublePrecision;
             for (var l = 0; l < order; l++)
             {
                 // Find small subdiagonal element
@@ -3030,9 +2823,9 @@ namespace LinearAlgebra
                         iter = iter + 1; // (Could check iteration count here.)
 
                         // Compute implicit shift
-                        var g = d[l];
-                        var p = (d[l + 1] - g) / (2.0 * e[l]);
-                        var r = SpecialFunctions.Hypotenuse(p, 1.0);
+                        double g = d[l];
+                        double p = (d[l + 1] - g) / (2.0 * e[l]);
+                        double r = SpecialFunctions_double.Hypotenuse(p, 1.0);
                         if (p < 0)
                         {
                             r = -r;
@@ -3041,8 +2834,8 @@ namespace LinearAlgebra
                         d[l] = e[l] / (p + r);
                         d[l + 1] = e[l] * (p + r);
 
-                        var dl1 = d[l + 1];
-                        var h = g - d[l];
+                        double dl1 = d[l + 1];
+                        double h = g - d[l];
                         for (var i = l + 2; i < order; i++)
                         {
                             d[i] -= h;
@@ -3052,12 +2845,12 @@ namespace LinearAlgebra
 
                         // Implicit QL transformation.
                         p = d[m];
-                        var c = 1.0;
-                        var c2 = c;
-                        var c3 = c;
-                        var el1 = e[l + 1];
-                        var s = 0.0;
-                        var s2 = 0.0;
+                        double c = 1.0;
+                        double c2 = c;
+                        double c3 = c;
+                        double el1 = e[l + 1];
+                        double s = 0.0;
+                        double s2 = 0.0;
                         for (var i = m - 1; i >= l; i--)
                         {
                             c3 = c2;
@@ -3065,7 +2858,7 @@ namespace LinearAlgebra
                             s2 = s;
                             g = c * e[i];
                             h = c * p;
-                            r = SpecialFunctions.Hypotenuse(p, e[i]);
+                            r = SpecialFunctions_double.Hypotenuse(p, e[i]);
                             e[i + 1] = s * r;
                             s = e[i] / r;
                             c = p / r;
@@ -3136,7 +2929,7 @@ namespace LinearAlgebra
         /// by Martin and Wilkinson, Handbook for Auto. Comp.,
         /// Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutines in EISPACK.</remarks>
-        internal static void NonsymmetricReduceToHessenberg(double[] a, double[] matrixH, int order)
+        internal static void NonsymmetricReduceToHessenberg(doubleN a, doubleN matrixH, int order)
         {
             var ort = new double[order];
             var high = order - 1;
@@ -3145,7 +2938,7 @@ namespace LinearAlgebra
                 var mm1 = m - 1;
                 var mm1O = mm1 * order;
                 // Scale column.
-                var scale = 0.0;
+                double scale = 0.0;
                 for (var i = m; i <= high; i++)
                 {
                     scale += math.abs(matrixH[mm1O + i]);
@@ -3154,14 +2947,14 @@ namespace LinearAlgebra
                 if (scale != 0.0)
                 {
                     // Compute Householder transformation.
-                    var h = 0.0;
+                    double h = 0.0;
                     for (var i = high; i >= m; i--)
                     {
                         ort[i] = matrixH[mm1O + i] / scale;
                         h += ort[i] * ort[i];
                     }
 
-                    var g = math.sqrt(h);
+                    double g = math.sqrt(h);
                     if (ort[m] > 0)
                     {
                         g = -g;
@@ -3175,7 +2968,7 @@ namespace LinearAlgebra
                     for (var j = m; j < order; j++)
                     {
                         var jO = j * order;
-                        var f = 0.0;
+                        double f = 0.0;
                         for (var i = order - 1; i >= m; i--)
                         {
                             f += ort[i] * matrixH[jO + i];
@@ -3191,7 +2984,7 @@ namespace LinearAlgebra
 
                     for (var i = 0; i <= high; i++)
                     {
-                        var f = 0.0;
+                        double f = 0.0;
                         for (var j = high; j >= m; j--)
                         {
                             f += ort[j] * matrixH[j * order + i];
@@ -3232,7 +3025,7 @@ namespace LinearAlgebra
 
                     for (var j = m; j <= high; j++)
                     {
-                        var g = 0.0;
+                        double g = 0.0;
                         var jO = j * order;
                         for (var i = m; i <= high; i++)
                         {
@@ -3251,7 +3044,7 @@ namespace LinearAlgebra
             }
         }
 
-        /*
+        
         /// <summary>
         /// Nonsymmetric reduction from Hessenberg to real Schur form.
         /// </summary>
@@ -3265,17 +3058,17 @@ namespace LinearAlgebra
         /// Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutine in EISPACK.</remarks>
         /// <exception cref="NonConvergenceException"></exception>
-        internal static void NonsymmetricReduceHessenberToRealSchur(double[] a, double[] matrixH, double[] d, double[] e, int order)
+        internal static void NonsymmetricReduceHessenberToRealSchur(doubleN a, doubleN matrixH, doubleN d, doubleN e, int order)
         {
             // Initialize
             var n = order - 1;
-            var eps = math.pow(2.0, -52.0);
-            var exshift = 0.0;
+            double eps = math.pow(2.0, -52.0);
+            double exshift = 0.0;
             double p = 0, q = 0, r = 0, s = 0, z = 0;
             double w, x, y;
 
             // Store roots isolated by balanc and compute matrix norm
-            var norm = 0.0;
+            double norm = 0.0;
             for (var i = 0; i < order; i++)
             {
                 for (var j = math.max(i - 1, 0); j < order; j++)
@@ -3731,8 +3524,8 @@ namespace LinearAlgebra
                         var ip1 = i + 1;
                         var iO = i * order;
                         var ip1O = ip1 * order;
-                        var ra = 0.0;
-                        var sa = 0.0;
+                        double ra = 0.0;
+                        double sa = 0.0;
                         for (var j = l; j <= n; j++)
                         {
                             var jO = j * order;
@@ -3764,8 +3557,8 @@ namespace LinearAlgebra
                                 x = matrixH[ip1O + i];
                                 y = matrixH[iO + ip1];
 
-                                var vr = ((d[i] - p) * (d[i] - p)) + (e[i] * e[i]) - (q * q);
-                                var vi = (d[i] - p) * 2.0 * q;
+                                double vr = ((d[i] - p) * (d[i] - p)) + (e[i] * e[i]) - (q * q);
+                                double vi = (d[i] - p) * 2.0 * q;
                                 if ((vr == 0.0) && (vi == 0.0))
                                 {
                                     vr = eps * norm * (math.abs(w) + math.abs(q) + math.abs(x) + math.abs(y) + math.abs(z));
@@ -3818,9 +3611,7 @@ namespace LinearAlgebra
                 }
             }
         }
-        */
 
-        /*
         /// <summary>
         /// Complex scalar division X/Y.
         /// </summary>
@@ -3838,6 +3629,5 @@ namespace LinearAlgebra
 
             return new Complex((ximag + (xreal * (yreal / yimag))) / (yimag + (yreal * (yreal / yimag))), (-xreal + (ximag * (yreal / yimag))) / (yimag + (yreal * (yreal / yimag))));
         }
-        */
     }
 }

@@ -49,7 +49,7 @@ public class floatSolversTests {
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
-            var b = arena.floatRandomVector(dim, -1f, 1f);
+            var b = arena.floatRandomVector(dim, -1f, 1f, 12324, true);
 
             var y = floatOP.dot(b, Q);
             

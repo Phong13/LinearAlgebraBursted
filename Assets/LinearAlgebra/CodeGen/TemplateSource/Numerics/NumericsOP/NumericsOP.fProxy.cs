@@ -6,7 +6,7 @@ using System;
 
 namespace LinearAlgebra.MathNet.Numerics
 {
-    public static class NumericsOP
+    public static class NumericsOPfProxy
     {
         [BurstCompile]
         public static void SingularValueDecomposition(ref Arena arena, bool computeVectors, fProxyMxN aRowMajor, fProxyN s, fProxyMxN uRowMajor, fProxyMxN vtRowMajor)
@@ -17,14 +17,14 @@ namespace LinearAlgebra.MathNet.Numerics
             aRowMajor.FlattenColumnMajorInpl(aFlat);
             fProxyN uFlat = arena.tempfProxyVec(uRowMajor.N_Cols * uRowMajor.M_Rows);
             fProxyN vtFlat = arena.tempfProxyVec(vtRowMajor.N_Cols * vtRowMajor.M_Rows);
-            ManagedLinearAlgebraProvider.SingularValueDecomposition(ref arena, computeVectors, aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, s, uFlat, vtFlat);
+            ManagedLinearAlgebraProviderfProxy.SingularValueDecomposition(ref arena, computeVectors, aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, s, uFlat, vtFlat);
             uFlat.UnFlattenFromColumnMajorInpl(uRowMajor);
             vtFlat.UnFlattenFromColumnMajorInpl(vtRowMajor);
         }
 
-        public static Svd Svd(ref Arena arena, bool computeVectors, fProxyMxN aRowMajor)
+        public static SvdfProxy Svd(ref Arena arena, bool computeVectors, fProxyMxN aRowMajor)
         {
-            var svd = new Svd(computeVectors);
+            var svd = new SvdfProxy(computeVectors);
             int mRows = aRowMajor.M_Rows;
             int nCols = aRowMajor.N_Cols;
             svd.S = arena.tempfProxyVec(Mathf.Min(mRows, nCols));
@@ -49,7 +49,7 @@ namespace LinearAlgebra.MathNet.Numerics
             bRowMajor.FlattenColumnMajorInpl(bFlat);
 
             var xFlat = arena.tempfProxyVec(x.Length);
-            ManagedLinearAlgebraProvider.SvdSolve(ref arena, aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, bFlat, bRowMajor.N_Cols, xFlat, epsilon);
+            ManagedLinearAlgebraProviderfProxy.SvdSolve(ref arena, aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, bFlat, bRowMajor.N_Cols, xFlat, epsilon);
 
             xFlat.UnFlattenFromColumnMajorInpl(x);
         }
@@ -96,15 +96,15 @@ namespace LinearAlgebra.MathNet.Numerics
                     break;
             }
 
-            ManagedLinearAlgebraProvider.EigenDecomp(ref arena, isSymmetric, order, matrixFlat, eigenVectorsFlat, eigenValuesReal, eigenValuesImaginary, blockDiagonalFlat);
+            ManagedLinearAlgebraProviderfProxy.EigenDecomp(ref arena, isSymmetric, order, matrixFlat, eigenVectorsFlat, eigenValuesReal, eigenValuesImaginary, blockDiagonalFlat);
             eigenVectorsFlat.UnFlattenFromColumnMajorInpl(eigenVectors);
             blockDiagonalFlat.UnFlattenFromColumnMajorInpl(blockDiagonal);
         }
 
-        public static Evd Evd(ref Arena arena, fProxyMxN matrixRowMajor, Symmetricity sym)
+        public static EvdfProxy Evd(ref Arena arena, fProxyMxN matrixRowMajor, Symmetricity sym)
         {
             var order = matrixRowMajor.RowCount;
-            var evd = new Evd();
+            var evd = new EvdfProxy();
             evd.EigenVectors = arena.tempfProxyMat(order, order);
             evd.EigenValuesReal = arena.tempfProxyVec(order);
             evd.EigenValuesImaginary = arena.tempfProxyVec(order);

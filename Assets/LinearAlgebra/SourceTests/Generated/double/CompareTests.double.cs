@@ -337,7 +337,7 @@ public class doubleCompareTests
         {
             int dim = 64;
 
-            doubleN v = arena.doubleRandomVector(dim, -1f, 1f, 1451);
+            doubleN v = arena.doubleRandomVector(dim, -1f, 1f, 1451, true);
             // set first element to zero
             v[0] = 0f;
 
@@ -365,7 +365,7 @@ public class doubleCompareTests
         {
             int dim = 32;
 
-            doubleMxN m = arena.doubleRandomMatrix(dim, dim, -1f, 1f, 1451);
+            doubleMxN m = arena.doubleRandomMatrix(dim, dim, -1f, 1f, 1451, true);
             // set first element to zero
             m[0,0] = 0f;
 
@@ -532,8 +532,8 @@ public class doubleCompareTests
         {
             int dim = 64;
 
-            doubleN v0 = arena.doubleRandomVector(dim, -1f, 1f, 1451);
-            doubleN v1 = arena.doubleRandomVector(dim, -1f, 1f, 6421);
+            doubleN v0 = arena.doubleRandomVector(dim, -1f, 1f, 1451, true);
+            doubleN v1 = arena.doubleRandomVector(dim, -1f, 1f, 6421, true);
 
             v0[0] = v1[0];
             v0[1] = 1f-v1[1];
@@ -561,8 +561,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 12343, true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 12343, true);
 
             var boolMat = m0 == m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
@@ -580,13 +580,13 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
 
             var boolMat = m0 != m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
 
-            m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131);
+            m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             boolMat = m0 != m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
@@ -596,8 +596,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 < m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
@@ -612,8 +612,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131,true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 <= m1;
 
@@ -624,8 +624,8 @@ public class doubleCompareTests
             boolMat = m0 <= m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
 
-            m0 = arena.doubleRandomMatrix(dim, dim, 1f, 0f, 2131);
-            m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
+            m0 = arena.doubleRandomMatrix(dim, dim, 1f, 0f, 2131, true);
+            m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
 
             boolMat = m0 <= m1;
 
@@ -636,8 +636,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 > m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
@@ -647,8 +647,8 @@ public class doubleCompareTests
             boolMat = m0 > m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
 
-            m0 = arena.doubleRandomMatrix(dim, dim, 1f, 0f, 2131);
-            m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
+            m0 = arena.doubleRandomMatrix(dim, dim, 1f, 0f, 2131, true);
+            m1 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
 
             boolMat = m0 > m1;
             Assert.IsFalse(BoolAnalysis.IsAllSame(boolMat));
@@ -661,8 +661,8 @@ public class doubleCompareTests
         {
             int dim = 16;
             
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, 0f, 1f, 2131, true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, 2f, 3f, 2131, true);
 
             var boolMat = m0 >= m1;
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, false));
@@ -672,7 +672,7 @@ public class doubleCompareTests
             boolMat = m0 >= m1;
 
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(boolMat, true));
-            m0 = arena.doubleRandomMatrix(dim, dim, 1f, 0f, 2131);
+            m0 = arena.doubleRandomMatrix(dim, dim, 1f, 0f, 2131, true);
 
             boolMat = m0 >= m1;
             Assert.IsTrue(BoolAnalysis.IsAllSame(boolMat));
@@ -682,8 +682,8 @@ public class doubleCompareTests
         {
             int dim = 32;
 
-            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, -1f, 1f, 1451);
-            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, -1f, 1f, 6421);
+            doubleMxN m0 = arena.doubleRandomMatrix(dim, dim, -1f, 1f, 1451, true);
+            doubleMxN m1 = arena.doubleRandomMatrix(dim, dim, -1f, 1f, 6421, true);
 
             m0[0,0] = m1[0,0];
             m0[0,1] = 1f - m1[0,1];

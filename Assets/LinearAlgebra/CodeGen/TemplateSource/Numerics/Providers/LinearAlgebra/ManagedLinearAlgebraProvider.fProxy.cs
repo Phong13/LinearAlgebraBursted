@@ -41,7 +41,7 @@ namespace LinearAlgebra.MathNet.Numerics
 {       
     /// The managed linear algebra provider.
     /// </summary>
-    public partial class ManagedLinearAlgebraProvider 
+    public partial class ManagedLinearAlgebraProviderfProxy 
     {
         /*
         /// <summary>
@@ -400,10 +400,10 @@ namespace LinearAlgebra.MathNet.Numerics
             switch (norm)
             {
                 case Norm.OneNorm:
-                    var norm1 = 0d;
+                    fProxy norm1 = 0d;
                     for (var j = 0; j < columns; j++)
                     {
-                        var s = 0.0;
+                        fProxy s = 0.0;
                         for (var i = 0; i < rows; i++)
                         {
                             s += math.abs(matrix[(j * rows) + i]);
@@ -412,7 +412,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     }
                     return norm1;
                 case Norm.LargestAbsoluteValue:
-                    var normMax = 0d;
+                    fProxy normMax = 0d;
                     for (var j = 0; j < columns; j++)
                     {
                         for (var i = 0; i < rows; i++)
@@ -443,7 +443,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 case Norm.FrobeniusNorm:
                     var aat = new fProxy[rows * rows];
                     MatrixMultiplyWithUpdate(Transpose.DontTranspose, Transpose.Transpose, 1.0, matrix, rows, columns, matrix, rows, columns, 0.0, aat);
-                    var normF = 0d;
+                    fProxy normF = 0d;
                     for (var i = 0; i < rows; i++)
                     {
                         normF += math.abs(aat[(i * rows) + i]);
@@ -1729,7 +1729,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 {
                     // Compute the transformation for the l-th column and
                     // place the l-th diagonal in vector s[l].
-                    var sum = 0.0;
+                    fProxy sum = 0.0;
                     for (var i1 = l; i1 < rowsA; i1++)
                     {
                         sum += a[(l * rowsA) + i1] * a[(l * rowsA) + i1];
@@ -1798,7 +1798,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 }
 
                 // Compute the l-th row transformation and place the l-th super-diagonal in e(l).
-                var enorm = 0.0;
+                fProxy enorm = 0.0;
                 for (i = lp1; i < e.N; i++)
                 {
                     enorm += e[i] * e[i];
@@ -1979,7 +1979,7 @@ namespace LinearAlgebra.MathNet.Numerics
             for (i = 0; i < m; i++)
             {
                 fProxy r;
-                if (stemp[i] != 0.0)
+                if (stemp[i] != 0)
                 {
                     t = stemp[i];
                     r = stemp[i] / t;
@@ -2005,7 +2005,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     break;
                 }
 
-                if (e[i] == 0.0)
+                if (e[i] == 0)
                 {
                     continue;
                 }
@@ -2052,7 +2052,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     test = math.abs(stemp[l]) + math.abs(stemp[l + 1]);
                     ztest = test + math.abs(e[l]);
                     
-                    if (Precision.AlmostEqualRelative(ztest, test, 15))
+                    if (PrecisionfProxy.AlmostEqualRelative(ztest, test, 15))
                     {
                         e[l] = 0.0;
                         break;
@@ -2081,7 +2081,7 @@ namespace LinearAlgebra.MathNet.Numerics
                         }
 
                         ztest = test + math.abs(stemp[ls]);
-                        if (Precision.AlmostEqualRelative(ztest , test, 15))
+                        if (PrecisionfProxy.AlmostEqualRelative(ztest , test, 15))
                         {
                             stemp[ls] = 0.0;
                             break;
@@ -2173,20 +2173,20 @@ namespace LinearAlgebra.MathNet.Numerics
                     case 3:
 
                         // calculate the shift.
-                        var scale = 0.0;
+                        fProxy scale = 0.0;
                         scale = math.max(scale, math.abs(stemp[m - 1]));
                         scale = math.max(scale, math.abs(stemp[m - 2]));
                         scale = math.max(scale, math.abs(e[m - 2]));
                         scale = math.max(scale, math.abs(stemp[l]));
                         scale = math.max(scale, math.abs(e[l]));
-                        var sm = stemp[m - 1] / scale;
-                        var smm1 = stemp[m - 2] / scale;
-                        var emm1 = e[m - 2] / scale;
-                        var sl = stemp[l] / scale;
-                        var el = e[l] / scale;
-                        var b = (((smm1 + sm) * (smm1 - sm)) + (emm1 * emm1)) / 2.0;
-                        var c = (sm * emm1) * (sm * emm1);
-                        var shift = 0.0;
+                        fProxy sm = stemp[m - 1] / scale;
+                        fProxy smm1 = stemp[m - 2] / scale;
+                        fProxy emm1 = e[m - 2] / scale;
+                        fProxy sl = stemp[l] / scale;
+                        fProxy el = e[l] / scale;
+                        fProxy b = (((smm1 + sm) * (smm1 - sm)) + (emm1 * emm1)) / 2.0;
+                        fProxy c = (sm * emm1) * (sm * emm1);
+                        fProxy shift = 0.0;
                         if (b != 0.0 || c != 0.0)
                         {
                             shift = math.sqrt((b * b) + c);
@@ -2199,7 +2199,7 @@ namespace LinearAlgebra.MathNet.Numerics
                         }
 
                         f = ((sl + sm) * (sl - sm)) + shift;
-                        var g = sl * el;
+                        fProxy g = sl * el;
 
                         // Chase zeros
                         for (k = l; k < m - 1; k++)
@@ -2218,7 +2218,7 @@ namespace LinearAlgebra.MathNet.Numerics
                             {
                                 for (i = 0; i < columnsA; i++)
                                 {
-                                    var z = (cs * v[(k * columnsA) + i]) + (sn * v[((k + 1) * columnsA) + i]);
+                                    fProxy z = (cs * v[(k * columnsA) + i]) + (sn * v[((k + 1) * columnsA) + i]);
                                     v[((k + 1) * columnsA) + i] = (cs * v[((k + 1) * columnsA) + i]) - (sn * v[(k * columnsA) + i]);
                                     v[(k * columnsA) + i] = z;
                                 }
@@ -2234,7 +2234,7 @@ namespace LinearAlgebra.MathNet.Numerics
                             {
                                 for (i = 0; i < rowsA; i++)
                                 {
-                                    var z = (cs * u[(k * rowsA) + i]) + (sn * u[((k + 1) * rowsA) + i]);
+                                    fProxy z = (cs * u[(k * rowsA) + i]) + (sn * u[((k + 1) * rowsA) + i]);
                                     u[((k + 1) * rowsA) + i] = (cs * u[((k + 1) * rowsA) + i]) - (sn * u[(k * rowsA) + i]);
                                     u[(k * rowsA) + i] = z;
                                 }
@@ -2338,15 +2338,15 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             fProxy r, z;
 
-            var roe = db;
-            var absda = math.abs(da);
-            var absdb = math.abs(db);
+            fProxy roe = db;
+            fProxy absda = math.abs(da);
+            fProxy absdb = math.abs(db);
             if (absda > absdb)
             {
                 roe = da;
             }
 
-            var scale = absda + absdb;
+            fProxy scale = absda + absdb;
             if (scale == 0.0)
             {
                 c = 1.0;
@@ -2356,8 +2356,8 @@ namespace LinearAlgebra.MathNet.Numerics
             }
             else
             {
-                var sda = da / scale;
-                var sdb = db / scale;
+                fProxy sda = da / scale;
+                fProxy sdb = db / scale;
                 r = scale * math.sqrt((sda * sda) + (sdb * sdb));
                 if (roe < 0.0)
                 {
@@ -2636,8 +2636,8 @@ namespace LinearAlgebra.MathNet.Numerics
             for (var i = order - 1; i > 0; i--)
             {
                 // Scale to avoid under/overflow.
-                var scale = 0.0;
-                var h = 0.0;
+                fProxy scale = 0.0;
+                fProxy h = 0.0;
 
                 for (var k = 0; k < i; k++)
                 {
@@ -2663,8 +2663,8 @@ namespace LinearAlgebra.MathNet.Numerics
                         h += d[k] * d[k];
                     }
 
-                    var f = d[i - 1];
-                    var g = math.sqrt(h);
+                    fProxy f = d[i - 1];
+                    fProxy g = math.sqrt(h);
                     if (f > 0)
                     {
                         g = -g;
@@ -2703,7 +2703,7 @@ namespace LinearAlgebra.MathNet.Numerics
                         f += e[j] * d[j];
                     }
 
-                    var hh = f / (h + h);
+                    fProxy hh = f / (h + h);
 
                     for (var j = 0; j < i; j++)
                     {
@@ -2733,7 +2733,7 @@ namespace LinearAlgebra.MathNet.Numerics
             {
                 a[(i * order) + order - 1] = a[(i * order) + i];
                 a[(i * order) + i] = 1.0;
-                var h = d[i + 1];
+                fProxy h = d[i + 1];
                 if (h != 0.0)
                 {
                     for (var k = 0; k <= i; k++)
@@ -2743,7 +2743,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var j = 0; j <= i; j++)
                     {
-                        var g = 0.0;
+                        fProxy g = 0.0;
                         for (var k = 0; k <= i; k++)
                         {
                             g += a[((i + 1) * order) + k] * a[(j * order) + k];
@@ -2795,9 +2795,9 @@ namespace LinearAlgebra.MathNet.Numerics
 
             e[order - 1] = 0.0;
 
-            var f = 0.0;
-            var tst1 = 0.0;
-            var eps = Precision.DoublePrecision;
+            fProxy f = 0.0;
+            fProxy tst1 = 0.0;
+            fProxy eps = PrecisionfProxy.DoublePrecision;
             for (var l = 0; l < order; l++)
             {
                 // Find small subdiagonal element
@@ -2823,9 +2823,9 @@ namespace LinearAlgebra.MathNet.Numerics
                         iter = iter + 1; // (Could check iteration count here.)
 
                         // Compute implicit shift
-                        var g = d[l];
-                        var p = (d[l + 1] - g) / (2.0 * e[l]);
-                        var r = SpecialFunctions.Hypotenuse(p, 1.0);
+                        fProxy g = d[l];
+                        fProxy p = (d[l + 1] - g) / (2.0 * e[l]);
+                        fProxy r = SpecialFunctions_fProxy.Hypotenuse(p, 1.0);
                         if (p < 0)
                         {
                             r = -r;
@@ -2834,8 +2834,8 @@ namespace LinearAlgebra.MathNet.Numerics
                         d[l] = e[l] / (p + r);
                         d[l + 1] = e[l] * (p + r);
 
-                        var dl1 = d[l + 1];
-                        var h = g - d[l];
+                        fProxy dl1 = d[l + 1];
+                        fProxy h = g - d[l];
                         for (var i = l + 2; i < order; i++)
                         {
                             d[i] -= h;
@@ -2845,12 +2845,12 @@ namespace LinearAlgebra.MathNet.Numerics
 
                         // Implicit QL transformation.
                         p = d[m];
-                        var c = 1.0;
-                        var c2 = c;
-                        var c3 = c;
-                        var el1 = e[l + 1];
-                        var s = 0.0;
-                        var s2 = 0.0;
+                        fProxy c = 1.0;
+                        fProxy c2 = c;
+                        fProxy c3 = c;
+                        fProxy el1 = e[l + 1];
+                        fProxy s = 0.0;
+                        fProxy s2 = 0.0;
                         for (var i = m - 1; i >= l; i--)
                         {
                             c3 = c2;
@@ -2858,7 +2858,7 @@ namespace LinearAlgebra.MathNet.Numerics
                             s2 = s;
                             g = c * e[i];
                             h = c * p;
-                            r = SpecialFunctions.Hypotenuse(p, e[i]);
+                            r = SpecialFunctions_fProxy.Hypotenuse(p, e[i]);
                             e[i + 1] = s * r;
                             s = e[i] / r;
                             c = p / r;
@@ -2938,7 +2938,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 var mm1 = m - 1;
                 var mm1O = mm1 * order;
                 // Scale column.
-                var scale = 0.0;
+                fProxy scale = 0.0;
                 for (var i = m; i <= high; i++)
                 {
                     scale += math.abs(matrixH[mm1O + i]);
@@ -2947,14 +2947,14 @@ namespace LinearAlgebra.MathNet.Numerics
                 if (scale != 0.0)
                 {
                     // Compute Householder transformation.
-                    var h = 0.0;
+                    fProxy h = 0.0;
                     for (var i = high; i >= m; i--)
                     {
                         ort[i] = matrixH[mm1O + i] / scale;
                         h += ort[i] * ort[i];
                     }
 
-                    var g = math.sqrt(h);
+                    fProxy g = math.sqrt(h);
                     if (ort[m] > 0)
                     {
                         g = -g;
@@ -2968,7 +2968,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     for (var j = m; j < order; j++)
                     {
                         var jO = j * order;
-                        var f = 0.0;
+                        fProxy f = 0.0;
                         for (var i = order - 1; i >= m; i--)
                         {
                             f += ort[i] * matrixH[jO + i];
@@ -2984,7 +2984,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var i = 0; i <= high; i++)
                     {
-                        var f = 0.0;
+                        fProxy f = 0.0;
                         for (var j = high; j >= m; j--)
                         {
                             f += ort[j] * matrixH[j * order + i];
@@ -3025,7 +3025,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var j = m; j <= high; j++)
                     {
-                        var g = 0.0;
+                        fProxy g = 0.0;
                         var jO = j * order;
                         for (var i = m; i <= high; i++)
                         {
@@ -3062,13 +3062,13 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             // Initialize
             var n = order - 1;
-            var eps = math.pow(2.0, -52.0);
-            var exshift = 0.0;
+            fProxy eps = math.pow(2.0, -52.0);
+            fProxy exshift = 0.0;
             fProxy p = 0, q = 0, r = 0, s = 0, z = 0;
             fProxy w, x, y;
 
             // Store roots isolated by balanc and compute matrix norm
-            var norm = 0.0;
+            fProxy norm = 0.0;
             for (var i = 0; i < order; i++)
             {
                 for (var j = math.max(i - 1, 0); j < order; j++)
@@ -3524,8 +3524,8 @@ namespace LinearAlgebra.MathNet.Numerics
                         var ip1 = i + 1;
                         var iO = i * order;
                         var ip1O = ip1 * order;
-                        var ra = 0.0;
-                        var sa = 0.0;
+                        fProxy ra = 0.0;
+                        fProxy sa = 0.0;
                         for (var j = l; j <= n; j++)
                         {
                             var jO = j * order;
@@ -3557,8 +3557,8 @@ namespace LinearAlgebra.MathNet.Numerics
                                 x = matrixH[ip1O + i];
                                 y = matrixH[iO + ip1];
 
-                                var vr = ((d[i] - p) * (d[i] - p)) + (e[i] * e[i]) - (q * q);
-                                var vi = (d[i] - p) * 2.0 * q;
+                                fProxy vr = ((d[i] - p) * (d[i] - p)) + (e[i] * e[i]) - (q * q);
+                                fProxy vi = (d[i] - p) * 2.0 * q;
                                 if ((vr == 0.0) && (vi == 0.0))
                                 {
                                     vr = eps * norm * (math.abs(w) + math.abs(q) + math.abs(x) + math.abs(y) + math.abs(z));

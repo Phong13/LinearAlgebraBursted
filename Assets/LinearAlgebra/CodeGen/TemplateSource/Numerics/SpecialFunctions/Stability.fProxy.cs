@@ -33,7 +33,7 @@ using Unity.Burst;
 // ReSharper disable once CheckNamespace
 namespace LinearAlgebra.MathNet.Numerics
 {
-    public partial class SpecialFunctions
+    public partial class SpecialFunctions_fProxy
     {
         /// <summary>
         /// Numerically stable hypotenuse of a right angle triangle, i.e. <code>(a,b) -> sqrt(a^2 + b^2)</code>

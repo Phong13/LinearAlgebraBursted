@@ -48,11 +48,11 @@ namespace LinearAlgebra
             floatN vec;
             if (isTemp)
             {
-                vec = arena.tempfloatVec(N, true);
+                vec = arena.tempfloatVec(N, false);
             }
             else
             {
-                vec = arena.floatVec(N, true);
+                vec = arena.floatVec(N, false);
             }
 
             if (index < 0 || index >= N)
@@ -63,7 +63,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static floatN floatRandomUnitVector(this ref Arena arena, int N, uint seed = 34215, bool isTemp = true)
+        public static floatN floatRandomUnitVector(this ref Arena arena, int N, uint seed, bool isTemp)
         {
             floatN vec;
             if (isTemp)
@@ -92,7 +92,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static floatN floatRandomVector(this ref Arena arena, int N, float min, float max, uint seed = 34215, bool isTemp = true)
+        public static floatN floatRandomVector(this ref Arena arena, int N, float min, float max, uint seed, bool isTemp)
         {
             floatN vec;
             if (isTemp)
@@ -223,13 +223,13 @@ namespace LinearAlgebra
 
         // random matrix
 
-        public static floatMxN floatRandomMatrix(this ref Arena arena, int M_rows, int N_cols, uint seed = 121312, bool isTemp = true)
+        public static floatMxN floatRandomMatrix(this ref Arena arena, int M_rows, int N_cols, uint seed, bool isTemp)
         {
             return floatRandomMatrix(ref arena, M_rows, N_cols, -1, 1, seed, isTemp);
         }
 
         // constructs diagonal matrix with scalar s on diagonal
-        public static floatMxN floatRandomDiagonalMatrix(this ref Arena arena, int N, float min, float max, uint seed = 65792, bool isTemp = true)
+        public static floatMxN floatRandomDiagonalMatrix(this ref Arena arena, int N, float min, float max, uint seed, bool isTemp)
         {
             floatMxN mat;
             if (isTemp)
@@ -245,7 +245,7 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static floatMxN floatRandomMatrix(this ref Arena arena, int M_rows, int N_cols, float min, float max, uint seed = 121312, bool isTemp = true)
+        public static floatMxN floatRandomMatrix(this ref Arena arena, int M_rows, int N_cols, float min, float max, uint seed, bool isTemp)
         {
             floatMxN mat;
             if (isTemp)

@@ -73,7 +73,7 @@ namespace LinearAlgebra.MathNet.Numerics
     /// </list>
     /// </para>
     /// </remarks>
-    public static partial class Precision
+    public static partial class PrecisionfProxy
     {
         /// <summary>
         /// The number of binary digits used to represent the binary number for a double precision floating

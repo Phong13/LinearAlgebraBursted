@@ -107,7 +107,7 @@ public class floatDotOperationTests
             int outVecLen = 5;
 
             floatN x = arena.floatVec(inVecLen, 1f);
-            floatMxN A = arena.floatRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
+            floatMxN A = arena.floatRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f, 12343, false);
 
             floatN xx = x;
             floatMxN AA = A;
@@ -131,8 +131,8 @@ public class floatDotOperationTests
 
             int vecLen = 20;
 
-            floatN x = arena.floatRandomUnitVector(vecLen);
-            floatMxN A = arena.floatIdentityMatrix(vecLen, true);
+            floatN x = arena.floatRandomUnitVector(vecLen, 12343, false);
+            floatMxN A = arena.floatIdentityMatrix(vecLen, false);
 
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             floatN b = floatOP.dot(x, A);
@@ -144,7 +144,7 @@ public class floatDotOperationTests
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual(x[i], b[i]);
 
-            x = arena.floatIndexZeroVector(vecLen, true);
+            x = arena.floatIndexZeroVector(vecLen, false);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
             Assert.IsTrue(arena.DB_isTemp(b));
@@ -224,8 +224,8 @@ public class floatDotOperationTests
 
             int matLen = 16;
 
-            floatMxN A = arena.floatIdentityMatrix(matLen, true);
-            floatMxN B = arena.floatIdentityMatrix(matLen, true);
+            floatMxN A = arena.floatIdentityMatrix(matLen, false);
+            floatMxN B = arena.floatIdentityMatrix(matLen, false);
 
             floatMxN AA = A;
             floatMxN BB = B;
@@ -247,7 +247,7 @@ public class floatDotOperationTests
                     Assert.AreEqual((float)0f, C[i, j]);
             }
 
-            floatMxN R = arena.floatRandomMatrix(matLen, matLen);
+            floatMxN R = arena.floatRandomMatrix(matLen, matLen, 12343, true);
             
             C = floatOP.dot(A, R);
 
@@ -281,7 +281,7 @@ public class floatDotOperationTests
             int outVecLen = 16;
 
             floatN x = arena.floatVec(inVecLen, 1f);
-            floatMxN A = arena.floatRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
+            floatMxN A = arena.floatRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f, 12343, false);
 
             floatN xx = x;
             floatMxN AA = A;
@@ -307,7 +307,7 @@ public class floatDotOperationTests
             int outVecLen = 16;
 
             floatN x = arena.floatVec(inVecLen, 1f);
-            floatMxN A = arena.floatRandomMatrix(inVecLen, outVecLen, -0.01f, 0.01f);
+            floatMxN A = arena.floatRandomMatrix(inVecLen, outVecLen, -0.01f, 0.01f, 12343, true);
 
             floatN b = floatOP.dot(x, A);
             

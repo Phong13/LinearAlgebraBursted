@@ -35,7 +35,7 @@ using Complex = System.Numerics.Complex;
 
 namespace LinearAlgebra.MathNet.Numerics
 {
-    public static partial class Precision
+    public static partial class PrecisionfProxy
     {
         /// <summary>
         /// Compares two doubles and determines if they are equal
@@ -146,6 +146,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNorm(a, b, a - b, maximumAbsoluteError);
         }
 
+        /*
         /// <summary>
         /// Compares two complex and determines if they are equal within
         /// the specified maximum error.
@@ -157,6 +158,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNorm(a, b, a - b, maximumAbsoluteError);
         }
+        */
 
         /// <summary>
         /// Compares two complex and determines if they are equal within
@@ -196,6 +198,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNormRelative(a, b, a - b, maximumError);
         }
 
+        /*
         /// <summary>
         /// Compares two complex and determines if they are equal within
         /// the specified maximum error.
@@ -207,6 +210,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNormRelative(a, b, a - b, maximumError);
         }
+        */
 
         /// <summary>
         /// Compares two complex and determines if they are equal within
@@ -244,7 +248,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNorm(a, b, a - b, DefaultDoubleAccuracy);
         }
-
+        /*
         /// <summary>
         /// Checks whether two real numbers are almost equal.
         /// </summary>
@@ -255,6 +259,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNorm(a, b, a - b, DefaultSingleAccuracy);
         }
+        */
 
         /// <summary>
         /// Checks whether two Complex numbers are almost equal.
@@ -291,6 +296,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNormRelative(a, b, a - b, DefaultDoubleAccuracy);
         }
 
+        /*
         /// <summary>
         /// Checks whether two real numbers are almost equal.
         /// </summary>
@@ -301,6 +307,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNormRelative(a, b, a - b, DefaultSingleAccuracy);
         }
+        */
 
         /// <summary>
         /// Checks whether two Complex numbers are almost equal.
@@ -490,6 +497,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNorm(a, b, a - b, decimalPlaces);
         }
 
+        /*
         /// <summary>
         /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not, using the
         /// number of decimal places as an absolute measure.
@@ -501,6 +509,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNorm(a, b, a - b, decimalPlaces);
         }
+        */
 
         /// <summary>
         /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not, using the
@@ -541,6 +550,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNormRelative(a, b, a - b, decimalPlaces);
         }
 
+        /*
         /// <summary>
         /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not. If the numbers
         /// are very close to zero an absolute difference is compared, otherwise the relative difference is compared.
@@ -552,6 +562,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return AlmostEqualNormRelative(a, b, a - b, decimalPlaces);
         }
+        */
 
         /// <summary>
         /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not. If the numbers
@@ -635,6 +646,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return (a > b) ? (secondUlong + maxNumbersBetween >= firstUlong) : (firstUlong + maxNumbersBetween >= secondUlong);
         }
 
+        /*
         /// <summary>
         /// Compares two floats and determines if they are equal to within the tolerance or not. Equality comparison is based on the binary representation.
         /// </summary>
@@ -677,6 +689,7 @@ namespace LinearAlgebra.MathNet.Numerics
             // Do note that we could overflow this way too. We should probably check that we don't.
             return (a > b) ? (secondUlong + maxNumbersBetween >= firstUlong) : (firstUlong + maxNumbersBetween >= secondUlong);
         }
+        */
 
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
@@ -690,6 +703,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return ListForAll(a, b, AlmostEqual, maximumAbsoluteError);
         }
 
+        /*
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
         /// specified maximum error.
@@ -701,6 +715,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return ListForAll(a, b, AlmostEqual, maximumAbsoluteError);
         }
+        */
 
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
@@ -740,6 +755,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return ListForAll(a, b, AlmostEqualRelative, maximumError);
         }
 
+        /*
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
         /// specified maximum error.
@@ -751,6 +767,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return ListForAll(a, b, AlmostEqualRelative, maximumError);
         }
+        */
 
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
@@ -790,6 +807,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return ListForAll(a, b, AlmostEqual, decimalPlaces);
         }
 
+        /*
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
         /// specified maximum error.
@@ -801,6 +819,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return ListForAll(a, b, AlmostEqual, decimalPlaces);
         }
+        */
 
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
@@ -840,6 +859,7 @@ namespace LinearAlgebra.MathNet.Numerics
             return ListForAll(a, b, AlmostEqualRelative, decimalPlaces);
         }
 
+        /*
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
         /// specified maximum error.
@@ -851,6 +871,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             return ListForAll(a, b, AlmostEqualRelative, decimalPlaces);
         }
+        */
 
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the

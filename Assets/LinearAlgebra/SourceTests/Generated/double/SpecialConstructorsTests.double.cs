@@ -145,7 +145,7 @@ public class doubleSpecialConstructorsTests {
 
             for (uint seed = 0; seed < 16; seed++)
             {
-                var v = arena.doubleRandomUnitVector(16, 332*seed+17);
+                var v = arena.doubleRandomUnitVector(16, 332*seed+17, true);
 
                 var len = doubleNormsOP.L2(in v);
 
@@ -161,7 +161,7 @@ public class doubleSpecialConstructorsTests {
 
             for (uint seed = 0; seed < 16; seed++)
             {
-                var v = arena.doubleRandomVector(16, -3f, 3f, 351*seed+19);
+                var v = arena.doubleRandomVector(16, -3f, 3f, 351*seed+19, true);
 
                 for (int i = 0; i < v.N; i++)
                     Assert.IsFalse(v[i] < -(double)3 || v[i] > (double)3);
@@ -248,7 +248,7 @@ public class doubleSpecialConstructorsTests {
         public void RandomDiagonalMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleRandomDiagonalMatrix(16, -3f, 3f);
+            var m = arena.doubleRandomDiagonalMatrix(16, -3f, 3f, 12343, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(in m));
 
@@ -267,7 +267,7 @@ public class doubleSpecialConstructorsTests {
         public void RandomMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleRandomMatrix(16, 16);
+            var m = arena.doubleRandomMatrix(16, 16, 12343, true);
 
             for (int i = 0; i < m.M_Rows; i++)
             for (int j = 0; j < m.N_Cols; j++)
@@ -279,7 +279,7 @@ public class doubleSpecialConstructorsTests {
         public void RandomRangeMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var m = arena.doubleRandomMatrix(16, 16, -6f, 6f);
+            var m = arena.doubleRandomMatrix(16, 16, -6f, 6f, 12343, true);
 
             for (int i = 0; i < m.M_Rows; i++)
             for (int j = 0; j < m.N_Cols; j++)
@@ -333,7 +333,7 @@ public class doubleSpecialConstructorsTests {
         public void HouseholderMat()
         {
             var arena = new Arena(Allocator.Persistent);
-            var v = arena.doubleRandomUnitVector(16);
+            var v = arena.doubleRandomUnitVector(16, 34215, true);
             var m = arena.doubleHouseholderMatrix(16, v, true);
 
             Assert.IsTrue(Analysis.IsOrthogonal(in m, 0.00001f));
