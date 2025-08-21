@@ -175,21 +175,18 @@ should be able to account for all allocations.
 - ✅ Basic vector-vector, vector-matrix, matrix-vector and matrix-matrix operations
 - ✅ QR decomposition & solver for well-determined and over-determined systems
 - ✅ Pivoting
+- ✅ SVD decomposition (copied from Math.Net modified to use burst mats and vecs)
+- ✅ EVD decomposiiont (copied from Math.Net modified to use burst mats and vecs)
 - 🔳 LU decomposition & solver
 - 🔳 View/Slice 
 - 🔳 Find/Query operations (e.g.: find row with biggest L2 norm)
-- 🔳 SVD decomposition
 - 🔳 Optimizers? (min/max of function, gradient descent, root finding.. )
 
 ## TODO
-- Better arena management and standalone vec/mat management (without arena allocation)
-- Test arena/vec/mat allocated outside jobs (On normal C# thread)
 - Refactor, unify the names / simplify
-- More safety checks
 - Vec/Mat views (simple structs for easier read/write)
 - More stats functions and tests
 - More solvers (LU, Pivoted LU)
-- SVD
 - Least squares
 - Sparse matrix?
 - Documentation
