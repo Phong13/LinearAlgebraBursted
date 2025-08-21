@@ -1,4 +1,4 @@
-﻿// <copyright file="ComplexExtensions.cs" company="Math.NET">
+// <copyright file="ComplexExtensions.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
@@ -38,15 +38,221 @@ namespace LinearAlgebra.MathNet.Numerics
     /// <summary>
     /// Extension methods for the Complex type provided by System.Numerics
     /// </summary>
-    public static class ComplexExtensionsfProxy
+    public static class ComplexExtensions
     {
+        /// <summary>The number sqrt(1/2) = (fProxy)  1/sqrt(2) = (fProxy)  sqrt(2)/2</summary>
+        public static readonly double Sqrt1Over2 = 0.70710678118654752440084436210484903928483593768845d;
+
+        public static readonly double Pi2 = 6.2831853071795864769252867665590057683943387987502d;
+
+        /// <summary>
+        /// Compares two complex and determines if they are equal within
+        /// the specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
+        public static bool AlmostEqual(this Complex a, Complex b, double maximumAbsoluteError)
+        {
+            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumAbsoluteError);
+        }
+
+        /// <summary>
+        /// Compares two complex and determines if they are equal within
+        /// the specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="maximumError">The accuracy required for being almost equal.</param>
+        public static bool AlmostEqualRelative(this Complex a, Complex b, double maximumError)
+        {
+            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumError);
+        }
+
+        /// <summary>
+        /// Checks whether two Complex numbers are almost equal.
+        /// </summary>
+        /// <param name="a">The first number</param>
+        /// <param name="b">The second number</param>
+        /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
+        public static bool AlmostEqual(this Complex a, Complex b)
+        {
+            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), Precision.DefaultDoubleAccuracy);
+        }
+
+        /// <summary>
+        /// Checks whether two Complex numbers are almost equal.
+        /// </summary>
+        /// <param name="a">The first number</param>
+        /// <param name="b">The second number</param>
+        /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
+        public static bool AlmostEqualRelative(this Complex a, Complex b)
+        {
+            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), Precision.DefaultDoubleAccuracy);
+        }
+
+        /// <summary>
+        /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not, using the
+        /// number of decimal places as an absolute measure.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool AlmostEqual(this Complex a, Complex b, int decimalPlaces)
+        {
+            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
+        }
+
+        /// <summary>
+        /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not. If the numbers
+        /// are very close to zero an absolute difference is compared, otherwise the relative difference is compared.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool AlmostEqualRelative(this Complex a, Complex b, int decimalPlaces)
+        {
+            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
+        public static bool ListAlmostEqual(this IList<Complex> a, IList<Complex> b, double maximumAbsoluteError)
+        {
+            return ListForAll(a, b, AlmostEqual, maximumAbsoluteError);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="maximumError">The accuracy required for being almost equal.</param>
+        public static bool ListAlmostEqualRelative(this IList<Complex> a, IList<Complex> b, double maximumError)
+        {
+            return ListForAll(a, b, AlmostEqualRelative, maximumError);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool ListAlmostEqual(this IList<Complex> a, IList<Complex> b, int decimalPlaces)
+        {
+            return ListForAll(a, b, AlmostEqual, decimalPlaces);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool ListAlmostEqualRelative(this IList<Complex> a, IList<Complex> b, int decimalPlaces)
+        {
+            return ListForAll(a, b, AlmostEqualRelative, decimalPlaces);
+        }
+
+        private static bool AlmostEqualNorm(double a, double b, double diff, double maximumAbsoluteError)
+        {
+            // If A or B are infinity (positive or negative) then
+            // only return true if they are exactly equal to each other -
+            // that is, if they are both infinities of the same sign.
+            if (double.IsInfinity(a) || double.IsInfinity(b))
+            {
+                return a == b;
+            }
+
+            // If A or B are a NAN, return false. NANs are equal to nothing,
+            // not even themselves.
+            if (double.IsNaN(a) || double.IsNaN(b))
+            {
+                return false;
+            }
+
+            return math.abs(diff) < maximumAbsoluteError;
+        }
+
+        /// <summary>
+        /// Compares two doubles and determines if they are equal
+        /// within the specified maximum error.
+        /// </summary>
+        /// <param name="a">The norm of the first value (can be negative).</param>
+        /// <param name="b">The norm of the second value (can be negative).</param>
+        /// <param name="diff">The norm of the difference of the two values (can be negative).</param>
+        /// <param name="maximumError">The accuracy required for being almost equal.</param>
+        /// <returns>True if both doubles are almost equal up to the specified maximum error, false otherwise.</returns>
+        private static bool AlmostEqualNormRelative(double a, double b, double diff, double maximumError)
+        {
+            // If A or B are infinity (positive or negative) then
+            // only return true if they are exactly equal to each other -
+            // that is, if they are both infinities of the same sign.
+            if (double.IsInfinity(a) || double.IsInfinity(b))
+            {
+                return a == b;
+            }
+
+            // If A or B are a NAN, return false. NANs are equal to nothing,
+            // not even themselves.
+            if (double.IsNaN(a) || double.IsNaN(b))
+            {
+                return false;
+            }
+
+            // If one is almost zero, fall back to absolute equality
+            if (math.abs(a) < Precision.DoublePrecision || math.abs(b) < Precision.DoublePrecision)
+            {
+                return math.abs(diff) < maximumError;
+            }
+
+            if ((a == 0 && math.abs(b) < maximumError) || (b == 0 && math.abs(a) < maximumError))
+            {
+                return true;
+            }
+
+            return math.abs(diff) < maximumError * math.max(math.abs(a), math.abs(b));
+        }
+
+        static bool ListForAll<T, TP>(IList<T> a, IList<T> b, Func<T, T, TP, bool> predicate, TP parameter)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+
+            if (a == null || b == null || a.Count != b.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!predicate(a[i], b[i], parameter))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         /*
         /// <summary>
         /// Gets the squared magnitude of the <c>Complex</c> number.
         /// </summary>
         /// <param name="complex">The <see cref="Complex32"/> number to perform this operation on.</param>
         /// <returns>The squared magnitude of the <c>Complex</c> number.</returns>
-        public static fProxy MagnitudeSquared(this Complex32 complex)
+        public static double MagnitudeSquared(this Complex32 complex)
         {
             return (complex.Real * complex.Real) + (complex.Imaginary * complex.Imaginary);
         }
@@ -57,7 +263,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// </summary>
         /// <param name="complex">The <see cref="Complex"/> number to perform this operation on.</param>
         /// <returns>The squared magnitude of the <c>Complex</c> number.</returns>
-        public static fProxy MagnitudeSquared(this Complex complex)
+        public static double MagnitudeSquared(this Complex complex)
         {
             return ((complex.Real * complex.Real) + (complex.Imaginary * complex.Imaginary));
         }
@@ -70,26 +276,26 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             if (double.IsPositiveInfinity(complex.Real) && double.IsPositiveInfinity(complex.Imaginary))
             {
-                return new Complex(ConstantsfProxy.Sqrt1Over2, ConstantsfProxy.Sqrt1Over2);
+                return new Complex(Sqrt1Over2, Sqrt1Over2);
             }
 
             if (double.IsPositiveInfinity(complex.Real) && double.IsNegativeInfinity(complex.Imaginary))
             {
-                return new Complex(ConstantsfProxy.Sqrt1Over2, -ConstantsfProxy.Sqrt1Over2);
+                return new Complex(Sqrt1Over2, -Sqrt1Over2);
             }
 
             if (double.IsNegativeInfinity(complex.Real) && double.IsPositiveInfinity(complex.Imaginary))
             {
-                return new Complex(-ConstantsfProxy.Sqrt1Over2, -ConstantsfProxy.Sqrt1Over2);
+                return new Complex(-Sqrt1Over2, -Sqrt1Over2);
             }
 
             if (double.IsNegativeInfinity(complex.Real) && double.IsNegativeInfinity(complex.Imaginary))
             {
-                return new Complex(-ConstantsfProxy.Sqrt1Over2, ConstantsfProxy.Sqrt1Over2);
+                return new Complex(-Sqrt1Over2, Sqrt1Over2);
             }
 
             // don't replace this with "Magnitude"!
-            var mod = SpecialFunctions_fProxy.Hypotenuse(complex.Real, complex.Imaginary);
+            var mod = SpecialFunctions.Hypotenuse(complex.Real, complex.Imaginary);
             if (mod == 0.0d)
             {
                 return Complex.Zero;
@@ -171,7 +377,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// </summary>
         /// <returns>The logarithm of this complex number.</returns>
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-        public static Complex Log(this Complex complex, fProxy baseValue)
+        public static Complex Log(this Complex complex, double baseValue)
         {
             return Complex.Log(complex, baseValue);
         }
@@ -203,11 +409,11 @@ namespace LinearAlgebra.MathNet.Numerics
                 if (exponent.Real < 0d)
                 {
                     return exponent.Imaginary == 0d
-                        ? new Complex(fProxy.PositiveInfinity, 0d)
-                        : new Complex(fProxy.PositiveInfinity, fProxy.PositiveInfinity);
+                        ? new Complex(double.PositiveInfinity, 0d)
+                        : new Complex(double.PositiveInfinity, double.PositiveInfinity);
                 }
 
-                return new Complex(fProxy.NaN, fProxy.NaN);
+                return new Complex(double.NaN, double.NaN);
             }
 
             return Complex.Pow(complex, exponent);
@@ -267,7 +473,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
             var absReal = Math.Abs(complex.Real);
             var absImag = Math.Abs(complex.Imaginary);
-            fProxy w;
+            double w;
             if (absReal >= absImag)
             {
                 var ratio = complex.Imaginary / complex.Real;
@@ -311,7 +517,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             var r = Math.Pow(complex.Magnitude, 1d/3d);
             var theta = complex.Phase/3;
-            fProxy shift = ConstantsfProxy.Pi2/3;
+            double shift = Pi2/3;
             return (Complex.FromPolarCoordinates(r, theta),
                 Complex.FromPolarCoordinates(r, theta + shift),
                 Complex.FromPolarCoordinates(r, theta - shift));
@@ -358,7 +564,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// </returns>
         public static bool IsNaN(this Complex complex)
         {
-            return fProxy.IsNaN(complex.Real) || fProxy.IsNaN(complex.Imaginary);
+            return double.IsNaN(complex.Real) || double.IsNaN(complex.Imaginary);
         }
 
         /// <summary>
@@ -375,7 +581,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// </remarks>
         public static bool IsInfinity(this Complex complex)
         {
-            return fProxy.IsInfinity(complex.Real) || fProxy.IsInfinity(complex.Imaginary);
+            return double.IsInfinity(complex.Real) || double.IsInfinity(complex.Imaginary);
         }
 
         /// <summary>
@@ -404,7 +610,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Returns a Norm of a value of this type, which is appropriate for measuring how
         /// close this value is to zero.
         /// </summary>
-        public static fProxy Norm(this Complex complex)
+        public static double Norm(this Complex complex)
         {
             return complex.MagnitudeSquared();
         }
@@ -414,7 +620,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Returns a Norm of a value of this type, which is appropriate for measuring how
         /// close this value is to zero.
         /// </summary>
-        public static fProxy Norm(this Complex32 complex)
+        public static double Norm(this Complex32 complex)
         {
             return complex.MagnitudeSquared;
         }
@@ -424,7 +630,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Returns a Norm of the difference of two values of this type, which is
         /// appropriate for measuring how close together these two values are.
         /// </summary>
-        public static fProxy NormOfDifference(this Complex complex, Complex otherValue)
+        public static double NormOfDifference(this Complex complex, Complex otherValue)
         {
             return (complex - otherValue).MagnitudeSquared();
         }
@@ -434,7 +640,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Returns a Norm of the difference of two values of this type, which is
         /// appropriate for measuring how close together these two values are.
         /// </summary>
-        public static fProxy NormOfDifference(this Complex32 complex, Complex32 otherValue)
+        public static double NormOfDifference(this Complex32 complex, Complex32 otherValue)
         {
             return (complex - otherValue).MagnitudeSquared;
         }
@@ -444,7 +650,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <summary>
         /// Creates a complex number based on a string. The string can be in the
         /// following formats (without the quotes): 'n', 'ni', 'n +/- ni',
-        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a fProxy.
+        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a double.
         /// </summary>
         /// <returns>
         /// A complex number containing the value specified by the given string.
@@ -462,7 +668,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <summary>
         /// Creates a complex number based on a string. The string can be in the
         /// following formats (without the quotes): 'n', 'ni', 'n +/- ni',
-        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a fProxy.
+        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a double.
         /// </summary>
         /// <returns>
         /// A complex number containing the value specified by the given string.
@@ -563,9 +769,9 @@ namespace LinearAlgebra.MathNet.Numerics
         /// An <see cref="IFormatProvider"/> that supplies culture-specific
         /// formatting information.
         /// </param>
-        /// <returns>Resulting part as fProxy.</returns>
+        /// <returns>Resulting part as double.</returns>
         /// <exception cref="FormatException"/>
-        static fProxy ParsePart(ref LinkedListNode<string> token, out bool imaginary, IFormatProvider format)
+        static double ParsePart(ref LinkedListNode<string> token, out bool imaginary, IFormatProvider format)
         {
             imaginary = false;
             if (token == null)
@@ -629,7 +835,7 @@ namespace LinearAlgebra.MathNet.Numerics
         }
 
         /// <summary>
-        /// Converts the string representation of a complex number to a fProxy-precision complex number equivalent.
+        /// Converts the string representation of a complex number to a double-precision complex number equivalent.
         /// A return value indicates whether the conversion succeeded or failed.
         /// </summary>
         /// <param name="value">
@@ -648,7 +854,7 @@ namespace LinearAlgebra.MathNet.Numerics
         }
 
         /// <summary>
-        /// Converts the string representation of a complex number to fProxy-precision complex number equivalent.
+        /// Converts the string representation of a complex number to double-precision complex number equivalent.
         /// A return value indicates whether the conversion succeeded or failed.
         /// </summary>
         /// <param name="value">
@@ -689,7 +895,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <summary>
         /// Creates a <c>Complex32</c> number based on a string. The string can be in the
         /// following formats (without the quotes): 'n', 'ni', 'n +/- ni',
-        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a fProxy.
+        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a double.
         /// </summary>
         /// <returns>
         /// A complex number containing the value specified by the given string.
@@ -705,7 +911,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <summary>
         /// Creates a <c>Complex32</c> number based on a string. The string can be in the
         /// following formats (without the quotes): 'n', 'ni', 'n +/- ni',
-        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a fProxy.
+        /// 'ni +/- n', 'n,n', 'n,ni,' '(n,n)', or '(n,ni)', where n is a double.
         /// </summary>
         /// <returns>
         /// A complex number containing the value specified by the given string.

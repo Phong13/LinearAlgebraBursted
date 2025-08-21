@@ -69,11 +69,11 @@ namespace LinearAlgebra.MathNet.Numerics
                 throw new System.ArgumentException("All vectors must have the same dimensionality.");
             }
 
-            if (alpha == 0.0)
+            if (alpha == 0.0f)
             {
                 y.Copy(result);
             }
-            else if (alpha == 1.0)
+            else if (alpha == 1.0f)
             {
                 for (int i = 0; i < result.Length; i++)
                 {
@@ -105,11 +105,11 @@ namespace LinearAlgebra.MathNet.Numerics
                 throw new System.ArgumentNullException(nameof(x));
             }
 
-            if (alpha == 0.0)
+            if (alpha == 0.0f)
             {
                 Array.Clear(result, 0, result.Length);
             }
-            else if (alpha == 1.0)
+            else if (alpha == 1.0f)
             {
                 x.Copy(result);
             }
@@ -168,7 +168,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 throw new System.ArgumentException("All vectors must have the same dimensionality.");
             }
 
-            double sum = 0.0;
+            double sum = 0.0f;
             for (var index = 0; index < y.Length; index++)
             {
                 sum += y[index] * x[index];
@@ -403,7 +403,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     double norm1 = 0d;
                     for (var j = 0; j < columns; j++)
                     {
-                        double s = 0.0;
+                        double s = 0.0f;
                         for (var i = 0; i < rows; i++)
                         {
                             s += math.abs(matrix[(j * rows) + i]);
@@ -442,7 +442,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     return max;
                 case Norm.FrobeniusNorm:
                     var aat = new double[rows * rows];
-                    MatrixMultiplyWithUpdate(Transpose.DontTranspose, Transpose.Transpose, 1.0, matrix, rows, columns, matrix, rows, columns, 0.0, aat);
+                    MatrixMultiplyWithUpdate(Transpose.DontTranspose, Transpose.Transpose, 1.0f, matrix, rows, columns, matrix, rows, columns, 0.0f, aat);
                     double normF = 0d;
                     for (var i = 0; i < rows; i++)
                     {
@@ -467,7 +467,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="columnsY">The number of columns in the y matrix.</param>
         /// <param name="result">Where to store the result of the multiplication.</param>
         /// <remarks>This is a simplified version of the BLAS GEMM routine with alpha
-        /// set to 1.0 and beta set to 0.0, and x and y are not transposed.</remarks>
+        /// set to 1.0f and beta set to 0.0f, and x and y are not transposed.</remarks>
         public void MatrixMultiply(double[] x, int rowsX, int columnsX, double[] y, int rowsY, int columnsY, double[] result)
         {
             if (x == null)
@@ -533,7 +533,7 @@ namespace LinearAlgebra.MathNet.Numerics
                             sum += row[ii] * col[ii];
                         }
 
-                        result[j * rowsX + i] += 1.0 * sum;
+                        result[j * rowsX + i] += 1.0f * sum;
                     }
                 }
             }
@@ -554,7 +554,7 @@ namespace LinearAlgebra.MathNet.Numerics
                                 sum += row[ii] * column[ii];
                             }
 
-                            result[j * rowsX + i] += 1.0 * sum;
+                            result[j * rowsX + i] += 1.0f * sum;
                         }
                     }
                 });
@@ -625,16 +625,16 @@ namespace LinearAlgebra.MathNet.Numerics
             }
 
             // handle degenerate cases
-            if (beta == 0.0)
+            if (beta == 0.0f)
             {
                 Array.Clear(c, 0, c.Length);
             }
-            else if (beta != 1.0)
+            else if (beta != 1.0f)
             {
                 ScaleArray(beta, c, c);
             }
 
-            if (alpha == 0.0)
+            if (alpha == 0.0f)
             {
                 return;
             }
@@ -698,7 +698,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Computes the LUP factorization of A. P*A = L*U.
         /// </summary>
         /// <param name="data">An <paramref name="order"/> by <paramref name="order"/> matrix. The matrix is overwritten with the
-        /// the LU factorization on exit. The lower triangular factor L is stored in under the diagonal of <paramref name="data"/> (the diagonal is always 1.0
+        /// the LU factorization on exit. The lower triangular factor L is stored in under the diagonal of <paramref name="data"/> (the diagonal is always 1.0f
         /// for the L factor). The upper triangular factor U is stored on and above the diagonal of <paramref name="data"/>.</param>
         /// <param name="order">The order of the square matrix <paramref name="data"/>.</param>
         /// <param name="ipiv">On exit, it contains the pivot indices. The size of the array must be <paramref name="order"/>.</param>
@@ -750,7 +750,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 {
                     // Most of the time is spent in the following dot product.
                     var kmax = math.min(i, j);
-                    var s = 0.0;
+                    var s = 0.0f;
                     for (var k = 0; k < kmax; k++)
                     {
                         s += data[(k * order) + i] * vecLUcolj[k];
@@ -783,7 +783,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 }
 
                 // Compute multipliers.
-                if (j < order & data[indexjj] != 0.0)
+                if (j < order & data[indexjj] != 0.0f)
                 {
                     for (var i = j + 1; i < order; i++)
                     {
@@ -852,7 +852,7 @@ namespace LinearAlgebra.MathNet.Numerics
             var inverse = new double[a.Length];
             for (var i = 0; i < order; i++)
             {
-                inverse[i + (order * i)] = 1.0;
+                inverse[i + (order * i)] = 1.0f;
             }
 
             LUSolveFactored(order, a, order, ipiv, inverse);
@@ -1028,7 +1028,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 // "Pivot" element
                 double tmpVal = a[(ij * order) + ij];
 
-                if (tmpVal > 0.0)
+                if (tmpVal > 0.0f)
                 {
                     tmpVal = math.sqrt(tmpVal);
                     a[(ij * order) + ij] = tmpVal;
@@ -1052,7 +1052,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                 for (int i = ij + 1; i < order; i++)
                 {
-                    a[(i * order) + ij] = 0.0;
+                    a[(i * order) + ij] = 0.0f;
                 }
             }
         }
@@ -1258,7 +1258,7 @@ namespace LinearAlgebra.MathNet.Numerics
             {
                 for (var i = a; i < b; i++)
                 {
-                    q[(i * rowsR) + i] = 1.0;
+                    q[(i * rowsR) + i] = 1.0f;
                 }
             });
 
@@ -1341,7 +1341,7 @@ namespace LinearAlgebra.MathNet.Numerics
             Array.Clear(a, 0, a.Length);
             for (var i = 0; i < columnsA; i++)
             {
-                a[i * rowsA + i] = 1.0;
+                a[i * rowsA + i] = 1.0f;
             }
 
             for (var i = minmn - 1; i >= 0; i--)
@@ -1386,7 +1386,7 @@ namespace LinearAlgebra.MathNet.Numerics
             {
                 for (var j = columnStart; j < columnCount; j++)
                 {
-                    var scale = 0.0;
+                    var scale = 0.0f;
                     for (var i = rowStart; i < rowCount; i++)
                     {
                         scale += work[(workIndex * rowCount) + i - rowStart] * a[(j * rowCount) + i];
@@ -1419,11 +1419,11 @@ namespace LinearAlgebra.MathNet.Numerics
                 {
                     var iIndex = tmp + i;
                     work[iIndex - row] = a[iIndex];
-                    a[iIndex] = 0.0;
+                    a[iIndex] = 0.0f;
                 }
             });
 
-            var norm = 0.0;
+            var norm = 0.0f;
             for (var i = 0; i < rowCount - row; ++i)
             {
                 var iindex = tmp + i;
@@ -1438,13 +1438,13 @@ namespace LinearAlgebra.MathNet.Numerics
                 return;
             }
 
-            var scale = 1.0 / norm;
-            if (work[tmp] < 0.0)
+            var scale = 1.0f / norm;
+            if (work[tmp] < 0.0f)
             {
-                scale *= -1.0;
+                scale *= -1.0f;
             }
 
-            a[index] = -1.0 / scale;
+            a[index] = -1.0f / scale;
             CommonParallel.For(0, rowCount - row, 4096, (u, v) =>
             {
                 for (int i = u; i < v; i++)
@@ -1452,9 +1452,9 @@ namespace LinearAlgebra.MathNet.Numerics
                     work[tmp + i] *= scale;
                 }
             });
-            work[tmp] += 1.0;
+            work[tmp] += 1.0f;
 
-            var s = math.sqrt(1.0 / work[tmp]);
+            var s = math.sqrt(1.0f / work[tmp]);
             CommonParallel.For(0, rowCount - row, 4096, (u, v) =>
             {
                 for (int i = u; i < v; i++)
@@ -1626,7 +1626,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     {
                         var im = i * rowsA;
 
-                        var sum = 0.0;
+                        var sum = 0.0f;
                         for (var k = 0; k < rowsA; k++)
                         {
                             sum += q[im + k] * column[k];
@@ -1729,7 +1729,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 {
                     // Compute the transformation for the l-th column and
                     // place the l-th diagonal in vector s[l].
-                    double sum = 0.0;
+                    double sum = 0.0f;
                     for (var i1 = l; i1 < rowsA; i1++)
                     {
                         sum += a[(l * rowsA) + i1] * a[(l * rowsA) + i1];
@@ -1737,20 +1737,20 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     stemp[l] = math.sqrt(sum);
 
-                    if (stemp[l] != 0.0)
+                    if (stemp[l] != 0.0f)
                     {
-                        if (a[(l * rowsA) + l] != 0.0)
+                        if (a[(l * rowsA) + l] != 0.0f)
                         {
                             stemp[l] = math.abs(stemp[l]) * (a[(l * rowsA) + l] / math.abs(a[(l * rowsA) + l]));
                         }
 
-                        // A part of column "l" of Matrix A from row "l" to end multiply by 1.0 / s[l]
+                        // A part of column "l" of Matrix A from row "l" to end multiply by 1.0f / s[l]
                         for (i = l; i < rowsA; i++)
                         {
-                            a[(l * rowsA) + i] = a[(l * rowsA) + i] * (1.0 / stemp[l]);
+                            a[(l * rowsA) + i] = a[(l * rowsA) + i] * (1.0f / stemp[l]);
                         }
 
-                        a[(l * rowsA) + l] = 1.0 + a[(l * rowsA) + l];
+                        a[(l * rowsA) + l] = 1.0f + a[(l * rowsA) + l];
                     }
 
                     stemp[l] = -stemp[l];
@@ -1760,10 +1760,10 @@ namespace LinearAlgebra.MathNet.Numerics
                 {
                     if (l < nct)
                     {
-                        if (stemp[l] != 0.0)
+                        if (stemp[l] != 0.0f)
                         {
                             // Apply the transformation.
-                            t = 0.0;
+                            t = 0.0f;
                             for (i = l; i < rowsA; i++)
                             {
                                 t += a[(j * rowsA) + i] * a[(l * rowsA) + i];
@@ -1798,37 +1798,37 @@ namespace LinearAlgebra.MathNet.Numerics
                 }
 
                 // Compute the l-th row transformation and place the l-th super-diagonal in e(l).
-                double enorm = 0.0;
+                double enorm = 0.0f;
                 for (i = lp1; i < e.N; i++)
                 {
                     enorm += e[i] * e[i];
                 }
 
                 e[l] = math.sqrt(enorm);
-                if (e[l] != 0.0)
+                if (e[l] != 0.0f)
                 {
-                    if (e[lp1] != 0.0)
+                    if (e[lp1] != 0.0f)
                     {
                         e[l] = math.abs(e[l]) * (e[lp1] / math.abs(e[lp1]));
                     }
 
-                    // Scale vector "e" from "lp1" by 1.0 / e[l]
+                    // Scale vector "e" from "lp1" by 1.0f / e[l]
                     for (i = lp1; i < e.N; i++)
                     {
-                        e[i] = e[i] * (1.0 / e[l]);
+                        e[i] = e[i] * (1.0f / e[l]);
                     }
 
-                    e[lp1] = 1.0 + e[lp1];
+                    e[lp1] = 1.0f + e[lp1];
                 }
 
                 e[l] = -e[l];
 
-                if (lp1 < rowsA && e[l] != 0.0)
+                if (lp1 < rowsA && e[l] != 0.0f)
                 {
                     // Apply the transformation.
                     for (i = lp1; i < rowsA; i++)
                     {
-                        work[i] = 0.0;
+                        work[i] = 0.0f;
                     }
 
                     for (j = lp1; j < columnsA; j++)
@@ -1872,7 +1872,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
             if (rowsA < m)
             {
-                stemp[m - 1] = 0.0;
+                stemp[m - 1] = 0.0f;
             }
 
             if (nrtp1 < m)
@@ -1880,7 +1880,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 e[nrtp1 - 1] = a[((m - 1) * rowsA) + (nrtp1 - 1)];
             }
 
-            e[m - 1] = 0.0;
+            e[m - 1] = 0.0f;
 
             // If required, generate "u".
             if (computeVectors)
@@ -1889,19 +1889,19 @@ namespace LinearAlgebra.MathNet.Numerics
                 {
                     for (i = 0; i < rowsA; i++)
                     {
-                        u[(j * rowsA) + i] = 0.0;
+                        u[(j * rowsA) + i] = 0.0f;
                     }
 
-                    u[(j * rowsA) + j] = 1.0;
+                    u[(j * rowsA) + j] = 1.0f;
                 }
 
                 for (l = nct - 1; l >= 0; l--)
                 {
-                    if (stemp[l] != 0.0)
+                    if (stemp[l] != 0.0f)
                     {
                         for (j = l + 1; j < ncu; j++)
                         {
-                            t = 0.0;
+                            t = 0.0f;
                             for (i = l; i < rowsA; i++)
                             {
                                 t += u[(j * rowsA) + i] * u[(l * rowsA) + i];
@@ -1915,26 +1915,26 @@ namespace LinearAlgebra.MathNet.Numerics
                             }
                         }
 
-                        // A part of column "l" of matrix A from row "l" to end multiply by -1.0
+                        // A part of column "l" of matrix A from row "l" to end multiply by -1.0f
                         for (i = l; i < rowsA; i++)
                         {
-                            u[(l * rowsA) + i] = u[(l * rowsA) + i] * -1.0;
+                            u[(l * rowsA) + i] = u[(l * rowsA) + i] * -1.0f;
                         }
 
-                        u[(l * rowsA) + l] = 1.0 + u[(l * rowsA) + l];
+                        u[(l * rowsA) + l] = 1.0f + u[(l * rowsA) + l];
                         for (i = 0; i < l; i++)
                         {
-                            u[(l * rowsA) + i] = 0.0;
+                            u[(l * rowsA) + i] = 0.0f;
                         }
                     }
                     else
                     {
                         for (i = 0; i < rowsA; i++)
                         {
-                            u[(l * rowsA) + i] = 0.0;
+                            u[(l * rowsA) + i] = 0.0f;
                         }
 
-                        u[(l * rowsA) + l] = 1.0;
+                        u[(l * rowsA) + l] = 1.0f;
                     }
                 }
             }
@@ -1947,11 +1947,11 @@ namespace LinearAlgebra.MathNet.Numerics
                     lp1 = l + 1;
                     if (l < nrt)
                     {
-                        if (e[l] != 0.0)
+                        if (e[l] != 0.0f)
                         {
                             for (j = lp1; j < columnsA; j++)
                             {
-                                t = 0.0;
+                                t = 0.0f;
                                 for (i = lp1; i < columnsA; i++)
                                 {
                                     t += v[(j * columnsA) + i] * v[(l * columnsA) + i];
@@ -1968,10 +1968,10 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (i = 0; i < columnsA; i++)
                     {
-                        v[(l * columnsA) + i] = 0.0;
+                        v[(l * columnsA) + i] = 0.0f;
                     }
 
-                    v[(l * columnsA) + l] = 1.0;
+                    v[(l * columnsA) + l] = 1.0f;
                 }
             }
 
@@ -2054,7 +2054,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     
                     if (Precisiondouble.AlmostEqualRelative(ztest, test, 15))
                     {
-                        e[l] = 0.0;
+                        e[l] = 0.0f;
                         break;
                     }
                 }
@@ -2069,7 +2069,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     int ls;
                     for (ls = m - 1; ls > l; ls--)
                     {
-                        test = 0.0;
+                        test = 0.0f;
                         if (ls != m - 1)
                         {
                             test = test + math.abs(e[ls]);
@@ -2083,7 +2083,7 @@ namespace LinearAlgebra.MathNet.Numerics
                         ztest = test + math.abs(stemp[ls]);
                         if (Precisiondouble.AlmostEqualRelative(ztest , test, 15))
                         {
-                            stemp[ls] = 0.0;
+                            stemp[ls] = 0.0f;
                             break;
                         }
                     }
@@ -2115,7 +2115,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     // Deflate negligible s[m].
                     case 1:
                         f = e[m - 2];
-                        e[m - 2] = 0.0;
+                        e[m - 2] = 0.0f;
                         double t1;
                         for (var kk = l; kk < m - 1; kk++)
                         {
@@ -2147,7 +2147,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     // Split at negligible s[l].
                     case 2:
                         f = e[l - 1];
-                        e[l - 1] = 0.0;
+                        e[l - 1] = 0.0f;
                         for (k = l; k < m; k++)
                         {
                             t1 = stemp[k];
@@ -2173,7 +2173,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     case 3:
 
                         // calculate the shift.
-                        double scale = 0.0;
+                        double scale = 0.0f;
                         scale = math.max(scale, math.abs(stemp[m - 1]));
                         scale = math.max(scale, math.abs(stemp[m - 2]));
                         scale = math.max(scale, math.abs(e[m - 2]));
@@ -2184,13 +2184,13 @@ namespace LinearAlgebra.MathNet.Numerics
                         double emm1 = e[m - 2] / scale;
                         double sl = stemp[l] / scale;
                         double el = e[l] / scale;
-                        double b = (((smm1 + sm) * (smm1 - sm)) + (emm1 * emm1)) / 2.0;
+                        double b = (((smm1 + sm) * (smm1 - sm)) + (emm1 * emm1)) / 2.0f;
                         double c = (sm * emm1) * (sm * emm1);
-                        double shift = 0.0;
-                        if (b != 0.0 || c != 0.0)
+                        double shift = 0.0f;
+                        if (b != 0.0f || c != 0.0f)
                         {
                             shift = math.sqrt((b * b) + c);
-                            if (b < 0.0)
+                            if (b < 0.0f)
                             {
                                 shift = -shift;
                             }
@@ -2249,7 +2249,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     case 4:
 
                         // Make the singular value  positive
-                        if (stemp[l] < 0.0)
+                        if (stemp[l] < 0.0f)
                         {
                             stemp[l] = -stemp[l];
                             if (computeVectors)
@@ -2257,7 +2257,7 @@ namespace LinearAlgebra.MathNet.Numerics
                                 // A part of column "l" of matrix VT from row 0 to end multiply by -1
                                 for (i = 0; i < columnsA; i++)
                                 {
-                                    v[(l * columnsA) + i] = v[(l * columnsA) + i] * -1.0;
+                                    v[(l * columnsA) + i] = v[(l * columnsA) + i] * -1.0f;
                                 }
                             }
                         }
@@ -2347,34 +2347,34 @@ namespace LinearAlgebra.MathNet.Numerics
             }
 
             double scale = absda + absdb;
-            if (scale == 0.0)
+            if (scale == 0.0f)
             {
-                c = 1.0;
-                s = 0.0;
-                r = 0.0;
-                z = 0.0;
+                c = 1.0f;
+                s = 0.0f;
+                r = 0.0f;
+                z = 0.0f;
             }
             else
             {
                 double sda = da / scale;
                 double sdb = db / scale;
                 r = scale * math.sqrt((sda * sda) + (sdb * sdb));
-                if (roe < 0.0)
+                if (roe < 0.0f)
                 {
                     r = -r;
                 }
 
                 c = da / r;
                 s = db / r;
-                z = 1.0;
+                z = 1.0f;
                 if (absda > absdb)
                 {
                     z = s;
                 }
 
-                if (absdb >= absda && c != 0.0)
+                if (absdb >= absda && c != 0.0f)
                 {
-                    z = 1.0 / c;
+                    z = 1.0f / c;
                 }
             }
 
@@ -2419,7 +2419,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 tolerance = -1; // disable tolerance
             } else
             {
-                tolerance = System.Math.Max(rowsA, columnsA) * s.l2Norm() * epsilon;
+                tolerance = math.max(rowsA, columnsA) * s.l2Norm() * epsilon;
             }
 
             SvdSolveFactored(rowsA, columnsA, s, u, vt, b, columnsB, x, tolerance);
@@ -2636,22 +2636,22 @@ namespace LinearAlgebra.MathNet.Numerics
             for (var i = order - 1; i > 0; i--)
             {
                 // Scale to avoid under/overflow.
-                double scale = 0.0;
-                double h = 0.0;
+                double scale = 0.0f;
+                double h = 0.0f;
 
                 for (var k = 0; k < i; k++)
                 {
                     scale = scale + math.abs(d[k]);
                 }
 
-                if (scale == 0.0)
+                if (scale == 0.0f)
                 {
                     e[i] = d[i - 1];
                     for (var j = 0; j < i; j++)
                     {
                         d[j] = a[(j * order) + i - 1];
-                        a[(j * order) + i] = 0.0;
-                        a[(i * order) + j] = 0.0;
+                        a[(j * order) + i] = 0.0f;
+                        a[(i * order) + j] = 0.0f;
                     }
                 }
                 else
@@ -2676,7 +2676,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var j = 0; j < i; j++)
                     {
-                        e[j] = 0.0;
+                        e[j] = 0.0f;
                     }
 
                     // Apply similarity transformation to remaining columns.
@@ -2695,7 +2695,7 @@ namespace LinearAlgebra.MathNet.Numerics
                         e[j] = g;
                     }
 
-                    f = 0.0;
+                    f = 0.0f;
 
                     for (var j = 0; j < i; j++)
                     {
@@ -2721,7 +2721,7 @@ namespace LinearAlgebra.MathNet.Numerics
                         }
 
                         d[j] = a[(j * order) + i - 1];
-                        a[(j * order) + i] = 0.0;
+                        a[(j * order) + i] = 0.0f;
                     }
                 }
 
@@ -2732,9 +2732,9 @@ namespace LinearAlgebra.MathNet.Numerics
             for (var i = 0; i < order - 1; i++)
             {
                 a[(i * order) + order - 1] = a[(i * order) + i];
-                a[(i * order) + i] = 1.0;
+                a[(i * order) + i] = 1.0f;
                 double h = d[i + 1];
-                if (h != 0.0)
+                if (h != 0.0f)
                 {
                     for (var k = 0; k <= i; k++)
                     {
@@ -2743,7 +2743,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var j = 0; j <= i; j++)
                     {
-                        double g = 0.0;
+                        double g = 0.0f;
                         for (var k = 0; k <= i; k++)
                         {
                             g += a[((i + 1) * order) + k] * a[(j * order) + k];
@@ -2758,18 +2758,18 @@ namespace LinearAlgebra.MathNet.Numerics
 
                 for (var k = 0; k <= i; k++)
                 {
-                    a[((i + 1) * order) + k] = 0.0;
+                    a[((i + 1) * order) + k] = 0.0f;
                 }
             }
 
             for (var j = 0; j < order; j++)
             {
                 d[j] = a[(j * order) + order - 1];
-                a[(j * order) + order - 1] = 0.0;
+                a[(j * order) + order - 1] = 0.0f;
             }
 
-            a[(order * order) - 1] = 1.0;
-            e[0] = 0.0;
+            a[(order * order) - 1] = 1.0f;
+            e[0] = 0.0f;
         }
 
         /// <summary>
@@ -2793,11 +2793,11 @@ namespace LinearAlgebra.MathNet.Numerics
                 e[i - 1] = e[i];
             }
 
-            e[order - 1] = 0.0;
+            e[order - 1] = 0.0f;
 
-            double f = 0.0;
-            double tst1 = 0.0;
-            double eps = Precisiondouble.DoublePrecision;
+            double f = 0.0f;
+            double tst1 = 0.0f;
+            double eps = Precision.Precisiondouble;
             for (var l = 0; l < order; l++)
             {
                 // Find small subdiagonal element
@@ -2824,8 +2824,8 @@ namespace LinearAlgebra.MathNet.Numerics
 
                         // Compute implicit shift
                         double g = d[l];
-                        double p = (d[l + 1] - g) / (2.0 * e[l]);
-                        double r = SpecialFunctions_double.Hypotenuse(p, 1.0);
+                        double p = (d[l + 1] - g) / (2.0f * e[l]);
+                        double r = SpecialFunctions.Hypotenuse(p, 1.0f);
                         if (p < 0)
                         {
                             r = -r;
@@ -2845,12 +2845,12 @@ namespace LinearAlgebra.MathNet.Numerics
 
                         // Implicit QL transformation.
                         p = d[m];
-                        double c = 1.0;
+                        double c = 1.0f;
                         double c2 = c;
                         double c3 = c;
                         double el1 = e[l + 1];
-                        double s = 0.0;
-                        double s2 = 0.0;
+                        double s = 0.0f;
+                        double s2 = 0.0f;
                         for (var i = m - 1; i >= l; i--)
                         {
                             c3 = c2;
@@ -2858,7 +2858,7 @@ namespace LinearAlgebra.MathNet.Numerics
                             s2 = s;
                             g = c * e[i];
                             h = c * p;
-                            r = SpecialFunctions_double.Hypotenuse(p, e[i]);
+                            r = SpecialFunctions.Hypotenuse(p, e[i]);
                             e[i + 1] = s * r;
                             s = e[i] / r;
                             c = p / r;
@@ -2888,7 +2888,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 }
 
                 d[l] = d[l] + f;
-                e[l] = 0.0;
+                e[l] = 0.0f;
             }
 
             // Sort eigenvalues and corresponding vectors.
@@ -2938,16 +2938,16 @@ namespace LinearAlgebra.MathNet.Numerics
                 var mm1 = m - 1;
                 var mm1O = mm1 * order;
                 // Scale column.
-                double scale = 0.0;
+                double scale = 0.0f;
                 for (var i = m; i <= high; i++)
                 {
                     scale += math.abs(matrixH[mm1O + i]);
                 }
 
-                if (scale != 0.0)
+                if (scale != 0.0f)
                 {
                     // Compute Householder transformation.
-                    double h = 0.0;
+                    double h = 0.0f;
                     for (var i = high; i >= m; i--)
                     {
                         ort[i] = matrixH[mm1O + i] / scale;
@@ -2968,7 +2968,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     for (var j = m; j < order; j++)
                     {
                         var jO = j * order;
-                        double f = 0.0;
+                        double f = 0.0f;
                         for (var i = order - 1; i >= m; i--)
                         {
                             f += ort[i] * matrixH[jO + i];
@@ -2984,7 +2984,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var i = 0; i <= high; i++)
                     {
-                        double f = 0.0;
+                        double f = 0.0f;
                         for (var j = high; j >= m; j--)
                         {
                             f += ort[j] * matrixH[j * order + i];
@@ -3007,7 +3007,7 @@ namespace LinearAlgebra.MathNet.Numerics
             {
                 for (var j = 0; j < order; j++)
                 {
-                    a[(j * order) + i] = i == j ? 1.0 : 0.0;
+                    a[(j * order) + i] = i == j ? 1.0f : 0.0f;
                 }
             }
 
@@ -3016,7 +3016,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 var mm1 = m - 1;
                 var mm1O = mm1 * order;
                 var mm1Om = mm1O + m;
-                if (matrixH[mm1Om] != 0.0)
+                if (matrixH[mm1Om] != 0.0f)
                 {
                     for (var i = m + 1; i <= high; i++)
                     {
@@ -3025,7 +3025,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     for (var j = m; j <= high; j++)
                     {
-                        double g = 0.0;
+                        double g = 0.0f;
                         var jO = j * order;
                         for (var i = m; i <= high; i++)
                         {
@@ -3062,13 +3062,13 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             // Initialize
             var n = order - 1;
-            double eps = math.pow(2.0, -52.0);
-            double exshift = 0.0;
+            double eps = math.pow(2.0f, -52.0f);
+            double exshift = 0.0f;
             double p = 0, q = 0, r = 0, s = 0, z = 0;
             double w, x, y;
 
             // Store roots isolated by balanc and compute matrix norm
-            double norm = 0.0;
+            double norm = 0.0f;
             for (var i = 0; i < order; i++)
             {
                 for (var j = math.max(i - 1, 0); j < order; j++)
@@ -3089,7 +3089,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     var lm1O = lm1 * order;
                     s = math.abs(matrixH[lm1O + lm1]) + math.abs(matrixH[l * order + l]);
 
-                    if (s == 0.0)
+                    if (s == 0.0f)
                     {
                         s = norm;
                     }
@@ -3109,7 +3109,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     var index = n * order + n;
                     matrixH[index] += exshift;
                     d[n] = matrixH[index];
-                    e[n] = 0.0;
+                    e[n] = 0.0f;
                     n--;
                     iter = 0;
 
@@ -3123,7 +3123,7 @@ namespace LinearAlgebra.MathNet.Numerics
                     var nOn = nO + n;
 
                     w = matrixH[nm1O + n] * matrixH[nO + nm1];
-                    p = (matrixH[nm1O + nm1] - matrixH[nOn]) / 2.0;
+                    p = (matrixH[nm1O + nm1] - matrixH[nOn]) / 2.0f;
                     q = (p * p) + w;
                     z = math.sqrt(math.abs(q));
 
@@ -3146,13 +3146,13 @@ namespace LinearAlgebra.MathNet.Numerics
                         d[nm1] = x + z;
 
                         d[n] = d[nm1];
-                        if (z != 0.0)
+                        if (z != 0.0f)
                         {
                             d[n] = x - (w / z);
                         }
 
-                        e[n - 1] = 0.0;
-                        e[n] = 0.0;
+                        e[n - 1] = 0.0f;
+                        e[n] = 0.0f;
                         x = matrixH[nm1O + n];
                         s = math.abs(x) + math.abs(z);
                         p = x / s;
@@ -3213,8 +3213,8 @@ namespace LinearAlgebra.MathNet.Numerics
 
                     // Form shift
                     x = matrixH[nOn];
-                    y = 0.0;
-                    w = 0.0;
+                    y = 0.0f;
+                    w = 0.0f;
                     if (l < n)
                     {
                         y = matrixH[nm1O + nm1];
@@ -3231,14 +3231,14 @@ namespace LinearAlgebra.MathNet.Numerics
                         }
 
                         s = math.abs(matrixH[nm1O + n]) + math.abs(matrixH[(n - 2) * order + nm1]);
-                        x = y = 0.75 * s;
-                        w = (-0.4375) * s * s;
+                        x = y = 0.75f * s;
+                        w = (-0.4375f) * s * s;
                     }
 
                     // MATLAB's new ad hoc shift
                     if (iter == 30)
                     {
-                        s = (y - x) / 2.0;
+                        s = (y - x) / 2.0f;
                         s = (s * s) + w;
                         if (s > 0)
                         {
@@ -3248,14 +3248,14 @@ namespace LinearAlgebra.MathNet.Numerics
                                 s = -s;
                             }
 
-                            s = x - (w / (((y - x) / 2.0) + s));
+                            s = x - (w / (((y - x) / 2.0f) + s));
                             for (var i = 0; i <= n; i++)
                             {
                                 matrixH[i * order + i] -= s;
                             }
 
                             exshift += s;
-                            x = y = w = 0.964;
+                            x = y = w = 0.964f;
                         }
                     }
 
@@ -3302,10 +3302,10 @@ namespace LinearAlgebra.MathNet.Numerics
                     var mp2 = m + 2;
                     for (var i = mp2; i <= n; i++)
                     {
-                        matrixH[(i - 2) * order + i] = 0.0;
+                        matrixH[(i - 2) * order + i] = 0.0f;
                         if (i > mp2)
                         {
-                            matrixH[(i - 3) * order + i] = 0.0;
+                            matrixH[(i - 3) * order + i] = 0.0f;
                         }
                     }
 
@@ -3324,9 +3324,9 @@ namespace LinearAlgebra.MathNet.Numerics
                         {
                             p = matrixH[km1O + k];
                             q = matrixH[km1O + kp1];
-                            r = notlast ? matrixH[km1O + kp2] : 0.0;
+                            r = notlast ? matrixH[km1O + kp2] : 0.0f;
                             x = math.abs(p) + math.abs(q) + math.abs(r);
-                            if (x == 0.0)
+                            if (x == 0.0f)
                             {
                                 continue;
                             }
@@ -3343,7 +3343,7 @@ namespace LinearAlgebra.MathNet.Numerics
                             s = -s;
                         }
 
-                        if (s != 0.0)
+                        if (s != 0.0f)
                         {
                             if (k != m)
                             {
@@ -3414,7 +3414,7 @@ namespace LinearAlgebra.MathNet.Numerics
             } // while (n >= low)
 
             // Backsubstitute to find vectors of upper triangular form
-            if (norm == 0.0)
+            if (norm == 0.0f)
             {
                 return;
             }
@@ -3431,10 +3431,10 @@ namespace LinearAlgebra.MathNet.Numerics
 
                 // Real vector
                 double t;
-                if (q == 0.0)
+                if (q == 0.0f)
                 {
                     var l = n;
-                    matrixH[nO + n] = 1.0;
+                    matrixH[nO + n] = 1.0f;
                     for (var i = n - 1; i >= 0; i--)
                     {
                         var ip1 = i + 1;
@@ -3442,13 +3442,13 @@ namespace LinearAlgebra.MathNet.Numerics
                         var ip1O = ip1 * order;
 
                         w = matrixH[iO + i] - p;
-                        r = 0.0;
+                        r = 0.0f;
                         for (var j = l; j <= n; j++)
                         {
                             r = r + (matrixH[j * order + i] * matrixH[nO + j]);
                         }
 
-                        if (e[i] < 0.0)
+                        if (e[i] < 0.0f)
                         {
                             z = w;
                             s = r;
@@ -3456,9 +3456,9 @@ namespace LinearAlgebra.MathNet.Numerics
                         else
                         {
                             l = i;
-                            if (e[i] == 0.0)
+                            if (e[i] == 0.0f)
                             {
-                                if (w != 0.0)
+                                if (w != 0.0f)
                                 {
                                     matrixH[nO + i] = (-r) / w;
                                 }
@@ -3512,20 +3512,20 @@ namespace LinearAlgebra.MathNet.Numerics
                     }
                     else
                     {
-                        var res = Cdiv(0.0, -matrixH[nO + nm1], matrixH[nm1O + nm1] - p, q);
-                        matrixH[nm1O + nm1] = res.Real;
-                        matrixH[nO + nm1] = res.Imaginary;
+                        var res = Cdiv(0.0f, -matrixH[nO + nm1], matrixH[nm1O + nm1] - p, q);
+                        matrixH[nm1O + nm1] = (double) res.Real;
+                        matrixH[nO + nm1] = (double) res.Imaginary;
                     }
 
-                    matrixH[nm1O + n] = 0.0;
-                    matrixH[nO + n] = 1.0;
+                    matrixH[nm1O + n] = 0.0f;
+                    matrixH[nO + n] = 1.0f;
                     for (var i = n - 2; i >= 0; i--)
                     {
                         var ip1 = i + 1;
                         var iO = i * order;
                         var ip1O = ip1 * order;
-                        double ra = 0.0;
-                        double sa = 0.0;
+                        double ra = 0.0f;
+                        double sa = 0.0f;
                         for (var j = l; j <= n; j++)
                         {
                             var jO = j * order;
@@ -3536,7 +3536,7 @@ namespace LinearAlgebra.MathNet.Numerics
 
                         w = matrixH[iO + i] - p;
 
-                        if (e[i] < 0.0)
+                        if (e[i] < 0.0f)
                         {
                             z = w;
                             r = ra;
@@ -3545,11 +3545,11 @@ namespace LinearAlgebra.MathNet.Numerics
                         else
                         {
                             l = i;
-                            if (e[i] == 0.0)
+                            if (e[i] == 0.0f)
                             {
                                 var res = Cdiv(-ra, -sa, w, q);
-                                matrixH[nm1O + i] = res.Real;
-                                matrixH[nO + i] = res.Imaginary;
+                                matrixH[nm1O + i] = (double) res.Real;
+                                matrixH[nO + i] = (double) res.Imaginary;
                             }
                             else
                             {
@@ -3558,15 +3558,15 @@ namespace LinearAlgebra.MathNet.Numerics
                                 y = matrixH[iO + ip1];
 
                                 double vr = ((d[i] - p) * (d[i] - p)) + (e[i] * e[i]) - (q * q);
-                                double vi = (d[i] - p) * 2.0 * q;
-                                if ((vr == 0.0) && (vi == 0.0))
+                                double vi = (d[i] - p) * 2.0f * q;
+                                if ((vr == 0.0f) && (vi == 0.0f))
                                 {
                                     vr = eps * norm * (math.abs(w) + math.abs(q) + math.abs(x) + math.abs(y) + math.abs(z));
                                 }
 
                                 var res = Cdiv((x * r) - (z * ra) + (q * sa), (x * s) - (z * sa) - (q * ra), vr, vi);
-                                matrixH[nm1O + i] = res.Real;
-                                matrixH[nO + i] = res.Imaginary;
+                                matrixH[nm1O + i] = (double) res.Real;
+                                matrixH[nO + i] = (double) res.Imaginary;
                                 if (math.abs(x) > (math.abs(z) + math.abs(q)))
                                 {
                                     matrixH[nm1O + ip1] = (-ra - (w * matrixH[nm1O + i]) + (q * matrixH[nO + i])) / x;
@@ -3575,8 +3575,8 @@ namespace LinearAlgebra.MathNet.Numerics
                                 else
                                 {
                                     res = Cdiv(-r - (y * matrixH[nm1O + i]), -s - (y * matrixH[nO + i]), z, q);
-                                    matrixH[nm1O + ip1] = res.Real;
-                                    matrixH[nO + ip1] = res.Imaginary;
+                                    matrixH[nm1O + ip1] = (double) res.Real;
+                                    matrixH[nO + ip1] = (double) res.Imaginary;
                                 }
                             }
 
@@ -3601,7 +3601,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 var jO = j * order;
                 for (var i = 0; i < order; i++)
                 {
-                    z = 0.0;
+                    z = 0.0f;
                     for (var k = 0; k <= j; k++)
                     {
                         z = z + (a[k * order + i] * matrixH[jO + k]);

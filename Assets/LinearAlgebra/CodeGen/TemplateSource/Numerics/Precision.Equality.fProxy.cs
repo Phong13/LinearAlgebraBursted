@@ -35,6 +35,28 @@ using Complex = System.Numerics.Complex;
 
 namespace LinearAlgebra.MathNet.Numerics
 {
+    /// <summary>
+    /// Support Interface for Precision Operations (like AlmostEquals).
+    /// </summary>
+    /// <typeparam name="T">Type of the implementing class.</typeparam>
+    public interface IPrecisionSupportfProxy<in T>
+    {
+        /// <summary>
+        /// Returns a Norm of a value of this type, which is appropriate for measuring how
+        /// close this value is to zero.
+        /// </summary>
+        /// <returns>A norm of this value.</returns>
+        fProxy Norm();
+
+        /// <summary>
+        /// Returns a Norm of the difference of two values of this type, which is
+        /// appropriate for measuring how close together these two values are.
+        /// </summary>
+        /// <param name="otherValue">The value to compare with.</param>
+        /// <returns>A norm of the difference between this and the other value.</returns>
+        fProxy NormOfDifference(T otherValue);
+    }
+
     public static partial class PrecisionfProxy
     {
         /// <summary>
@@ -75,7 +97,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="maximumAbsoluteError">The absolute accuracy required for being almost equal.</param>
         /// <returns>True if both doubles are almost equal up to the specified maximum absolute error, false otherwise.</returns>
         public static bool AlmostEqualNorm<T>(this T a, T b, fProxy maximumAbsoluteError)
-            where T : IPrecisionSupport<T>
+            where T : IPrecisionSupportfProxy<T>
         {
             return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumAbsoluteError);
         }
@@ -107,7 +129,7 @@ namespace LinearAlgebra.MathNet.Numerics
             }
 
             // If one is almost zero, fall back to absolute equality
-            if (math.abs(a) < DoublePrecision || math.abs(b) < DoublePrecision)
+            if (math.abs(a) < Precision.DoublePrecision || math.abs(b) < Precision.DoublePrecision)
             {
                 return math.abs(diff) < maximumError;
             }
@@ -129,7 +151,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="maximumError">The accuracy required for being almost equal.</param>
         /// <returns>True if both doubles are almost equal up to the specified maximum error, false otherwise.</returns>
         public static bool AlmostEqualNormRelative<T>(this T a, T b, fProxy maximumError)
-            where T : IPrecisionSupport<T>
+            where T : IPrecisionSupportfProxy<T>
         {
             return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumError);
         }
@@ -159,18 +181,6 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNorm(a, b, a - b, maximumAbsoluteError);
         }
         */
-
-        /// <summary>
-        /// Compares two complex and determines if they are equal within
-        /// the specified maximum error.
-        /// </summary>
-        /// <param name="a">The first value.</param>
-        /// <param name="b">The second value.</param>
-        /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
-        public static bool AlmostEqual(this Complex a, Complex b, fProxy maximumAbsoluteError)
-        {
-            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumAbsoluteError);
-        }
 
         /*
         /// <summary>
@@ -212,18 +222,6 @@ namespace LinearAlgebra.MathNet.Numerics
         }
         */
 
-        /// <summary>
-        /// Compares two complex and determines if they are equal within
-        /// the specified maximum error.
-        /// </summary>
-        /// <param name="a">The first value.</param>
-        /// <param name="b">The second value.</param>
-        /// <param name="maximumError">The accuracy required for being almost equal.</param>
-        public static bool AlmostEqualRelative(this Complex a, Complex b, fProxy maximumError)
-        {
-            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumError);
-        }
-
         /*
         /// <summary>
         /// Compares two complex and determines if they are equal within
@@ -246,7 +244,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
         public static bool AlmostEqual(this fProxy a, fProxy b)
         {
-            return AlmostEqualNorm(a, b, a - b, DefaultDoubleAccuracy);
+            return AlmostEqualNorm(a, b, a - b, Precision.DefaultAccuracyfProxy);
         }
         /*
         /// <summary>
@@ -260,17 +258,6 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNorm(a, b, a - b, DefaultSingleAccuracy);
         }
         */
-
-        /// <summary>
-        /// Checks whether two Complex numbers are almost equal.
-        /// </summary>
-        /// <param name="a">The first number</param>
-        /// <param name="b">The second number</param>
-        /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
-        public static bool AlmostEqual(this Complex a, Complex b)
-        {
-            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), DefaultDoubleAccuracy);
-        }
 
         /*
         /// <summary>
@@ -293,7 +280,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
         public static bool AlmostEqualRelative(this fProxy a, fProxy b)
         {
-            return AlmostEqualNormRelative(a, b, a - b, DefaultDoubleAccuracy);
+            return AlmostEqualNormRelative(a, b, a - b, Precision.DefaultAccuracyfProxy);
         }
 
         /*
@@ -308,17 +295,6 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNormRelative(a, b, a - b, DefaultSingleAccuracy);
         }
         */
-
-        /// <summary>
-        /// Checks whether two Complex numbers are almost equal.
-        /// </summary>
-        /// <param name="a">The first number</param>
-        /// <param name="b">The second number</param>
-        /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
-        public static bool AlmostEqualRelative(this Complex a, Complex b)
-        {
-            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), DefaultDoubleAccuracy);
-        }
 
         /*
         /// <summary>
@@ -387,7 +363,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="b">The second value.</param>
         /// <param name="decimalPlaces">The number of decimal places.</param>
         public static bool AlmostEqualNorm<T>(this T a, T b, int decimalPlaces)
-            where T : IPrecisionSupport<T>
+            where T : IPrecisionSupportfProxy<T>
         {
             return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
         }
@@ -440,7 +416,7 @@ namespace LinearAlgebra.MathNet.Numerics
             }
 
             // If one is almost zero, fall back to absolute equality
-            if (math.abs(a) < DoublePrecision || math.abs(b) < DoublePrecision)
+            if (math.abs(a) < Precision.DoublePrecision || math.abs(b) < Precision.DoublePrecision)
             {
                 // The values are equal if the difference between the two numbers is smaller than
                 // 10^(-numberOfDecimalPlaces). We divide by two so that we have half the range
@@ -480,7 +456,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="b">The second value.</param>
         /// <param name="decimalPlaces">The number of decimal places.</param>
         public static bool AlmostEqualNormRelative<T>(this T a, T b, int decimalPlaces)
-            where T : IPrecisionSupport<T>
+            where T : IPrecisionSupportfProxy<T>
         {
             return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
         }
@@ -510,18 +486,6 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNorm(a, b, a - b, decimalPlaces);
         }
         */
-
-        /// <summary>
-        /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not, using the
-        /// number of decimal places as an absolute measure.
-        /// </summary>
-        /// <param name="a">The first value.</param>
-        /// <param name="b">The second value.</param>
-        /// <param name="decimalPlaces">The number of decimal places.</param>
-        public static bool AlmostEqual(this Complex a, Complex b, int decimalPlaces)
-        {
-            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
-        }
 
         /*
         /// <summary>
@@ -563,18 +527,6 @@ namespace LinearAlgebra.MathNet.Numerics
             return AlmostEqualNormRelative(a, b, a - b, decimalPlaces);
         }
         */
-
-        /// <summary>
-        /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not. If the numbers
-        /// are very close to zero an absolute difference is compared, otherwise the relative difference is compared.
-        /// </summary>
-        /// <param name="a">The first value.</param>
-        /// <param name="b">The second value.</param>
-        /// <param name="decimalPlaces">The number of decimal places.</param>
-        public static bool AlmostEqualRelative(this Complex a, Complex b, int decimalPlaces)
-        {
-            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
-        }
 
         /*
         /// <summary>
@@ -717,18 +669,6 @@ namespace LinearAlgebra.MathNet.Numerics
         }
         */
 
-        /// <summary>
-        /// Compares two lists of doubles and determines if they are equal within the
-        /// specified maximum error.
-        /// </summary>
-        /// <param name="a">The first value list.</param>
-        /// <param name="b">The second value list.</param>
-        /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
-        public static bool ListAlmostEqual(this IList<Complex> a, IList<Complex> b, fProxy maximumAbsoluteError)
-        {
-            return ListForAll(a, b, AlmostEqual, maximumAbsoluteError);
-        }
-
         /*
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
@@ -768,18 +708,6 @@ namespace LinearAlgebra.MathNet.Numerics
             return ListForAll(a, b, AlmostEqualRelative, maximumError);
         }
         */
-
-        /// <summary>
-        /// Compares two lists of doubles and determines if they are equal within the
-        /// specified maximum error.
-        /// </summary>
-        /// <param name="a">The first value list.</param>
-        /// <param name="b">The second value list.</param>
-        /// <param name="maximumError">The accuracy required for being almost equal.</param>
-        public static bool ListAlmostEqualRelative(this IList<Complex> a, IList<Complex> b, fProxy maximumError)
-        {
-            return ListForAll(a, b, AlmostEqualRelative, maximumError);
-        }
 
         /*
         /// <summary>
@@ -821,17 +749,6 @@ namespace LinearAlgebra.MathNet.Numerics
         }
         */
 
-        /// <summary>
-        /// Compares two lists of doubles and determines if they are equal within the
-        /// specified maximum error.
-        /// </summary>
-        /// <param name="a">The first value list.</param>
-        /// <param name="b">The second value list.</param>
-        /// <param name="decimalPlaces">The number of decimal places.</param>
-        public static bool ListAlmostEqual(this IList<Complex> a, IList<Complex> b, int decimalPlaces)
-        {
-            return ListForAll(a, b, AlmostEqual, decimalPlaces);
-        }
 
         /*
         /// <summary>
@@ -873,18 +790,6 @@ namespace LinearAlgebra.MathNet.Numerics
         }
         */
 
-        /// <summary>
-        /// Compares two lists of doubles and determines if they are equal within the
-        /// specified maximum error.
-        /// </summary>
-        /// <param name="a">The first value list.</param>
-        /// <param name="b">The second value list.</param>
-        /// <param name="decimalPlaces">The number of decimal places.</param>
-        public static bool ListAlmostEqualRelative(this IList<Complex> a, IList<Complex> b, int decimalPlaces)
-        {
-            return ListForAll(a, b, AlmostEqualRelative, decimalPlaces);
-        }
-
         /*
         /// <summary>
         /// Compares two lists of doubles and determines if they are equal within the
@@ -907,7 +812,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="b">The second value list.</param>
         /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
         public static bool ListAlmostEqualNorm<T>(this IList<T> a, IList<T> b, fProxy maximumAbsoluteError)
-            where T : IPrecisionSupport<T>
+            where T : IPrecisionSupportfProxy<T>
         {
             if (a == null && b == null)
             {
@@ -938,7 +843,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="b">The second value list.</param>
         /// <param name="maximumError">The accuracy required for being almost equal.</param>
         public static bool ListAlmostEqualNormRelative<T>(this IList<T> a, IList<T> b, fProxy maximumError)
-            where T : IPrecisionSupport<T>
+            where T : IPrecisionSupportfProxy<T>
         {
             if (a == null && b == null)
             {

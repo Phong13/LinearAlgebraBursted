@@ -51,7 +51,7 @@ namespace LinearAlgebra.MathNet.Numerics
     /// </list>
     /// </para>
     /// </remarks>
-    public static partial class PrecisionfProxy
+    public static partial class Precisionfloat
     {
         /*
         /// <summary>

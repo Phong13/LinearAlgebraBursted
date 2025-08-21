@@ -33,7 +33,7 @@ using Unity.Burst;
 // ReSharper disable once CheckNamespace
 namespace LinearAlgebra.MathNet.Numerics
 {
-    public partial class SpecialFunctions_fProxy
+    public partial class SpecialFunctions
     {
         /// <summary>
         /// Numerically stable hypotenuse of a right angle triangle, i.e. <code>(a,b) -> sqrt(a^2 + b^2)</code>
@@ -42,30 +42,29 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="b">The length of side b of the triangle.</param>
         /// <returns>Returns <code>sqrt(a<sup>2</sup> + b<sup>2</sup>)</code> without underflow/overflow.</returns>
         [BurstCompile]
-        public static fProxy Hypotenuse(fProxy a, fProxy b)
+        public static double Hypotenuse(double a, double b)
         {
-            if (fProxy.IsNaN(a) || fProxy.IsNaN(b))
+            if (double.IsNaN(a) || double.IsNaN(b))
             {
-                return fProxy.NaN;
+                return double.NaN;
             }
 
             if (math.abs(a) > math.abs(b))
             {
-                fProxy r = b/a;
+                double r = b/a;
                 return math.abs(a)*math.sqrt(1 + (r*r));
             }
 
             if (b != 0.0)
             {
                 // NOTE (ruegg): not "!b.AlmostZero()" to avoid convergence issues (e.g. in SVD algorithm)
-                fProxy r = a/b;
+                double r = a/b;
                 return math.abs(b)*math.sqrt(1 + (r*r));
             }
 
             return 0;
         }
 
-        /*
         /// <summary>
         /// Numerically stable hypotenuse of a right angle triangle, i.e. <code>(a,b) -> sqrt(a^2 + b^2)</code>
         /// </summary>
@@ -90,6 +89,5 @@ namespace LinearAlgebra.MathNet.Numerics
 
             return 0f;
         }
-        */
     }
 }

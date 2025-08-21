@@ -1,4 +1,4 @@
-// <copyright file="ComplexExtensions.cs" company="Math.NET">
+﻿// <copyright file="ComplexExtensions.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
@@ -38,8 +38,214 @@ namespace LinearAlgebra.MathNet.Numerics
     /// <summary>
     /// Extension methods for the Complex type provided by System.Numerics
     /// </summary>
-    public static class ComplexExtensionsdouble
+    public static class ComplexExtensions
     {
+        /// <summary>The number sqrt(1/2) = (fProxy)  1/sqrt(2) = (fProxy)  sqrt(2)/2</summary>
+        public static readonly double Sqrt1Over2 = 0.70710678118654752440084436210484903928483593768845d;
+
+        public static readonly double Pi2 = 6.2831853071795864769252867665590057683943387987502d;
+
+        /// <summary>
+        /// Compares two complex and determines if they are equal within
+        /// the specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
+        public static bool AlmostEqual(this Complex a, Complex b, double maximumAbsoluteError)
+        {
+            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumAbsoluteError);
+        }
+
+        /// <summary>
+        /// Compares two complex and determines if they are equal within
+        /// the specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="maximumError">The accuracy required for being almost equal.</param>
+        public static bool AlmostEqualRelative(this Complex a, Complex b, double maximumError)
+        {
+            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), maximumError);
+        }
+
+        /// <summary>
+        /// Checks whether two Complex numbers are almost equal.
+        /// </summary>
+        /// <param name="a">The first number</param>
+        /// <param name="b">The second number</param>
+        /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
+        public static bool AlmostEqual(this Complex a, Complex b)
+        {
+            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), Precision.DefaultDoubleAccuracy);
+        }
+
+        /// <summary>
+        /// Checks whether two Complex numbers are almost equal.
+        /// </summary>
+        /// <param name="a">The first number</param>
+        /// <param name="b">The second number</param>
+        /// <returns>true if the two values differ by no more than 10 * 2^(-52); false otherwise.</returns>
+        public static bool AlmostEqualRelative(this Complex a, Complex b)
+        {
+            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), Precision.DefaultDoubleAccuracy);
+        }
+
+        /// <summary>
+        /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not, using the
+        /// number of decimal places as an absolute measure.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool AlmostEqual(this Complex a, Complex b, int decimalPlaces)
+        {
+            return AlmostEqualNorm(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
+        }
+
+        /// <summary>
+        /// Compares two doubles and determines if they are equal to within the specified number of decimal places or not. If the numbers
+        /// are very close to zero an absolute difference is compared, otherwise the relative difference is compared.
+        /// </summary>
+        /// <param name="a">The first value.</param>
+        /// <param name="b">The second value.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool AlmostEqualRelative(this Complex a, Complex b, int decimalPlaces)
+        {
+            return AlmostEqualNormRelative(a.Norm(), b.Norm(), a.NormOfDifference(b), decimalPlaces);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="maximumAbsoluteError">The accuracy required for being almost equal.</param>
+        public static bool ListAlmostEqual(this IList<Complex> a, IList<Complex> b, double maximumAbsoluteError)
+        {
+            return ListForAll(a, b, AlmostEqual, maximumAbsoluteError);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="maximumError">The accuracy required for being almost equal.</param>
+        public static bool ListAlmostEqualRelative(this IList<Complex> a, IList<Complex> b, double maximumError)
+        {
+            return ListForAll(a, b, AlmostEqualRelative, maximumError);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool ListAlmostEqual(this IList<Complex> a, IList<Complex> b, int decimalPlaces)
+        {
+            return ListForAll(a, b, AlmostEqual, decimalPlaces);
+        }
+
+        /// <summary>
+        /// Compares two lists of doubles and determines if they are equal within the
+        /// specified maximum error.
+        /// </summary>
+        /// <param name="a">The first value list.</param>
+        /// <param name="b">The second value list.</param>
+        /// <param name="decimalPlaces">The number of decimal places.</param>
+        public static bool ListAlmostEqualRelative(this IList<Complex> a, IList<Complex> b, int decimalPlaces)
+        {
+            return ListForAll(a, b, AlmostEqualRelative, decimalPlaces);
+        }
+
+        private static bool AlmostEqualNorm(double a, double b, double diff, double maximumAbsoluteError)
+        {
+            // If A or B are infinity (positive or negative) then
+            // only return true if they are exactly equal to each other -
+            // that is, if they are both infinities of the same sign.
+            if (double.IsInfinity(a) || double.IsInfinity(b))
+            {
+                return a == b;
+            }
+
+            // If A or B are a NAN, return false. NANs are equal to nothing,
+            // not even themselves.
+            if (double.IsNaN(a) || double.IsNaN(b))
+            {
+                return false;
+            }
+
+            return math.abs(diff) < maximumAbsoluteError;
+        }
+
+        /// <summary>
+        /// Compares two doubles and determines if they are equal
+        /// within the specified maximum error.
+        /// </summary>
+        /// <param name="a">The norm of the first value (can be negative).</param>
+        /// <param name="b">The norm of the second value (can be negative).</param>
+        /// <param name="diff">The norm of the difference of the two values (can be negative).</param>
+        /// <param name="maximumError">The accuracy required for being almost equal.</param>
+        /// <returns>True if both doubles are almost equal up to the specified maximum error, false otherwise.</returns>
+        private static bool AlmostEqualNormRelative(double a, double b, double diff, double maximumError)
+        {
+            // If A or B are infinity (positive or negative) then
+            // only return true if they are exactly equal to each other -
+            // that is, if they are both infinities of the same sign.
+            if (double.IsInfinity(a) || double.IsInfinity(b))
+            {
+                return a == b;
+            }
+
+            // If A or B are a NAN, return false. NANs are equal to nothing,
+            // not even themselves.
+            if (double.IsNaN(a) || double.IsNaN(b))
+            {
+                return false;
+            }
+
+            // If one is almost zero, fall back to absolute equality
+            if (math.abs(a) < Precision.DoublePrecision || math.abs(b) < Precision.DoublePrecision)
+            {
+                return math.abs(diff) < maximumError;
+            }
+
+            if ((a == 0 && math.abs(b) < maximumError) || (b == 0 && math.abs(a) < maximumError))
+            {
+                return true;
+            }
+
+            return math.abs(diff) < maximumError * math.max(math.abs(a), math.abs(b));
+        }
+
+        static bool ListForAll<T, TP>(IList<T> a, IList<T> b, Func<T, T, TP, bool> predicate, TP parameter)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+
+            if (a == null || b == null || a.Count != b.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (!predicate(a[i], b[i], parameter))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         /*
         /// <summary>
         /// Gets the squared magnitude of the <c>Complex</c> number.
@@ -70,26 +276,26 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             if (double.IsPositiveInfinity(complex.Real) && double.IsPositiveInfinity(complex.Imaginary))
             {
-                return new Complex(Constantsdouble.Sqrt1Over2, Constantsdouble.Sqrt1Over2);
+                return new Complex(Sqrt1Over2, Sqrt1Over2);
             }
 
             if (double.IsPositiveInfinity(complex.Real) && double.IsNegativeInfinity(complex.Imaginary))
             {
-                return new Complex(Constantsdouble.Sqrt1Over2, -Constantsdouble.Sqrt1Over2);
+                return new Complex(Sqrt1Over2, -Sqrt1Over2);
             }
 
             if (double.IsNegativeInfinity(complex.Real) && double.IsPositiveInfinity(complex.Imaginary))
             {
-                return new Complex(-Constantsdouble.Sqrt1Over2, -Constantsdouble.Sqrt1Over2);
+                return new Complex(-Sqrt1Over2, -Sqrt1Over2);
             }
 
             if (double.IsNegativeInfinity(complex.Real) && double.IsNegativeInfinity(complex.Imaginary))
             {
-                return new Complex(-Constantsdouble.Sqrt1Over2, Constantsdouble.Sqrt1Over2);
+                return new Complex(-Sqrt1Over2, Sqrt1Over2);
             }
 
             // don't replace this with "Magnitude"!
-            var mod = SpecialFunctions_double.Hypotenuse(complex.Real, complex.Imaginary);
+            var mod = SpecialFunctions.Hypotenuse(complex.Real, complex.Imaginary);
             if (mod == 0.0d)
             {
                 return Complex.Zero;
@@ -311,7 +517,7 @@ namespace LinearAlgebra.MathNet.Numerics
         {
             var r = Math.Pow(complex.Magnitude, 1d/3d);
             var theta = complex.Phase/3;
-            double shift = Constantsdouble.Pi2/3;
+            double shift = Pi2/3;
             return (Complex.FromPolarCoordinates(r, theta),
                 Complex.FromPolarCoordinates(r, theta + shift),
                 Complex.FromPolarCoordinates(r, theta - shift));

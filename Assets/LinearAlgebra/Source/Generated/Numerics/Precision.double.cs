@@ -36,28 +36,6 @@ using System.Runtime.InteropServices;
 namespace LinearAlgebra.MathNet.Numerics
 {
     /// <summary>
-    /// Support Interface for Precision Operations (like AlmostEquals).
-    /// </summary>
-    /// <typeparam name="T">Type of the implementing class.</typeparam>
-    public interface IPrecisionSupport<in T>
-    {
-        /// <summary>
-        /// Returns a Norm of a value of this type, which is appropriate for measuring how
-        /// close this value is to zero.
-        /// </summary>
-        /// <returns>A norm of this value.</returns>
-        double Norm();
-
-        /// <summary>
-        /// Returns a Norm of the difference of two values of this type, which is
-        /// appropriate for measuring how close together these two values are.
-        /// </summary>
-        /// <param name="otherValue">The value to compare with.</param>
-        /// <returns>A norm of the difference between this and the other value.</returns>
-        double NormOfDifference(T otherValue);
-    }
-
-    /// <summary>
     /// Utilities for working with floating point numbers.
     /// </summary>
     /// <remarks>
@@ -75,6 +53,7 @@ namespace LinearAlgebra.MathNet.Numerics
     /// </remarks>
     public static partial class Precisiondouble
     {
+        /*
         /// <summary>
         /// The number of binary digits used to represent the binary number for a double precision floating
         /// point value. i.e. there are this many digits used to represent the
@@ -146,6 +125,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Value representing 10 * 2^(-24) = 5.96046447753906E-07
         /// </summary>
         static readonly float DefaultSingleAccuracy = (float) (SinglePrecision*10);
+        */
 
         /// <summary>
         /// Returns the magnitude of the number.
@@ -435,7 +415,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <returns>Zero if |<paramref name="a"/>| is smaller than 2^(-53) = 1.11e-16, <paramref name="a"/> otherwise.</returns>
         public static double CoerceZero(this double a)
         {
-            return CoerceZero(a, DoublePrecision);
+            return CoerceZero(a, Precision.DoublePrecision);
         }
 
         /// <summary>

@@ -202,19 +202,19 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double l2Norm(this in fProxyN v)
+        public static fProxy l2Norm(this in fProxyN v)
         {
             Arena.CheckValid(v);
             return math.sqrt(v.sumSqr());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double sumSqr(this in fProxyN v)
+        public static fProxy sumSqr(this in fProxyN v)
         {
             Arena.CheckValid(v);
             unsafe
             {
-                double sumSqr = 0;
+                fProxy sumSqr = 0;
                 for (int i = 0; i < v.N; i++)
                 {
                     sumSqr += v[i] * v[i];
