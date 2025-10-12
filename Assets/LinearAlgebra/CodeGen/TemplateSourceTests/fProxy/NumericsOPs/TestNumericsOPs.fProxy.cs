@@ -44,7 +44,7 @@ public class TestNumericsOPsfProxy
             fProxyN s = arena.tempfProxyVec(Mathf.Min(mRows, nCols));
             fProxyMxN u = arena.tempfProxyMat(mRows, mRows);
             fProxyMxN vt = arena.tempfProxyMat(nCols, nCols);
-            NumericsOPfProxy.SingularValueDecomposition(ref arena, true, A, s, u, vt);
+            NumericsOPfProxy.SingularValueDecomposition(ref arena, true, ref A, ref s, ref u, ref vt);
 
 
             var w = arena.tempfProxyMat(u.M_Rows, vt.N_Cols); 
@@ -81,7 +81,7 @@ public class TestNumericsOPsfProxy
 
             fProxyMxN xx = arena.tempfProxyMat(_A.GetLength(0), _b.GetLength(1));
 
-            NumericsOPfProxy.SvdSolve(ref arena, A, b, xx, eps);
+            NumericsOPfProxy.SvdSolve(ref arena, ref A, ref b, ref xx, eps);
 
             ToDotNetMatrix(xx, out x);
         }

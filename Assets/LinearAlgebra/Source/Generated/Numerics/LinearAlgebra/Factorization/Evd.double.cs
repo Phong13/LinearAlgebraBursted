@@ -50,20 +50,19 @@ namespace LinearAlgebra.MathNet.Numerics
     /// A = V*D*Inverse(V) depends upon V.Condition().
     /// </remarks>
     /// <typeparam name="T">Supported data types are double, single, <see cref="Complex"/>, and <see cref="Complex32"/>.</typeparam>
-    public class Evddouble
+    public struct Evddouble
     {
         public doubleMxN EigenVectors;
         public doubleN EigenValuesReal;
         public doubleN EigenValuesImaginary;
         public doubleMxN D;
-        public bool IsSymmetric;
 
-        public Evddouble()
-        {
+        byte _isSymmetric;
 
-        }
+        public bool IsSymmetric => _isSymmetric == 1;
 
-        protected Evddouble(doubleMxN eigenVectors, doubleN eigenValuesReal, doubleN eigenValuesImaginary, doubleMxN blockDiagonal, bool isSymmetric)
+        /*
+        protected void Init(ref doubleMxN eigenVectors, ref doubleN eigenValuesReal, ref doubleN eigenValuesImaginary, ref doubleMxN blockDiagonal, bool isSymmetric)
         {
             EigenVectors = eigenVectors;
             EigenValuesReal = eigenValuesReal;
@@ -71,6 +70,7 @@ namespace LinearAlgebra.MathNet.Numerics
             D = blockDiagonal;
             IsSymmetric = isSymmetric;
         }
+        */
 
         /// <summary>
         /// Gets the absolute value of determinant of the square matrix for which the EVD was computed.

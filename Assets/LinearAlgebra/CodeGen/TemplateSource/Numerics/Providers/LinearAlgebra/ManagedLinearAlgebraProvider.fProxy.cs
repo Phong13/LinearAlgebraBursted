@@ -1681,7 +1681,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// right singular vectors. Packed in column major order.</param>
         /// <remarks>This is equivalent to the GESVD LAPACK routine.</remarks>
         [BurstCompile]
-        public static unsafe void SingularValueDecomposition(ref Arena arena, bool computeVectors, fProxyN aa, int rowsA, int columnsA, fProxyN ss, fProxyN uu, fProxyN vvt)
+        public static unsafe void SingularValueDecomposition(ref Arena arena, bool computeVectors, ref fProxyN aa, int rowsA, int columnsA, ref fProxyN ss, ref fProxyN uu, ref fProxyN vvt)
         {
             UnsafeList<fProxy> a = aa.Data;
             UnsafeList<fProxy> s = ss.Data;
@@ -2395,7 +2395,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="tolerance">if -1 then it is ignored. If positive then we truncate singular values that are smaller than tolerence. This is very important
         /// for numerical stability. Otherwise very small singular values (noise) explode when we 1/s and the noise dominates the solution.</param>
         [BurstCompile]
-        public static void SvdSolve(ref Arena arena, fProxyN a, int rowsA, int columnsA, fProxyN b, int columnsB, fProxyN x, fProxy epsilon)
+        public static void SvdSolve(ref Arena arena, ref fProxyN a, int rowsA, int columnsA, ref fProxyN b, int columnsB, ref fProxyN x, fProxy epsilon)
         {
             if (b.N != rowsA * columnsB)
             {
@@ -2412,7 +2412,7 @@ namespace LinearAlgebra.MathNet.Numerics
             var vt = arena.tempfProxyVec(columnsA * columnsA);
 
             var clone = a.TempCopy();
-            SingularValueDecomposition(ref arena, true, clone, rowsA, columnsA, s, u, vt);
+            SingularValueDecomposition(ref arena, true, ref clone, rowsA, columnsA, ref s, ref u, ref vt);
             fProxy tolerance;
             if (epsilon == -1)
             {
@@ -2422,7 +2422,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 tolerance = math.max(rowsA, columnsA) * s.l2Norm() * epsilon;
             }
 
-            SvdSolveFactored(rowsA, columnsA, s, u, vt, b, columnsB, x, tolerance);
+            SvdSolveFactored(ref arena, rowsA, columnsA, s, u, vt, b, columnsB, x, tolerance);
         }
 
         /// <summary>
@@ -2439,7 +2439,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="tolerance">if -1 then it is ignored. If positive then we truncate singular values that are smaller than tolerence. This is very important
         /// for numerical stability. Otherwise very small singular values (noise) explode when we 1/s and the noise dominates the solution.</param>
         [BurstCompile]
-        public static void SvdSolveFactored(int rowsA, int columnsA, fProxyN ss, fProxyN uu, fProxyN vvt, fProxyN bb, int columnsB, fProxyN xx, fProxy tolerance)
+        public static void SvdSolveFactored(ref Arena arena, int rowsA, int columnsA, fProxyN ss, fProxyN uu, fProxyN vvt, fProxyN bb, int columnsB, fProxyN xx, fProxy tolerance)
         {
             UnsafeList<fProxy> s = ss.Data;
             UnsafeList<fProxy> u = uu.Data;
@@ -2473,7 +2473,7 @@ namespace LinearAlgebra.MathNet.Numerics
             }
 
             var mn = math.min(rowsA, columnsA);
-            var tmp = new fProxy[columnsA];
+            fProxyN tmp = arena.tempfProxyVec(columnsA);
             for (var k = 0; k < columnsB; k++)
             {
                 for (var j = 0; j < columnsA; j++)
@@ -2531,7 +2531,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="matrixEv">On output, the matrix contains the eigen vectors. The length of the array must be order * order.</param>
         /// <param name="vectorEv">On output, the eigen values (λ) of matrix in ascending value. The length of the array must <paramref name="order"/>.</param>
         /// <param name="matrixD">On output, the block diagonal eigenvalue matrix. The length of the array must be order * order.</param>
-        public static void EigenDecomp(ref Arena arena, bool isSymmetric, int order, fProxyN matrix, fProxyN matrixEv, fProxyN vectorEvReal, fProxyN vectorEvImaginary, fProxyN matrixD)
+        public static void EigenDecomp(ref Arena arena, bool isSymmetric, int order, ref fProxyN matrix, ref fProxyN matrixEv, ref fProxyN vectorEvReal, ref fProxyN vectorEvImaginary, ref fProxyN matrixD)
         {
             if (!matrix.CheckValid())
             {
@@ -2596,8 +2596,8 @@ namespace LinearAlgebra.MathNet.Numerics
                 fProxyN matrixH = arena.tempfProxyVec(matrix.Length);
                 //System.Buffer.BlockCopy(matrix, 0, matrixH, 0, matrix.Length * Constants.SizeOfDouble);
                 fProxyOP.copyInpl(matrixH, matrix);
-                NonsymmetricReduceToHessenberg(matrixEv, matrixH, order);
-                NonsymmetricReduceHessenberToRealSchur(matrixEv, matrixH, d, e, order);
+                NonsymmetricReduceToHessenberg(ref arena, ref matrixEv, ref matrixH, order);
+                NonsymmetricReduceHessenberToRealSchur(ref matrixEv, ref matrixH, ref d, ref e, order); 
             }
 
             for (var i = 0; i < order; i++)
@@ -2929,9 +2929,9 @@ namespace LinearAlgebra.MathNet.Numerics
         /// by Martin and Wilkinson, Handbook for Auto. Comp.,
         /// Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutines in EISPACK.</remarks>
-        internal static void NonsymmetricReduceToHessenberg(fProxyN a, fProxyN matrixH, int order)
+        internal static void NonsymmetricReduceToHessenberg(ref Arena arena, ref fProxyN a, ref fProxyN matrixH, int order)
         {
-            var ort = new fProxy[order];
+            fProxyN ort = arena.tempfProxyVec(order);
             var high = order - 1;
             for (var m = 1; m <= high - 1; m++)
             {
@@ -3058,7 +3058,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutine in EISPACK.</remarks>
         /// <exception cref="NonConvergenceException"></exception>
-        internal static void NonsymmetricReduceHessenberToRealSchur(fProxyN a, fProxyN matrixH, fProxyN d, fProxyN e, int order)
+        internal static void NonsymmetricReduceHessenberToRealSchur(ref fProxyN a, ref fProxyN matrixH, ref fProxyN d, ref fProxyN e, int order)
         {
             // Initialize
             var n = order - 1;

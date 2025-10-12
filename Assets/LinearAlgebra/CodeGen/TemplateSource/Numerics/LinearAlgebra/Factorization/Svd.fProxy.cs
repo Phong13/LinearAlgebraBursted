@@ -46,7 +46,7 @@ namespace LinearAlgebra.MathNet.Numerics
     /// The computation of the singular value decomposition is done at construction time.
     /// </remarks>
     /// <typeparam name="T">Supported data types are double, single, <see cref="Complex"/>, and <see cref="Complex32"/>.</typeparam>
-    public class SvdfProxy
+    public struct SvdfProxy
     {
         public fProxyN S;
         public fProxyMxN U;
@@ -54,13 +54,17 @@ namespace LinearAlgebra.MathNet.Numerics
         public fProxyMxN W;
 
         /// <summary>Indicating whether U and VT matrices have been computed during SVD factorization.</summary>
-        protected readonly bool VectorsComputed;
 
-        public SvdfProxy(bool vecotrsComputed)
+        byte _vectorsComputed;
+        
+        bool VectorsComputed => _vectorsComputed == 1;
+
+        public void Init(bool vecotrsComputed)
         {
-            VectorsComputed = vecotrsComputed;
+            _vectorsComputed = vecotrsComputed ? (byte) 1 : (byte) 0;
         }
 
+        /*
         protected SvdfProxy(fProxyN s, fProxyMxN u, fProxyMxN vt, fProxyMxN w, bool vectorsComputed)
         {
             S = s;
@@ -69,6 +73,7 @@ namespace LinearAlgebra.MathNet.Numerics
             W = w;
             VectorsComputed = vectorsComputed;
         }
+        */
 
 
         public void ComputeW(ref Arena arena, bool isTemp)

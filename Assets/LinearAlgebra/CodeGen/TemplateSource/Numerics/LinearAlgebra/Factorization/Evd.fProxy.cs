@@ -50,20 +50,19 @@ namespace LinearAlgebra.MathNet.Numerics
     /// A = V*D*Inverse(V) depends upon V.Condition().
     /// </remarks>
     /// <typeparam name="T">Supported data types are double, single, <see cref="Complex"/>, and <see cref="Complex32"/>.</typeparam>
-    public class EvdfProxy
+    public struct EvdfProxy
     {
         public fProxyMxN EigenVectors;
         public fProxyN EigenValuesReal;
         public fProxyN EigenValuesImaginary;
         public fProxyMxN D;
-        public bool IsSymmetric;
 
-        public EvdfProxy()
-        {
+        byte _isSymmetric;
 
-        }
+        public bool IsSymmetric => _isSymmetric == 1;
 
-        protected EvdfProxy(fProxyMxN eigenVectors, fProxyN eigenValuesReal, fProxyN eigenValuesImaginary, fProxyMxN blockDiagonal, bool isSymmetric)
+        /*
+        protected void Init(ref fProxyMxN eigenVectors, ref fProxyN eigenValuesReal, ref fProxyN eigenValuesImaginary, ref fProxyMxN blockDiagonal, bool isSymmetric)
         {
             EigenVectors = eigenVectors;
             EigenValuesReal = eigenValuesReal;
@@ -71,6 +70,7 @@ namespace LinearAlgebra.MathNet.Numerics
             D = blockDiagonal;
             IsSymmetric = isSymmetric;
         }
+        */
 
         /// <summary>
         /// Gets the absolute value of determinant of the square matrix for which the EVD was computed.

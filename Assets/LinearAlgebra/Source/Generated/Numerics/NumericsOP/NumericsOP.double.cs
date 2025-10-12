@@ -6,10 +6,11 @@ using System;
 
 namespace LinearAlgebra.MathNet.Numerics
 {
+    [BurstCompile]
     public static class NumericsOPdouble
     {
         [BurstCompile]
-        public static void SingularValueDecomposition(ref Arena arena, bool computeVectors, doubleMxN aRowMajor, doubleN s, doubleMxN uRowMajor, doubleMxN vtRowMajor)
+        public static void SingularValueDecomposition(ref Arena arena, bool computeVectors, ref doubleMxN aRowMajor, ref doubleN s, ref doubleMxN uRowMajor, ref doubleMxN vtRowMajor)
         {
             // LinearAlgebraBursted stores mats as row major order. 
             // These  Math.Net want column first order. We need to transpose.
@@ -17,28 +18,29 @@ namespace LinearAlgebra.MathNet.Numerics
             aRowMajor.FlattenColumnMajorInpl(aFlat);
             doubleN uFlat = arena.tempdoubleVec(uRowMajor.N_Cols * uRowMajor.M_Rows);
             doubleN vtFlat = arena.tempdoubleVec(vtRowMajor.N_Cols * vtRowMajor.M_Rows);
-            ManagedLinearAlgebraProviderdouble.SingularValueDecomposition(ref arena, computeVectors, aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, s, uFlat, vtFlat);
+            ManagedLinearAlgebraProviderdouble.SingularValueDecomposition(ref arena, computeVectors, ref aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, ref s, ref uFlat, ref vtFlat);
             uFlat.UnFlattenFromColumnMajorInpl(uRowMajor);
             vtFlat.UnFlattenFromColumnMajorInpl(vtRowMajor);
         }
 
-        public static Svddouble Svd(ref Arena arena, bool computeVectors, doubleMxN aRowMajor)
+        [BurstCompile]
+        public static void Svd(ref Arena arena, bool computeVectors, ref doubleMxN aRowMajor, out Svddouble svd)
         {
-            var svd = new Svddouble(computeVectors);
+            svd = new Svddouble();
+            svd.Init(computeVectors);
             int mRows = aRowMajor.M_Rows;
             int nCols = aRowMajor.N_Cols;
             svd.S = arena.tempdoubleVec(Mathf.Min(mRows, nCols));
             svd.U = arena.tempdoubleMat(mRows, mRows);
             svd.VT = arena.tempdoubleMat(nCols, nCols);
 
-            SingularValueDecomposition(ref arena, computeVectors, aRowMajor, svd.S, svd.U, svd.VT);
+            SingularValueDecomposition(ref arena, computeVectors, ref aRowMajor, ref svd.S, ref svd.U, ref svd.VT);
 
             svd.ComputeW(ref arena, true);
-            return svd;
         }
 
         [BurstCompile]
-        public static void SvdSolve(ref Arena arena, doubleMxN aRowMajor, doubleMxN bRowMajor, doubleMxN x, double epsilon)
+        public static void SvdSolve(ref Arena arena, ref doubleMxN aRowMajor, ref doubleMxN bRowMajor, ref doubleMxN x, double epsilon)
         {
             // LinearAlgebraBursted stores mats as row major order. 
             // These  Math.Net want column first order. We need to transpose.
@@ -49,12 +51,13 @@ namespace LinearAlgebra.MathNet.Numerics
             bRowMajor.FlattenColumnMajorInpl(bFlat);
 
             var xFlat = arena.tempdoubleVec(x.Length);
-            ManagedLinearAlgebraProviderdouble.SvdSolve(ref arena, aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, bFlat, bRowMajor.N_Cols, xFlat, epsilon);
+            ManagedLinearAlgebraProviderdouble.SvdSolve(ref arena, ref aFlat, aRowMajor.M_Rows, aRowMajor.N_Cols, ref bFlat, bRowMajor.N_Cols, ref xFlat, epsilon);
 
             xFlat.UnFlattenFromColumnMajorInpl(x);
         }
 
-        public static void EigenDecomp(ref Arena arena, doubleMxN matrixRowMajor, Symmetricity symmetricity, doubleMxN eigenVectors, doubleN eigenValuesReal, doubleN eigenValuesImaginary, doubleMxN blockDiagonal)
+        [BurstCompile]
+        public static void EigenDecomp(ref Arena arena, ref doubleMxN matrixRowMajor, Symmetricity symmetricity, ref doubleMxN eigenVectors, ref doubleN eigenValuesReal, ref doubleN eigenValuesImaginary, ref doubleMxN blockDiagonal)
         {
             // Debug.LogError("Do Burst Compile");
             if (matrixRowMajor.RowCount != matrixRowMajor.ColumnCount)
@@ -96,23 +99,22 @@ namespace LinearAlgebra.MathNet.Numerics
                     break;
             }
 
-            ManagedLinearAlgebraProviderdouble.EigenDecomp(ref arena, isSymmetric, order, matrixFlat, eigenVectorsFlat, eigenValuesReal, eigenValuesImaginary, blockDiagonalFlat);
+            ManagedLinearAlgebraProviderdouble.EigenDecomp(ref arena, isSymmetric, order, ref matrixFlat, ref eigenVectorsFlat, ref eigenValuesReal, ref eigenValuesImaginary, ref blockDiagonalFlat);
             eigenVectorsFlat.UnFlattenFromColumnMajorInpl(eigenVectors);
             blockDiagonalFlat.UnFlattenFromColumnMajorInpl(blockDiagonal);
         }
 
-        public static Evddouble Evd(ref Arena arena, doubleMxN matrixRowMajor, Symmetricity sym)
+        [BurstCompile]
+        public static void Evd(ref Arena arena, ref doubleMxN matrixRowMajor, Symmetricity sym, out Evddouble evd)
         {
             var order = matrixRowMajor.RowCount;
-            var evd = new Evddouble();
+            evd = new Evddouble();
             evd.EigenVectors = arena.tempdoubleMat(order, order);
             evd.EigenValuesReal = arena.tempdoubleVec(order);
             evd.EigenValuesImaginary = arena.tempdoubleVec(order);
             evd.D = arena.tempdoubleMat(order, order);
 
-            EigenDecomp(ref arena, matrixRowMajor, sym, evd.EigenVectors, evd.EigenValuesReal, evd.EigenValuesImaginary, evd.D);
-
-            return evd;
+            EigenDecomp(ref arena, ref matrixRowMajor, sym, ref evd.EigenVectors, ref evd.EigenValuesReal, ref evd.EigenValuesImaginary, ref evd.D);
         }
 
 

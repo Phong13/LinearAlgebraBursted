@@ -380,7 +380,8 @@ namespace LinearAlgebra.MathNet.Numerics.Tests.LinearAlgebraTests.Double.Factori
         {
             Arena arena = new Arena(Unity.Collections.Allocator.Persistent);
             var matrix = arena.floatIdentityMatrix(order, true); // floatMxN.Build.DenseIdentity(order);
-            var factorEvd = NumericsOPfloat.Evd(ref arena, matrix, Symmetricity.Unknown);
+            Evdfloat factorEvd;
+            NumericsOPfloat.Evd(ref arena, ref matrix, Symmetricity.Unknown, out factorEvd);
             var eigenValues = GetComplexEigenValues(factorEvd);
             var eigenVectors = factorEvd.EigenVectors;
             var d = factorEvd.D;
@@ -403,7 +404,8 @@ namespace LinearAlgebra.MathNet.Numerics.Tests.LinearAlgebraTests.Double.Factori
         {
             Arena arena = new Arena(Unity.Collections.Allocator.Persistent);
             var A = arena.floatRandomMatrix(order, order, 1, true);
-            var factorEvd = NumericsOPfloat.Evd(ref arena, A, Symmetricity.Unknown);
+            Evdfloat factorEvd;
+            NumericsOPfloat.Evd(ref arena, ref A, Symmetricity.Unknown, out factorEvd);
             var V = factorEvd.EigenVectors;
             var λ = factorEvd.D;
 

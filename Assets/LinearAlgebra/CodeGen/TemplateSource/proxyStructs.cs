@@ -52,7 +52,9 @@ namespace LinearAlgebra
         /*[BurstDiscard]
         public override bool Equals(object obj) => obj is fProxy d && this.value == d.value;*/
         public override int GetHashCode() => value.GetHashCode();
-        public override string ToString() => value.ToString(); 
+        public override string ToString() => value.ToString();
+
+        public string ToString(string f) => value.ToString(f);
 
         public static bool IsNaN(fProxy f)
         {

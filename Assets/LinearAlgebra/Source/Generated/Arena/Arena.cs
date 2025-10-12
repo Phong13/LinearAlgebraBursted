@@ -55,9 +55,19 @@ namespace LinearAlgebra
 
         public Allocator Allocator;
 
-        bool isDisposed;
+        byte _isDisposed;
 
-        public bool Initialized { get; private set; }
+        public bool isDisposed
+        {
+            get { return _isDisposed == 1; }
+        }
+
+        byte _isInitialized;
+
+        public bool Initialized
+        {
+            get { return _isInitialized == 1; }
+        }
 
         private UnsafeList<boolN> BoolVectors;
         private UnsafeList<boolMxN> BoolMatrices;
@@ -68,9 +78,9 @@ namespace LinearAlgebra
 
         public Arena(Allocator allocator) {
 
-            Initialized = true;
+            
             Allocator = allocator;
-            isDisposed = false;
+            _isDisposed = 0;
 
             expectedPersistentAllocations = -1;
 
@@ -108,6 +118,8 @@ namespace LinearAlgebra
 
             TempBoolVectors = new UnsafeList<boolN>(2, Allocator);
             TempBoolMatrices = new UnsafeList<boolMxN>(2, Allocator);
+
+            _isInitialized = 1;
         }
 
         public void Clear() {
@@ -521,9 +533,9 @@ namespace LinearAlgebra
                 TempBoolMatrices.Dispose();
                 TempBoolVectors.Dispose();
                  
-                Initialized = false;
+                _isInitialized = 0;
                 Allocator = Allocator.Invalid;
-                isDisposed = true;
+                _isInitialized = 1;
             }
         }
     }

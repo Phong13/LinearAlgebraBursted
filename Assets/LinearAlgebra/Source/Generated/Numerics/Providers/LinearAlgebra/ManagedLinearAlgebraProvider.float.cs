@@ -1681,7 +1681,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// right singular vectors. Packed in column major order.</param>
         /// <remarks>This is equivalent to the GESVD LAPACK routine.</remarks>
         [BurstCompile]
-        public static unsafe void SingularValueDecomposition(ref Arena arena, bool computeVectors, floatN aa, int rowsA, int columnsA, floatN ss, floatN uu, floatN vvt)
+        public static unsafe void SingularValueDecomposition(ref Arena arena, bool computeVectors, ref floatN aa, int rowsA, int columnsA, ref floatN ss, ref floatN uu, ref floatN vvt)
         {
             UnsafeList<float> a = aa.Data;
             UnsafeList<float> s = ss.Data;
@@ -2395,7 +2395,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="tolerance">if -1 then it is ignored. If positive then we truncate singular values that are smaller than tolerence. This is very important
         /// for numerical stability. Otherwise very small singular values (noise) explode when we 1/s and the noise dominates the solution.</param>
         [BurstCompile]
-        public static void SvdSolve(ref Arena arena, floatN a, int rowsA, int columnsA, floatN b, int columnsB, floatN x, float epsilon)
+        public static void SvdSolve(ref Arena arena, ref floatN a, int rowsA, int columnsA, ref floatN b, int columnsB, ref floatN x, float epsilon)
         {
             if (b.N != rowsA * columnsB)
             {
@@ -2412,7 +2412,7 @@ namespace LinearAlgebra.MathNet.Numerics
             var vt = arena.tempfloatVec(columnsA * columnsA);
 
             var clone = a.TempCopy();
-            SingularValueDecomposition(ref arena, true, clone, rowsA, columnsA, s, u, vt);
+            SingularValueDecomposition(ref arena, true, ref clone, rowsA, columnsA, ref s, ref u, ref vt);
             float tolerance;
             if (epsilon == -1)
             {
@@ -2422,7 +2422,7 @@ namespace LinearAlgebra.MathNet.Numerics
                 tolerance = math.max(rowsA, columnsA) * s.l2Norm() * epsilon;
             }
 
-            SvdSolveFactored(rowsA, columnsA, s, u, vt, b, columnsB, x, tolerance);
+            SvdSolveFactored(ref arena, rowsA, columnsA, s, u, vt, b, columnsB, x, tolerance);
         }
 
         /// <summary>
@@ -2439,7 +2439,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="tolerance">if -1 then it is ignored. If positive then we truncate singular values that are smaller than tolerence. This is very important
         /// for numerical stability. Otherwise very small singular values (noise) explode when we 1/s and the noise dominates the solution.</param>
         [BurstCompile]
-        public static void SvdSolveFactored(int rowsA, int columnsA, floatN ss, floatN uu, floatN vvt, floatN bb, int columnsB, floatN xx, float tolerance)
+        public static void SvdSolveFactored(ref Arena arena, int rowsA, int columnsA, floatN ss, floatN uu, floatN vvt, floatN bb, int columnsB, floatN xx, float tolerance)
         {
             UnsafeList<float> s = ss.Data;
             UnsafeList<float> u = uu.Data;
@@ -2473,7 +2473,7 @@ namespace LinearAlgebra.MathNet.Numerics
             }
 
             var mn = math.min(rowsA, columnsA);
-            var tmp = new float[columnsA];
+            floatN tmp = arena.tempfloatVec(columnsA);
             for (var k = 0; k < columnsB; k++)
             {
                 for (var j = 0; j < columnsA; j++)
@@ -2531,7 +2531,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// <param name="matrixEv">On output, the matrix contains the eigen vectors. The length of the array must be order * order.</param>
         /// <param name="vectorEv">On output, the eigen values (λ) of matrix in ascending value. The length of the array must <paramref name="order"/>.</param>
         /// <param name="matrixD">On output, the block diagonal eigenvalue matrix. The length of the array must be order * order.</param>
-        public static void EigenDecomp(ref Arena arena, bool isSymmetric, int order, floatN matrix, floatN matrixEv, floatN vectorEvReal, floatN vectorEvImaginary, floatN matrixD)
+        public static void EigenDecomp(ref Arena arena, bool isSymmetric, int order, ref floatN matrix, ref floatN matrixEv, ref floatN vectorEvReal, ref floatN vectorEvImaginary, ref floatN matrixD)
         {
             if (!matrix.CheckValid())
             {
@@ -2596,8 +2596,8 @@ namespace LinearAlgebra.MathNet.Numerics
                 floatN matrixH = arena.tempfloatVec(matrix.Length);
                 //System.Buffer.BlockCopy(matrix, 0, matrixH, 0, matrix.Length * Constants.SizeOfDouble);
                 floatOP.copyInpl(matrixH, matrix);
-                NonsymmetricReduceToHessenberg(matrixEv, matrixH, order);
-                NonsymmetricReduceHessenberToRealSchur(matrixEv, matrixH, d, e, order);
+                NonsymmetricReduceToHessenberg(ref arena, ref matrixEv, ref matrixH, order);
+                NonsymmetricReduceHessenberToRealSchur(ref matrixEv, ref matrixH, ref d, ref e, order); 
             }
 
             for (var i = 0; i < order; i++)
@@ -2929,9 +2929,9 @@ namespace LinearAlgebra.MathNet.Numerics
         /// by Martin and Wilkinson, Handbook for Auto. Comp.,
         /// Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutines in EISPACK.</remarks>
-        internal static void NonsymmetricReduceToHessenberg(floatN a, floatN matrixH, int order)
+        internal static void NonsymmetricReduceToHessenberg(ref Arena arena, ref floatN a, ref floatN matrixH, int order)
         {
-            var ort = new float[order];
+            floatN ort = arena.tempfloatVec(order);
             var high = order - 1;
             for (var m = 1; m <= high - 1; m++)
             {
@@ -3058,7 +3058,7 @@ namespace LinearAlgebra.MathNet.Numerics
         /// Vol.ii-Linear Algebra, and the corresponding
         /// Fortran subroutine in EISPACK.</remarks>
         /// <exception cref="NonConvergenceException"></exception>
-        internal static void NonsymmetricReduceHessenberToRealSchur(floatN a, floatN matrixH, floatN d, floatN e, int order)
+        internal static void NonsymmetricReduceHessenberToRealSchur(ref floatN a, ref floatN matrixH, ref floatN d, ref floatN e, int order)
         {
             // Initialize
             var n = order - 1;

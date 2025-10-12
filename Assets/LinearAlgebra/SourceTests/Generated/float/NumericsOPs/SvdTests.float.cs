@@ -62,7 +62,8 @@ namespace LinearAlgebra.MathNet.Numerics.Tests.LinearAlgebraTests.Double.Factori
         {
             Arena arena = new Arena(Unity.Collections.Allocator.Persistent);
             var matrixI = arena.floatIdentityMatrix(order, true);
-            var factorSvd = NumericsOPfloat.Svd(ref arena, true, matrixI);
+            Svdfloat factorSvd;
+            NumericsOPfloat.Svd(ref arena, true, ref matrixI, out factorSvd);
             var u = factorSvd.U;
             var vt = factorSvd.VT;
             var w = factorSvd.W;
@@ -113,7 +114,8 @@ namespace LinearAlgebra.MathNet.Numerics.Tests.LinearAlgebraTests.Double.Factori
         {
             Arena arena = new Arena(Unity.Collections.Allocator.Persistent);
             var matrixA = arena.floatRandomMatrix(row, column, 1, true); // Matrix<double>.Build.Random(row, column, 1);
-            var factorSvd = NumericsOPfloat.Svd(ref arena, true, matrixA);
+            Svdfloat factorSvd;
+            NumericsOPfloat.Svd(ref arena, true, ref matrixA, out factorSvd);
             var u = factorSvd.U;
             var vt = factorSvd.VT;
             var w = factorSvd.W;

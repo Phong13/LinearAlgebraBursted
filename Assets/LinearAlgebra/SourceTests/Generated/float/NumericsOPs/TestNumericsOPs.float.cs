@@ -44,7 +44,7 @@ public class TestNumericsOPsfloat
             floatN s = arena.tempfloatVec(Mathf.Min(mRows, nCols));
             floatMxN u = arena.tempfloatMat(mRows, mRows);
             floatMxN vt = arena.tempfloatMat(nCols, nCols);
-            NumericsOPfloat.SingularValueDecomposition(ref arena, true, A, s, u, vt);
+            NumericsOPfloat.SingularValueDecomposition(ref arena, true, ref A, ref s, ref u, ref vt);
 
 
             var w = arena.tempfloatMat(u.M_Rows, vt.N_Cols); 
@@ -81,7 +81,7 @@ public class TestNumericsOPsfloat
 
             floatMxN xx = arena.tempfloatMat(_A.GetLength(0), _b.GetLength(1));
 
-            NumericsOPfloat.SvdSolve(ref arena, A, b, xx, eps);
+            NumericsOPfloat.SvdSolve(ref arena, ref A, ref b, ref xx, eps);
 
             ToDotNetMatrix(xx, out x);
         }

@@ -44,7 +44,7 @@ public class TestNumericsOPsdouble
             doubleN s = arena.tempdoubleVec(Mathf.Min(mRows, nCols));
             doubleMxN u = arena.tempdoubleMat(mRows, mRows);
             doubleMxN vt = arena.tempdoubleMat(nCols, nCols);
-            NumericsOPdouble.SingularValueDecomposition(ref arena, true, A, s, u, vt);
+            NumericsOPdouble.SingularValueDecomposition(ref arena, true, ref A, ref s, ref u, ref vt);
 
 
             var w = arena.tempdoubleMat(u.M_Rows, vt.N_Cols); 
@@ -81,7 +81,7 @@ public class TestNumericsOPsdouble
 
             doubleMxN xx = arena.tempdoubleMat(_A.GetLength(0), _b.GetLength(1));
 
-            NumericsOPdouble.SvdSolve(ref arena, A, b, xx, eps);
+            NumericsOPdouble.SvdSolve(ref arena, ref A, ref b, ref xx, eps);
 
             ToDotNetMatrix(xx, out x);
         }
