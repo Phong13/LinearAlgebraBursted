@@ -189,6 +189,11 @@ namespace LinearAlgebra
             throw new NotImplementedException();
         }
 
+        public string ToStringDimensions()
+        {
+            return $"fProxyMxN {M_Rows} x {N_Cols}";
+        }
+
         public override string ToString()
         {
             // Get the dimensions of the matrix.

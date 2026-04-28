@@ -201,6 +201,11 @@ namespace LinearAlgebra
             }
         }
 
+        public string ToStringDimensions()
+        {
+            return $"floatN {N}";
+        }
+
         public override string ToString()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
