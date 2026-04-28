@@ -17,7 +17,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator -(in fProxyMxN a)
         {
-            fProxyMxN matrix = a.TempCopy();
+            fProxyMxN matrix = a.CopyTemp();
             
             fProxyOP.signFlipInpl(matrix);
 
@@ -26,7 +26,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator +(in fProxyMxN lhs, fProxy rhs)
         {
-            fProxyMxN matrix = lhs.TempCopy();
+            fProxyMxN matrix = lhs.CopyTemp();
             
             fProxyOP.addInpl(matrix, rhs);
 
@@ -37,7 +37,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator -(in fProxyMxN lhs, fProxy rhs)
         {
-            fProxyMxN matrix = lhs.TempCopy();
+            fProxyMxN matrix = lhs.CopyTemp();
             
             fProxyOP.addInpl(matrix, -rhs);
 
@@ -51,7 +51,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator *(in fProxyMxN a, fProxy s)
         {
-            fProxyMxN matrix = a.TempCopy();
+            fProxyMxN matrix = a.CopyTemp();
 
             fProxyOP.mulInpl(matrix, s);
 
@@ -62,7 +62,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator /(in fProxyMxN a, fProxy s)
         {
-            fProxyMxN matrix = a.TempCopy();
+            fProxyMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -74,7 +74,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator /(fProxy s, in fProxyMxN a)
         {
-            fProxyMxN matrix = a.TempCopy();
+            fProxyMxN matrix = a.CopyTemp();
             
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -86,7 +86,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator %(in fProxyMxN a, fProxy s)
         {
-            fProxyMxN matrix = a.TempCopy();
+            fProxyMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -98,7 +98,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyMxN operator %(fProxy s, in fProxyMxN a)
         {
-            fProxyMxN matrix = a.TempCopy();
+            fProxyMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -121,7 +121,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
 
-            fProxyMxN matrix = lhs.TempCopy();
+            fProxyMxN matrix = lhs.CopyTemp();
 
             fProxyOP.addInpl(matrix, rhs);
 
@@ -138,7 +138,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
             
-            fProxyMxN matrix = lhs.TempCopy();
+            fProxyMxN matrix = lhs.CopyTemp();
 
             fProxyOP.subInpl(matrix, rhs);
 
@@ -159,7 +159,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
 
-            fProxyMxN matrix = lhs.TempCopy();
+            fProxyMxN matrix = lhs.CopyTemp();
 
             fProxyOP.compMulInpl(rhs, matrix);
 
@@ -176,7 +176,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            fProxyMxN newDividendMatrix = dividend.TempCopy();
+            fProxyMxN newDividendMatrix = dividend.CopyTemp();
 
             fProxyOP.compDivInpl(newDividendMatrix, divisor);
             return newDividendMatrix;
@@ -193,7 +193,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            var newDividendMatrix = dividend.TempCopy();
+            var newDividendMatrix = dividend.CopyTemp();
 
             fProxyOP.compModDiv(newDividendMatrix, divisor);
             return newDividendMatrix;

@@ -13,7 +13,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator -(in fProxyN a) {
 
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
             fProxyOP.signFlipInpl(vec);
 
             return vec;
@@ -22,7 +22,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator +(in fProxyN a, fProxy s) {
 
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
             fProxyOP.addInpl(vec, s);
 
             return vec; 
@@ -34,7 +34,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator -(in fProxyN a, fProxy s) {
             
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
             fProxyOP.addInpl(vec, -s);
             
             return vec;
@@ -43,15 +43,15 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator -(fProxy s, in fProxyN a)
         {
-            fProxyN vec = a.TempCopy();
-            fProxyOP.subInpl(s, vec);
+            fProxyN vec = a.CopyTemp();
+            vec.rsubInpl(s);
             return vec;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator *(in fProxyN a, fProxy s) {
             
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             fProxyOP.mulInpl(vec, s);
 
@@ -64,7 +64,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator /(in fProxyN a, fProxy s)
         {
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -77,7 +77,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator /(fProxy s, fProxyN a)
         {
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             fProxyOP.divInpl(s, vec);
 
@@ -87,7 +87,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator %(in fProxyN a, fProxy s)
         {
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -100,7 +100,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static fProxyN operator %(fProxy s, fProxyN a)
         {
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             fProxyOP.modInpl(s, vec);
 
@@ -120,7 +120,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             fProxyOP.addInpl(vec, b);
 
@@ -137,7 +137,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
             fProxyOP.subInpl(vec, b);
             
             return vec;
@@ -153,7 +153,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            fProxyN vec = a.TempCopy();
+            fProxyN vec = a.CopyTemp();
 
             fProxyOP.compMulInpl(b, vec);
 
@@ -171,7 +171,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            fProxyN newDividendVec = dividend.TempCopy();
+            fProxyN newDividendVec = dividend.CopyTemp();
             fProxyOP.compDivInpl(newDividendVec, divisor);
 
             return newDividendVec;
@@ -188,7 +188,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            fProxyN newDividendVec = dividend.TempCopy();
+            fProxyN newDividendVec = dividend.CopyTemp();
             fProxyOP.compModDiv(newDividendVec, divisor);
 
             return newDividendVec;

@@ -17,7 +17,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator -(in floatMxN a)
         {
-            floatMxN matrix = a.TempCopy();
+            floatMxN matrix = a.CopyTemp();
             
             floatOP.signFlipInpl(matrix);
 
@@ -26,7 +26,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator +(in floatMxN lhs, float rhs)
         {
-            floatMxN matrix = lhs.TempCopy();
+            floatMxN matrix = lhs.CopyTemp();
             
             floatOP.addInpl(matrix, rhs);
 
@@ -37,7 +37,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator -(in floatMxN lhs, float rhs)
         {
-            floatMxN matrix = lhs.TempCopy();
+            floatMxN matrix = lhs.CopyTemp();
             
             floatOP.addInpl(matrix, -rhs);
 
@@ -51,7 +51,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator *(in floatMxN a, float s)
         {
-            floatMxN matrix = a.TempCopy();
+            floatMxN matrix = a.CopyTemp();
 
             floatOP.mulInpl(matrix, s);
 
@@ -62,7 +62,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator /(in floatMxN a, float s)
         {
-            floatMxN matrix = a.TempCopy();
+            floatMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -74,7 +74,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator /(float s, in floatMxN a)
         {
-            floatMxN matrix = a.TempCopy();
+            floatMxN matrix = a.CopyTemp();
             
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -86,7 +86,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator %(in floatMxN a, float s)
         {
-            floatMxN matrix = a.TempCopy();
+            floatMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -98,7 +98,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatMxN operator %(float s, in floatMxN a)
         {
-            floatMxN matrix = a.TempCopy();
+            floatMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -121,7 +121,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
 
-            floatMxN matrix = lhs.TempCopy();
+            floatMxN matrix = lhs.CopyTemp();
 
             floatOP.addInpl(matrix, rhs);
 
@@ -138,7 +138,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
             
-            floatMxN matrix = lhs.TempCopy();
+            floatMxN matrix = lhs.CopyTemp();
 
             floatOP.subInpl(matrix, rhs);
 
@@ -159,7 +159,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
 
-            floatMxN matrix = lhs.TempCopy();
+            floatMxN matrix = lhs.CopyTemp();
 
             floatOP.compMulInpl(rhs, matrix);
 
@@ -176,7 +176,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            floatMxN newDividendMatrix = dividend.TempCopy();
+            floatMxN newDividendMatrix = dividend.CopyTemp();
 
             floatOP.compDivInpl(newDividendMatrix, divisor);
             return newDividendMatrix;
@@ -193,7 +193,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            var newDividendMatrix = dividend.TempCopy();
+            var newDividendMatrix = dividend.CopyTemp();
 
             floatOP.compModDiv(newDividendMatrix, divisor);
             return newDividendMatrix;

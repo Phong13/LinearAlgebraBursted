@@ -77,8 +77,6 @@ namespace LinearAlgebra
             flags = new UnsafeList<Arena.ArrayFlags>(1, allocator);
             flags.Resize(1);
             flags.Ptr[0] = Arena.ArrayFlags.None;
-
-            floatN nn;
         }
 
         /// <summary>
@@ -107,10 +105,19 @@ namespace LinearAlgebra
             return _arenaPtr->floatVec(in this);
         }
 
-        public unsafe floatN TempCopy()
+        /// <summary>
+        /// Allocates a copy in the arena's temp buffer.
+        /// </summary>
+        public unsafe floatN CopyTemp()
         {
             return _arenaPtr->tempfloatVec(in this);
         }
+
+        /// <summary>
+        /// Deprecated. Renamed to CopyTemp() for consistency with CopyPersistent().
+        /// </summary>
+        [System.Obsolete("Renamed to CopyTemp() for naming consistency with CopyPersistent().")]
+        public unsafe floatN TempCopy() => CopyTemp();
 
         public void CopyTo(in floatN vec)
         {

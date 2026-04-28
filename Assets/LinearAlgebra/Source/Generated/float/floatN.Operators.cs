@@ -13,7 +13,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator -(in floatN a) {
 
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
             floatOP.signFlipInpl(vec);
 
             return vec;
@@ -22,7 +22,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator +(in floatN a, float s) {
 
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
             floatOP.addInpl(vec, s);
 
             return vec; 
@@ -34,7 +34,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator -(in floatN a, float s) {
             
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
             floatOP.addInpl(vec, -s);
             
             return vec;
@@ -43,15 +43,15 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator -(float s, in floatN a)
         {
-            floatN vec = a.TempCopy();
-            floatOP.subInpl(s, vec);
+            floatN vec = a.CopyTemp();
+            vec.rsubInpl(s);
             return vec;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator *(in floatN a, float s) {
             
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             floatOP.mulInpl(vec, s);
 
@@ -64,7 +64,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator /(in floatN a, float s)
         {
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -77,7 +77,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator /(float s, floatN a)
         {
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             floatOP.divInpl(s, vec);
 
@@ -87,7 +87,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator %(in floatN a, float s)
         {
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -100,7 +100,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static floatN operator %(float s, floatN a)
         {
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             floatOP.modInpl(s, vec);
 
@@ -120,7 +120,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             floatOP.addInpl(vec, b);
 
@@ -137,7 +137,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
             floatOP.subInpl(vec, b);
             
             return vec;
@@ -153,7 +153,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            floatN vec = a.TempCopy();
+            floatN vec = a.CopyTemp();
 
             floatOP.compMulInpl(b, vec);
 
@@ -171,7 +171,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            floatN newDividendVec = dividend.TempCopy();
+            floatN newDividendVec = dividend.CopyTemp();
             floatOP.compDivInpl(newDividendVec, divisor);
 
             return newDividendVec;
@@ -188,7 +188,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            floatN newDividendVec = dividend.TempCopy();
+            floatN newDividendVec = dividend.CopyTemp();
             floatOP.compModDiv(newDividendVec, divisor);
 
             return newDividendVec;

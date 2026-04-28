@@ -256,7 +256,7 @@ namespace LinearAlgebra
             bool good = true;
             
             {
-                NativeHashSet<floatN> allVecs = new NativeHashSet<floatN>(tempfloatVectors.Length + floatVectors.Length, Allocator);
+                NativeHashSet<floatN> allVecs = new NativeHashSet<floatN>(tempfloatVectors.Length + floatVectors.Length, Allocator.Temp);
                 for (int srcIdx = 0; srcIdx < tempfloatVectors.Length; srcIdx++)
                 {
                     floatN v = tempfloatVectors[srcIdx];
@@ -307,7 +307,7 @@ namespace LinearAlgebra
             }
 
             {
-                NativeHashSet<floatMxN> allMats = new NativeHashSet<floatMxN>(tempfloatMatrices.Length + floatMatrices.Length, Allocator);
+                NativeHashSet<floatMxN> allMats = new NativeHashSet<floatMxN>(tempfloatMatrices.Length + floatMatrices.Length, Allocator.Temp);
                 for (int srcIdx = 0; srcIdx < tempfloatMatrices.Length; srcIdx++)
                 {
                     floatMxN v = tempfloatMatrices[srcIdx];
@@ -358,7 +358,7 @@ namespace LinearAlgebra
             }
             
             {
-                NativeHashSet<doubleN> allVecs = new NativeHashSet<doubleN>(tempdoubleVectors.Length + doubleVectors.Length, Allocator);
+                NativeHashSet<doubleN> allVecs = new NativeHashSet<doubleN>(tempdoubleVectors.Length + doubleVectors.Length, Allocator.Temp);
                 for (int srcIdx = 0; srcIdx < tempdoubleVectors.Length; srcIdx++)
                 {
                     doubleN v = tempdoubleVectors[srcIdx];
@@ -409,7 +409,7 @@ namespace LinearAlgebra
             }
 
             {
-                NativeHashSet<doubleMxN> allMats = new NativeHashSet<doubleMxN>(tempdoubleMatrices.Length + doubleMatrices.Length, Allocator);
+                NativeHashSet<doubleMxN> allMats = new NativeHashSet<doubleMxN>(tempdoubleMatrices.Length + doubleMatrices.Length, Allocator.Temp);
                 for (int srcIdx = 0; srcIdx < tempdoubleMatrices.Length; srcIdx++)
                 {
                     doubleMxN v = tempdoubleMatrices[srcIdx];

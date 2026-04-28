@@ -105,10 +105,19 @@ namespace LinearAlgebra
         /// <summary>
         /// Allocates a copy in the arena's temp buffer
         /// </summary>
-        public unsafe fProxyMxN TempCopy()
+        /// <summary>
+        /// Allocates a copy in the arena's temp buffer.
+        /// </summary>
+        public unsafe fProxyMxN CopyTemp()
         {
             return _arenaPtr->tempfProxyMat(in this);
         }
+
+        /// <summary>
+        /// Deprecated. Renamed to CopyTemp() for consistency with CopyPersistent().
+        /// </summary>
+        [System.Obsolete("Renamed to CopyTemp() for naming consistency with CopyPersistent().")]
+        public unsafe fProxyMxN TempCopy() => CopyTemp();
 
         public unsafe bool Equals(fProxyMxN other)
         {

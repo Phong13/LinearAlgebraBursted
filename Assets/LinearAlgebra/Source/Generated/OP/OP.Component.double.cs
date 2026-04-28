@@ -96,10 +96,12 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void copyInpl<T>(this T place, T from) where T : unmanaged, IUnsafedoubleArray
         {
+            // Match the rest of the 2-arg Inpl family: assert equal length
+            // rather than silently clamping to min(place, from).
+            Assume.SameDim(place.Data.Length, from.Data.Length);
             unsafe
             {
-                int n = math.min(place.Data.Length, from.Data.Length);
-                UnsafeOP.compCopy(place.Data.Ptr, from.Data.Ptr, n);
+                UnsafeOP.compCopy(place.Data.Ptr, from.Data.Ptr, place.Data.Length);
             }
         }
 
@@ -167,13 +169,30 @@ namespace LinearAlgebra
         {
             addInpl(v, -s);
         }
-        
+
+        /// <summary>
+        /// Reverse subtract: v = s - v, in place. The numpy "rsub" pattern.
+        /// Different from subInpl(this T v, double s) which computes v = v - s.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void rsubInpl<T>(this T v, double s) where T : unmanaged, IUnsafedoubleArray
+        {
+            unsafe {
+                UnsafeOP.scalSub(s, v.Data.Ptr, v.Data.Length);
+            }
+        }
+
+        /// <summary>
+        /// Deprecated. The result-in-second-arg shape was inconsistent with
+        /// the rest of the *Inpl family (where the first arg is the
+        /// destination). Use v.rsubInpl(s) instead, which has the same
+        /// semantics (v = s - v) but a regular extension-method call shape.
+        /// </summary>
+        [System.Obsolete("Use v.rsubInpl(s) instead. Same semantics (v = s - v) but matches the rest of the *Inpl family's call shape.")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void subInpl<T>(double s, T v) where T : unmanaged, IUnsafedoubleArray
         {
-            unsafe {                 
-                UnsafeOP.scalSub(s, v.Data.Ptr, v.Data.Length);
-            }
+            v.rsubInpl(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

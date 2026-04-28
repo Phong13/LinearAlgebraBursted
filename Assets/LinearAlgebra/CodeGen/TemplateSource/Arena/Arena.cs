@@ -181,7 +181,7 @@ namespace LinearAlgebra
             bool good = true;
             //+copyReplace
             {
-                NativeHashSet<fProxyN> allVecs = new NativeHashSet<fProxyN>(tempfProxyVectors.Length + fProxyVectors.Length, Allocator);
+                NativeHashSet<fProxyN> allVecs = new NativeHashSet<fProxyN>(tempfProxyVectors.Length + fProxyVectors.Length, Allocator.Temp);
                 for (int srcIdx = 0; srcIdx < tempfProxyVectors.Length; srcIdx++)
                 {
                     fProxyN v = tempfProxyVectors[srcIdx];
@@ -232,7 +232,7 @@ namespace LinearAlgebra
             }
 
             {
-                NativeHashSet<fProxyMxN> allMats = new NativeHashSet<fProxyMxN>(tempfProxyMatrices.Length + fProxyMatrices.Length, Allocator);
+                NativeHashSet<fProxyMxN> allMats = new NativeHashSet<fProxyMxN>(tempfProxyMatrices.Length + fProxyMatrices.Length, Allocator.Temp);
                 for (int srcIdx = 0; srcIdx < tempfProxyMatrices.Length; srcIdx++)
                 {
                     fProxyMxN v = tempfProxyMatrices[srcIdx];

@@ -13,7 +13,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator -(in doubleN a) {
 
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
             doubleOP.signFlipInpl(vec);
 
             return vec;
@@ -22,7 +22,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator +(in doubleN a, double s) {
 
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
             doubleOP.addInpl(vec, s);
 
             return vec; 
@@ -34,7 +34,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator -(in doubleN a, double s) {
             
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
             doubleOP.addInpl(vec, -s);
             
             return vec;
@@ -43,15 +43,15 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator -(double s, in doubleN a)
         {
-            doubleN vec = a.TempCopy();
-            doubleOP.subInpl(s, vec);
+            doubleN vec = a.CopyTemp();
+            vec.rsubInpl(s);
             return vec;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator *(in doubleN a, double s) {
             
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             doubleOP.mulInpl(vec, s);
 
@@ -64,7 +64,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator /(in doubleN a, double s)
         {
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -77,7 +77,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator /(double s, doubleN a)
         {
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             doubleOP.divInpl(s, vec);
 
@@ -87,7 +87,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator %(in doubleN a, double s)
         {
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -100,7 +100,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleN operator %(double s, doubleN a)
         {
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             doubleOP.modInpl(s, vec);
 
@@ -120,7 +120,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             doubleOP.addInpl(vec, b);
 
@@ -137,7 +137,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
             doubleOP.subInpl(vec, b);
             
             return vec;
@@ -153,7 +153,7 @@ namespace LinearAlgebra
 
             Assume.SameDim(in a, in b);
 
-            doubleN vec = a.TempCopy();
+            doubleN vec = a.CopyTemp();
 
             doubleOP.compMulInpl(b, vec);
 
@@ -171,7 +171,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            doubleN newDividendVec = dividend.TempCopy();
+            doubleN newDividendVec = dividend.CopyTemp();
             doubleOP.compDivInpl(newDividendVec, divisor);
 
             return newDividendVec;
@@ -188,7 +188,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            doubleN newDividendVec = dividend.TempCopy();
+            doubleN newDividendVec = dividend.CopyTemp();
             doubleOP.compModDiv(newDividendVec, divisor);
 
             return newDividendVec;

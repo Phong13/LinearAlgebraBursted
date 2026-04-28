@@ -17,7 +17,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator -(in doubleMxN a)
         {
-            doubleMxN matrix = a.TempCopy();
+            doubleMxN matrix = a.CopyTemp();
             
             doubleOP.signFlipInpl(matrix);
 
@@ -26,7 +26,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator +(in doubleMxN lhs, double rhs)
         {
-            doubleMxN matrix = lhs.TempCopy();
+            doubleMxN matrix = lhs.CopyTemp();
             
             doubleOP.addInpl(matrix, rhs);
 
@@ -37,7 +37,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator -(in doubleMxN lhs, double rhs)
         {
-            doubleMxN matrix = lhs.TempCopy();
+            doubleMxN matrix = lhs.CopyTemp();
             
             doubleOP.addInpl(matrix, -rhs);
 
@@ -51,7 +51,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator *(in doubleMxN a, double s)
         {
-            doubleMxN matrix = a.TempCopy();
+            doubleMxN matrix = a.CopyTemp();
 
             doubleOP.mulInpl(matrix, s);
 
@@ -62,7 +62,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator /(in doubleMxN a, double s)
         {
-            doubleMxN matrix = a.TempCopy();
+            doubleMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -74,7 +74,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator /(double s, in doubleMxN a)
         {
-            doubleMxN matrix = a.TempCopy();
+            doubleMxN matrix = a.CopyTemp();
             
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -86,7 +86,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator %(in doubleMxN a, double s)
         {
-            doubleMxN matrix = a.TempCopy();
+            doubleMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -98,7 +98,7 @@ namespace LinearAlgebra
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static doubleMxN operator %(double s, in doubleMxN a)
         {
-            doubleMxN matrix = a.TempCopy();
+            doubleMxN matrix = a.CopyTemp();
 
             if (s == 0f)
                 throw new DivideByZeroException();
@@ -121,7 +121,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
 
-            doubleMxN matrix = lhs.TempCopy();
+            doubleMxN matrix = lhs.CopyTemp();
 
             doubleOP.addInpl(matrix, rhs);
 
@@ -138,7 +138,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
             
-            doubleMxN matrix = lhs.TempCopy();
+            doubleMxN matrix = lhs.CopyTemp();
 
             doubleOP.subInpl(matrix, rhs);
 
@@ -159,7 +159,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in lhs, in rhs);
 
-            doubleMxN matrix = lhs.TempCopy();
+            doubleMxN matrix = lhs.CopyTemp();
 
             doubleOP.compMulInpl(rhs, matrix);
 
@@ -176,7 +176,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            doubleMxN newDividendMatrix = dividend.TempCopy();
+            doubleMxN newDividendMatrix = dividend.CopyTemp();
 
             doubleOP.compDivInpl(newDividendMatrix, divisor);
             return newDividendMatrix;
@@ -193,7 +193,7 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in dividend, in divisor);
 
-            var newDividendMatrix = dividend.TempCopy();
+            var newDividendMatrix = dividend.CopyTemp();
 
             doubleOP.compModDiv(newDividendMatrix, divisor);
             return newDividendMatrix;

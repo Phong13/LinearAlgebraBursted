@@ -46,14 +46,14 @@ namespace LinearAlgebra
         {
             Assume.SameDim(in a, in b);
 
-            return c ? b.TempCopy() : a.TempCopy();
+            return c ? b.CopyTemp() : a.CopyTemp();
         }
 
         public static floatMxN select(in floatMxN a, in floatMxN b, in bool c)
         {
             Assume.SameDim(in a, in b);
 
-            return c ? b.TempCopy() : a.TempCopy();
+            return c ? b.CopyTemp() : a.CopyTemp();
         }
     }
 
