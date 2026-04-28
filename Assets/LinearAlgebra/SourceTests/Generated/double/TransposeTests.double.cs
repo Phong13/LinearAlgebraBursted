@@ -39,7 +39,7 @@ public class doubleTransposeTests
 
             int dim = 16;
             
-            doubleMxN A = arena.doubleRandomMatrix(dim, dim);
+            doubleMxN A = arena.doubleRandomMatrix(dim, dim, 12343, true);
 
             doubleMxN B = doubleOP.trans(A);
 
@@ -60,7 +60,7 @@ public class doubleTransposeTests
             int rows = 8; 
             int cols = 32;
 
-            doubleMxN A = arena.doubleRandomMatrix(rows, cols);
+            doubleMxN A = arena.doubleRandomMatrix(rows, cols, 12343, true);
 
             doubleMxN B = doubleOP.trans(A);
 

@@ -89,7 +89,7 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsIdentity(A, 0.0001f));
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsIdentity(A, 0.002f));
 
@@ -106,7 +106,7 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsSymmetric(A));
 
-            A = arena.doubleRandomMatrix(dim, dim * 2);
+            A = arena.doubleRandomMatrix(dim, dim * 2, 12343, true);
 
             doubleMxN C = doubleOP.dot(A, A, true);
 
@@ -125,13 +125,13 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsSymmetric(A, 0.000001f));
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(A, 0.002f));
 
             doubleMxN C = doubleOP.dot(A, A, true);
 
-            C += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            C += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsSymmetric(C, 0.002f));
 
@@ -148,7 +148,7 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsDiagonal(A));
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsFalse(Analysis.IsDiagonal(A));
 
@@ -165,11 +165,11 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.000001f));
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.002f));
 
-            A = arena.doubleRandomDiagonalMatrix(dim, -1f, -1f);
+            A = arena.doubleRandomDiagonalMatrix(dim, -1f, -1f, 12343, true);
 
             Assert.IsTrue(Analysis.IsDiagonal(A, 0.000001f));
 
@@ -186,7 +186,7 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A));
             
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsFalse(Analysis.IsUpperTriangular(A));
 
@@ -211,7 +211,7 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.000001f));
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.002f));
 
@@ -221,7 +221,7 @@ public class doubleAnalysisTests
             for(int r = 0; r < c; r++)
                 A[r, c] = 5f;
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             Assert.IsTrue(Analysis.IsUpperTriangular(A, 0.002f));
                         
@@ -238,7 +238,7 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsLowerTriangular(A));
 
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
             Assert.IsFalse(Analysis.IsLowerTriangular(A));
 
             // Reset A to the identity matrix
@@ -267,7 +267,7 @@ public class doubleAnalysisTests
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.000001f));
 
             // Add small random values and test if it's still lower triangular within a higher tolerance
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.002f));
 
             // Reset A to the identity matrix
@@ -279,7 +279,7 @@ public class doubleAnalysisTests
                     A[r, c] = 5f;
 
             // Add small random values again
-            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f);
+            A += arena.doubleRandomMatrix(dim, dim, -0.001f, 0.001f, 12343, true);
 
             // Test if the modified matrix is still lower triangular within the higher epsilon tolerance
             Assert.IsTrue(Analysis.IsLowerTriangular(A, 0.002f));
@@ -305,13 +305,13 @@ public class doubleAnalysisTests
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            doubleN reflect = arena.doubleRandomVector(dim, -1f, 1f);
+            doubleN reflect = arena.doubleRandomVector(dim, -1f, 1f, 12343, true);
 
             A = doubleOP.dot(arena.doubleHouseholderMatrix(dim, reflect, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));
 
-            reflect = arena.doubleRandomVector(dim, -1f, 1f, 50301);
+            reflect = arena.doubleRandomVector(dim, -1f, 1f, 50301, true);
             A = doubleOP.dot(arena.doubleHouseholderMatrix(dim, reflect, true), A);
 
             Assert.IsTrue(Analysis.IsOrthogonal(A, 0.00001f));

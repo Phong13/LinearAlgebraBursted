@@ -20,7 +20,7 @@ public class floatOrthoOpTests
 
             int dim = 16;
 
-            var Q = arena.floatRandomMatrix(dim*2, dim);
+            var Q = arena.floatRandomMatrix(dim*2, dim, 12343, true);
             var R = arena.floatMat(dim);
 
             OrthoOP.qrDecomposition(ref Q, ref R);
@@ -128,7 +128,7 @@ public class floatOrthoOpTests
 
             int dim = 8;
 
-            var Q = arena.floatRandomDiagonalMatrix(dim, 1f, 3f);
+            var Q = arena.floatRandomDiagonalMatrix(dim, 1f, 3f, 12343, true);
             var R = arena.floatMat(dim);
 
             var A = Q.CopyPersistent();
@@ -151,7 +151,7 @@ public class floatOrthoOpTests
             int dim = 8;
 
             var R = arena.floatMat(dim);
-            var Q = arena.floatRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221);
+            var Q = arena.floatRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221, true);
             
             var A = Q.CopyPersistent();
 
@@ -171,7 +171,7 @@ public class floatOrthoOpTests
             int dim = 512;
 
             var R = arena.floatMat(dim);
-            var Q = arena.floatRandomMatrix(dim * 2, dim, -5f, 5f, 9612221);
+            var Q = arena.floatRandomMatrix(dim * 2, dim, -5f, 5f, 9612221, true);
 
             var A = Q.CopyPersistent();
 
@@ -310,9 +310,9 @@ public class floatOrthoOpTests
                 floatMxN A; 
                 
                 if(Type == TestType.RandomDiagonal)
-                    A = arena.floatRandomDiagonalMatrix(dim, 1f, 3f, 21410 + i*i + i*7);
+                    A = arena.floatRandomDiagonalMatrix(dim, 1f, 3f, 21410 + i*i + i*7, true);
                 else
-                    A = arena.floatRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7);
+                    A = arena.floatRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7, true);
                 
                 var Q = A.CopyPersistent();
                 var R = arena.floatMat(dim);
@@ -394,7 +394,7 @@ public class floatOrthoOpTests
 
             for (uint i = 0; i < randomMatTests; i++) {
 
-                floatMxN A = arena.floatRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7);
+                floatMxN A = arena.floatRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7, true);
 
                 for(int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f*random.NextFloat();
@@ -406,7 +406,7 @@ public class floatOrthoOpTests
 
                 for(uint j = 0; j < randomVecTests; j++) {
 
-                    floatN xOrig = arena.floatRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5);
+                    floatN xOrig = arena.floatRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5, true);
                     floatN b = floatOP.dot(A, xOrig);
                     floatN y = floatOP.dot(b, Q);
 
@@ -444,7 +444,7 @@ public class floatOrthoOpTests
             for (uint i = 0; i < randomMatTests; i++) {
 
                 var arena = new Arena(Allocator.Persistent);
-                floatMxN A = arena.floatRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7);
+                floatMxN A = arena.floatRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextFloat();
@@ -456,7 +456,7 @@ public class floatOrthoOpTests
 
                 for (uint j = 0; j < randomVecTests; j++) {
 
-                    floatN xOrig = arena.floatRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5);
+                    floatN xOrig = arena.floatRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5, true);
                     floatN b = floatOP.dot(A, xOrig);
                     floatN y = floatOP.dot(b, Q);
 
@@ -492,12 +492,12 @@ public class floatOrthoOpTests
 
             for (uint i = 0; i < randomMatTests; i++) {
 
-                floatMxN A = arena.floatRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7);
+                floatMxN A = arena.floatRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f * random.NextFloat();
 
-                floatN xOrig = arena.floatRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5);
+                floatN xOrig = arena.floatRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5, true);
                 floatN b = floatOP.dot(A, xOrig);
                 floatN x = arena.floatVec(systemDim);
 
@@ -535,12 +535,12 @@ public class floatOrthoOpTests
             for (uint i = 0; i < randomMatTests; i++) {
 
                 var arena = new Arena(Allocator.Persistent);
-                floatMxN A = arena.floatRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7);
+                floatMxN A = arena.floatRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextFloat();
 
-                floatN xOrig = arena.floatRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5);
+                floatN xOrig = arena.floatRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5, true);
                 floatN b = floatOP.dot(A, xOrig);
                 floatN x = arena.floatVec(sysDimN);
 

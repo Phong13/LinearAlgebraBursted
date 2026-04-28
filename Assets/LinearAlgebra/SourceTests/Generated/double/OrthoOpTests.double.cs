@@ -20,7 +20,7 @@ public class doubleOrthoOpTests
 
             int dim = 16;
 
-            var Q = arena.doubleRandomMatrix(dim*2, dim);
+            var Q = arena.doubleRandomMatrix(dim*2, dim, 12343, true);
             var R = arena.doubleMat(dim);
 
             OrthoOP.qrDecomposition(ref Q, ref R);
@@ -128,7 +128,7 @@ public class doubleOrthoOpTests
 
             int dim = 8;
 
-            var Q = arena.doubleRandomDiagonalMatrix(dim, 1f, 3f);
+            var Q = arena.doubleRandomDiagonalMatrix(dim, 1f, 3f, 12343, true);
             var R = arena.doubleMat(dim);
 
             var A = Q.CopyPersistent();
@@ -151,7 +151,7 @@ public class doubleOrthoOpTests
             int dim = 8;
 
             var R = arena.doubleMat(dim);
-            var Q = arena.doubleRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221);
+            var Q = arena.doubleRandomMatrix(dim*2, dim, -0.5f, 0.5f, 94221, true);
             
             var A = Q.CopyPersistent();
 
@@ -171,7 +171,7 @@ public class doubleOrthoOpTests
             int dim = 512;
 
             var R = arena.doubleMat(dim);
-            var Q = arena.doubleRandomMatrix(dim * 2, dim, -5f, 5f, 9612221);
+            var Q = arena.doubleRandomMatrix(dim * 2, dim, -5f, 5f, 9612221, true);
 
             var A = Q.CopyPersistent();
 
@@ -310,9 +310,9 @@ public class doubleOrthoOpTests
                 doubleMxN A; 
                 
                 if(Type == TestType.RandomDiagonal)
-                    A = arena.doubleRandomDiagonalMatrix(dim, 1f, 3f, 21410 + i*i + i*7);
+                    A = arena.doubleRandomDiagonalMatrix(dim, 1f, 3f, 21410 + i*i + i*7, true);
                 else
-                    A = arena.doubleRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7);
+                    A = arena.doubleRandomMatrix(dim*2, dim, -25f, +25f, 21410 + i*i + i*7, true);
                 
                 var Q = A.CopyPersistent();
                 var R = arena.doubleMat(dim);
@@ -394,7 +394,7 @@ public class doubleOrthoOpTests
 
             for (uint i = 0; i < randomMatTests; i++) {
 
-                doubleMxN A = arena.doubleRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7);
+                doubleMxN A = arena.doubleRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7, true);
 
                 for(int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f*random.NextDouble();
@@ -406,7 +406,7 @@ public class doubleOrthoOpTests
 
                 for(uint j = 0; j < randomVecTests; j++) {
 
-                    doubleN xOrig = arena.doubleRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5);
+                    doubleN xOrig = arena.doubleRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5, true);
                     doubleN b = doubleOP.dot(A, xOrig);
                     doubleN y = doubleOP.dot(b, Q);
 
@@ -444,7 +444,7 @@ public class doubleOrthoOpTests
             for (uint i = 0; i < randomMatTests; i++) {
 
                 var arena = new Arena(Allocator.Persistent);
-                doubleMxN A = arena.doubleRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7);
+                doubleMxN A = arena.doubleRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextDouble();
@@ -456,7 +456,7 @@ public class doubleOrthoOpTests
 
                 for (uint j = 0; j < randomVecTests; j++) {
 
-                    doubleN xOrig = arena.doubleRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5);
+                    doubleN xOrig = arena.doubleRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5, true);
                     doubleN b = doubleOP.dot(A, xOrig);
                     doubleN y = doubleOP.dot(b, Q);
 
@@ -492,12 +492,12 @@ public class doubleOrthoOpTests
 
             for (uint i = 0; i < randomMatTests; i++) {
 
-                doubleMxN A = arena.doubleRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7);
+                doubleMxN A = arena.doubleRandomMatrix(systemDim, systemDim, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < systemDim; d++)
                     A[d, d] += 5.1f + 10f * random.NextDouble();
 
-                doubleN xOrig = arena.doubleRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5);
+                doubleN xOrig = arena.doubleRandomVector(systemDim, -25, +25, 1337 + i * i + i * 5, true);
                 doubleN b = doubleOP.dot(A, xOrig);
                 doubleN x = arena.doubleVec(systemDim);
 
@@ -535,12 +535,12 @@ public class doubleOrthoOpTests
             for (uint i = 0; i < randomMatTests; i++) {
 
                 var arena = new Arena(Allocator.Persistent);
-                doubleMxN A = arena.doubleRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7);
+                doubleMxN A = arena.doubleRandomMatrix(sysDimM, sysDimN, -5, +5, 420 + i - i + i * 7, true);
 
                 for (int d = 0; d < sysDimN; d++)
                     A[d, d] += 5.1f + 10f * random.NextDouble();
 
-                doubleN xOrig = arena.doubleRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5);
+                doubleN xOrig = arena.doubleRandomVector(sysDimN, -25, +25, 1337 + i * i + i * 5, true);
                 doubleN b = doubleOP.dot(A, xOrig);
                 doubleN x = arena.doubleVec(sysDimN);
 

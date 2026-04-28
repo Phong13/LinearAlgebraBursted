@@ -107,7 +107,7 @@ public class doubleDotOperationTests
             int outVecLen = 5;
 
             doubleN x = arena.doubleVec(inVecLen, 1f);
-            doubleMxN A = arena.doubleRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
+            doubleMxN A = arena.doubleRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f, 12343, false);
 
             doubleN xx = x;
             doubleMxN AA = A;
@@ -131,8 +131,8 @@ public class doubleDotOperationTests
 
             int vecLen = 20;
 
-            doubleN x = arena.doubleRandomUnitVector(vecLen);
-            doubleMxN A = arena.doubleIdentityMatrix(vecLen, true);
+            doubleN x = arena.doubleRandomUnitVector(vecLen, 12343, false);
+            doubleMxN A = arena.doubleIdentityMatrix(vecLen, false);
 
             Assert.IsTrue(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
             doubleN b = doubleOP.dot(x, A);
@@ -144,7 +144,7 @@ public class doubleDotOperationTests
             for (int i = 0; i < vecLen; i++)
                 Assert.AreEqual(x[i], b[i]);
 
-            x = arena.doubleIndexZeroVector(vecLen, true);
+            x = arena.doubleIndexZeroVector(vecLen, false);
 
             Assert.IsTrue(arena.AllocationsCount == 3 && arena.TempAllocationsCount == 1);
             Assert.IsTrue(arena.DB_isTemp(b));
@@ -224,8 +224,8 @@ public class doubleDotOperationTests
 
             int matLen = 16;
 
-            doubleMxN A = arena.doubleIdentityMatrix(matLen, true);
-            doubleMxN B = arena.doubleIdentityMatrix(matLen, true);
+            doubleMxN A = arena.doubleIdentityMatrix(matLen, false);
+            doubleMxN B = arena.doubleIdentityMatrix(matLen, false);
 
             doubleMxN AA = A;
             doubleMxN BB = B;
@@ -247,7 +247,7 @@ public class doubleDotOperationTests
                     Assert.AreEqual((double)0f, C[i, j]);
             }
 
-            doubleMxN R = arena.doubleRandomMatrix(matLen, matLen);
+            doubleMxN R = arena.doubleRandomMatrix(matLen, matLen, 12343, true);
             
             C = doubleOP.dot(A, R);
 
@@ -281,7 +281,7 @@ public class doubleDotOperationTests
             int outVecLen = 16;
 
             doubleN x = arena.doubleVec(inVecLen, 1f);
-            doubleMxN A = arena.doubleRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f);
+            doubleMxN A = arena.doubleRandomMatrix(outVecLen, inVecLen, -0.01f, 0.01f, 12343, false);
 
             doubleN xx = x;
             doubleMxN AA = A;
@@ -307,7 +307,7 @@ public class doubleDotOperationTests
             int outVecLen = 16;
 
             doubleN x = arena.doubleVec(inVecLen, 1f);
-            doubleMxN A = arena.doubleRandomMatrix(inVecLen, outVecLen, -0.01f, 0.01f);
+            doubleMxN A = arena.doubleRandomMatrix(inVecLen, outVecLen, -0.01f, 0.01f, 12343, true);
 
             doubleN b = doubleOP.dot(x, A);
             

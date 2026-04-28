@@ -49,7 +49,7 @@ public class doubleSolversTests {
 
             OrthoOP.qrDecomposition(ref Q, ref R);
 
-            var b = arena.doubleRandomVector(dim, -1f, 1f);
+            var b = arena.doubleRandomVector(dim, -1f, 1f, 12324, true);
 
             var y = doubleOP.dot(b, Q);
             

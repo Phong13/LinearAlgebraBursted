@@ -270,7 +270,8 @@ public class doublePivotTests
             Print.Log(vec);
 
             var vecCopy = vec.CopyPersistent();
-
+            UnityEngine.Debug.Log(vec);
+            UnityEngine.Debug.Log(vecCopy);
             Assert.IsTrue(BoolAnalysis.IsAllEqualTo(vec == vecCopy, true));
 
             // [1, 0, 0, 0] -> [0, 0, 0, 1]

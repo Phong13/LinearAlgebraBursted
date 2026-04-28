@@ -74,7 +74,7 @@ public class floatLUTests
 
         private floatMxN GetRandomMatrix(ref Arena arena, int dim, float min, float max, uint seed) {
 
-            var mat = arena.floatRandomMatrix(dim, dim, min, max, seed);
+            var mat = arena.floatRandomMatrix(dim, dim, min, max, seed, true);
 
             return mat;
         }
@@ -102,7 +102,7 @@ public class floatLUTests
 
             int dim = 8;
 
-            var U = arena.floatRandomDiagonalMatrix(dim, 1f, 3f);
+            var U = arena.floatRandomDiagonalMatrix(dim, 1f, 3f, 12345, true);
             var L = arena.floatIdentityMatrix(dim, true);
 
             var A = U.CopyPersistent();
@@ -178,7 +178,7 @@ public class floatLUTests
 
             int dim = 18;
 
-            var U = arena.floatRandomMatrix(dim, dim, 1f, 10f, 314221);
+            var U = arena.floatRandomMatrix(dim, dim, 1f, 10f, 314221, true);
             var L = arena.floatIdentityMatrix(dim, true);
             
             // add to diagonals of U
@@ -324,7 +324,7 @@ public class floatLUTests
 
             int dim = 512; 
 
-            var A = arena.floatRandomMatrix(dim, dim, -10f, 10f, 314221);
+            var A = arena.floatRandomMatrix(dim, dim, -10f, 10f, 314221, false);
 
             if (!(arena.AllocationsCount == 1 && arena.TempAllocationsCount == 0)) UnityEngine.Debug.LogError("FAILED");
 
@@ -334,14 +334,14 @@ public class floatLUTests
                     A[d, d] *= 10f;
             }
 
-            var x_Known = arena.floatRandomVector(dim, 1f, 10f, 901);
+            var x_Known = arena.floatRandomVector(dim, 1f, 10f, 901, false);
 
             if (!(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0)) Debug.LogError("failed");
 
             var b = floatOP.dot(A, x_Known);
 
             var U = A.CopyPersistent();
-            var L = arena.floatIdentityMatrix(dim, true);
+            var L = arena.floatIdentityMatrix(dim, false);
 
             SortOfAssert(arena.AllocationsCount == 4 && arena.TempAllocationsCount == 1);
             SortOfAssert(arena.DB_isPersistant(U) && arena.DB_isPersistant(L) && arena.DB_isTemp(b));
@@ -379,7 +379,7 @@ public class floatLUTests
 
             int dim = 512; 
 
-            var A = arena.floatRandomMatrix(dim, dim, -10f, 10f, 314221);
+            var A = arena.floatRandomMatrix(dim, dim, -10f, 10f, 314221, false);
 
             SortOfAssert(arena.AllocationsCount == 1 && arena.TempAllocationsCount == 0);
 
@@ -389,7 +389,7 @@ public class floatLUTests
                     A[d, d] *= 10f;
             }
 
-            var x_Known = arena.floatRandomVector(dim, 1f, 10f, 901);
+            var x_Known = arena.floatRandomVector(dim, 1f, 10f, 901, false);
             
             SortOfAssert(arena.AllocationsCount == 2 && arena.TempAllocationsCount == 0);
 

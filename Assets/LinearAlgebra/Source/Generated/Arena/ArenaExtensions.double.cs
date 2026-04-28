@@ -48,11 +48,11 @@ namespace LinearAlgebra
             doubleN vec;
             if (isTemp)
             {
-                vec = arena.tempdoubleVec(N, true);
+                vec = arena.tempdoubleVec(N, false);
             }
             else
             {
-                vec = arena.doubleVec(N, true);
+                vec = arena.doubleVec(N, false);
             }
 
             if (index < 0 || index >= N)
@@ -63,7 +63,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static doubleN doubleRandomUnitVector(this ref Arena arena, int N, uint seed = 34215, bool isTemp = true)
+        public static doubleN doubleRandomUnitVector(this ref Arena arena, int N, uint seed, bool isTemp)
         {
             doubleN vec;
             if (isTemp)
@@ -92,7 +92,7 @@ namespace LinearAlgebra
             return vec;
         }
 
-        public static doubleN doubleRandomVector(this ref Arena arena, int N, double min, double max, uint seed = 34215, bool isTemp = true)
+        public static doubleN doubleRandomVector(this ref Arena arena, int N, double min, double max, uint seed, bool isTemp)
         {
             doubleN vec;
             if (isTemp)
@@ -223,13 +223,13 @@ namespace LinearAlgebra
 
         // random matrix
 
-        public static doubleMxN doubleRandomMatrix(this ref Arena arena, int M_rows, int N_cols, uint seed = 121312, bool isTemp = true)
+        public static doubleMxN doubleRandomMatrix(this ref Arena arena, int M_rows, int N_cols, uint seed, bool isTemp)
         {
             return doubleRandomMatrix(ref arena, M_rows, N_cols, -1, 1, seed, isTemp);
         }
 
         // constructs diagonal matrix with scalar s on diagonal
-        public static doubleMxN doubleRandomDiagonalMatrix(this ref Arena arena, int N, double min, double max, uint seed = 65792, bool isTemp = true)
+        public static doubleMxN doubleRandomDiagonalMatrix(this ref Arena arena, int N, double min, double max, uint seed, bool isTemp)
         {
             doubleMxN mat;
             if (isTemp)
@@ -245,7 +245,7 @@ namespace LinearAlgebra
             return mat;
         }
 
-        public static doubleMxN doubleRandomMatrix(this ref Arena arena, int M_rows, int N_cols, double min, double max, uint seed = 121312, bool isTemp = true)
+        public static doubleMxN doubleRandomMatrix(this ref Arena arena, int M_rows, int N_cols, double min, double max, uint seed, bool isTemp)
         {
             doubleMxN mat;
             if (isTemp)

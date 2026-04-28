@@ -272,7 +272,7 @@ public class doubleOperationsTest {
             //result = a * b;
             //result = a / b;
             result = a % b;
-            SortOfAssert(arena.TempAllocationsCount == 15);
+            SortOfAssert(arena.TempAllocationsCount == 13);
             SortOfAssert(arena.AllocationsCount == 2);
 
             // Check that the buffers a and b were not moved by any of these operations
@@ -638,7 +638,7 @@ public class doubleOperationsTest {
 
             var b = arena.doubleMat(rows, cols, 0.5f);
 
-            a = a.dot(b);
+            b.compMulInpl(a);
 
             for (int i = 0; i < totalElements; i++)
                 Assert.AreEqual((double)9f, a[i]);

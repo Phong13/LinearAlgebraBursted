@@ -105,8 +105,11 @@ namespace LinearAlgebra
         {
             Arena.CheckValid(a);
             Arena.CheckValid(b);
+            // Inner dimension of A^T * B is A.M_Rows (== A^T.N_Cols), which
+            // must equal B.M_Rows. For the non-transposed case it is
+            // A.N_Cols == B.M_Rows.
             if (transposeA)
-                Assume.SameDim(a.N_Cols, b.N_Cols);
+                Assume.SameDim(a.M_Rows, b.M_Rows);
             else
                 Assume.SameDim(a.N_Cols, b.M_Rows);
 
@@ -141,8 +144,11 @@ namespace LinearAlgebra
             Arena.CheckValid(a);
             Arena.CheckValid(b);
             Arena.CheckValid(target);
+            // Inner dimension of A^T * B is A.M_Rows (== A^T.N_Cols), which
+            // must equal B.M_Rows. For the non-transposed case it is
+            // A.N_Cols == B.M_Rows.
             if (transposeA)
-                Assume.SameDim(a.N_Cols, b.N_Cols);
+                Assume.SameDim(a.M_Rows, b.M_Rows);
             else
                 Assume.SameDim(a.N_Cols, b.M_Rows);
 
@@ -179,11 +185,26 @@ namespace LinearAlgebra
             Arena.CheckValid(target);
             Arena.CheckValid(A);
             Arena.CheckValid(x);
-            Assume.SameDim(A.N_Cols, x.N);
-            unsafe
+            if (transposeA)
             {
-                for (int i = 0; i < target.N; i++) target[i] = 0;
-                UnsafeOP.matVecDot(A.Data.Ptr, x.Data.Ptr, target.Data.Ptr, A.M_Rows, A.N_Cols);
+                // y = A^T * x  is equivalent to  y = x^T * A.
+                Assume.SameDim(A.M_Rows, x.N);
+                Assume.SameDim(target.N, A.N_Cols);
+                unsafe
+                {
+                    for (int i = 0; i < target.N; i++) target[i] = 0;
+                    UnsafeOP.vecMatDot(x.Data.Ptr, A.Data.Ptr, target.Data.Ptr, A.M_Rows, A.N_Cols);
+                }
+            }
+            else
+            {
+                Assume.SameDim(A.N_Cols, x.N);
+                Assume.SameDim(target.N, A.M_Rows);
+                unsafe
+                {
+                    for (int i = 0; i < target.N; i++) target[i] = 0;
+                    UnsafeOP.matVecDot(A.Data.Ptr, x.Data.Ptr, target.Data.Ptr, A.M_Rows, A.N_Cols);
+                }
             }
         }
 

@@ -43,7 +43,7 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void addInpl<T>(T place, float s) where T : unmanaged, IUnsafefloatArray {
+        public static void addInpl<T>(this T place, float s) where T : unmanaged, IUnsafefloatArray {
 
             unsafe {
                 UnsafeOP.scalAdd(place.Data.Ptr, place.Data.Length, s);
@@ -51,7 +51,7 @@ namespace LinearAlgebra
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void mulInpl<T>(T place, float s) where T : unmanaged, IUnsafefloatArray
+        public static void mulInpl<T>(this T place, float s) where T : unmanaged, IUnsafefloatArray
         {
             unsafe {
                 UnsafeOP.scalMul(place.Data.Ptr, place.Data.Length, s);
@@ -338,10 +338,13 @@ namespace LinearAlgebra
         }
 
         /// <summary>
-        /// Allocated as a tempVec
+        /// Returns a newly-allocated vector containing one column of the
+        /// matrix. Pass isTemp:true for an arena temp allocation,
+        /// isTemp:false for a persistent one. No defaults — callers must
+        /// pick a lifetime, matching the rest of the new API.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static floatN Col(this floatMxN a, int col, int rowStartIdx = 0, bool isTemp = true)
+        public static floatN Col(this floatMxN a, int col, int rowStartIdx, bool isTemp)
         {
             Arena.CheckValid(a);
             unsafe
