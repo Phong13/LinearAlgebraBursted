@@ -55,9 +55,17 @@ namespace LinearAlgebra
 
         public Allocator Allocator;
 
-        bool isDisposed;
+        // Why byte and not bool? `Arena` is captured by Burst-compiled jobs
+        // through pointers (NativeDisableUnsafePtrRestriction Arena*). Burst /
+        // Unity's job marshalling does not handle the managed `bool` type
+        // reliably across the native boundary; using `bool` fields here
+        // produced crashes in consumer projects. Store the flags as `byte`
+        // (0 / 1) and expose a `bool` property for ergonomic access.
+        byte _isDisposed;
+        public bool isDisposed => _isDisposed == 1;
 
-        public bool Initialized { get; private set; }
+        byte _isInitialized;
+        public bool Initialized => _isInitialized == 1;
 
         private UnsafeList<boolN> BoolVectors;
         private UnsafeList<boolMxN> BoolMatrices;
@@ -68,9 +76,9 @@ namespace LinearAlgebra
 
         public Arena(Allocator allocator) {
 
-            Initialized = true;
             Allocator = allocator;
-            isDisposed = false;
+            _isDisposed = 0;
+            _isInitialized = 0;
 
             expectedPersistentAllocations = -1;
 
@@ -108,6 +116,7 @@ namespace LinearAlgebra
 
             TempBoolVectors = new UnsafeList<boolN>(2, Allocator);
             TempBoolMatrices = new UnsafeList<boolMxN>(2, Allocator);
+            _isInitialized = 1;
         }
 
         public void Clear() {
@@ -521,9 +530,9 @@ namespace LinearAlgebra
                 TempBoolMatrices.Dispose();
                 TempBoolVectors.Dispose();
                  
-                Initialized = false;
+                _isInitialized = 0;
                 Allocator = Allocator.Invalid;
-                isDisposed = true;
+                _isDisposed = 1; // true
             }
         }
     }

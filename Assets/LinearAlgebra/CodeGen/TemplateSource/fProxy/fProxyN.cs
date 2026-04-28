@@ -224,5 +224,17 @@ namespace LinearAlgebra
 
             return sb.ToString();
         }
+
+        public string ToString(string format)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < N; i++)
+            {
+                sb.Append(", ");
+                sb.Append(this[i].ToString(format));
+            }
+
+            return sb.ToString();
+        }
     }
 }
