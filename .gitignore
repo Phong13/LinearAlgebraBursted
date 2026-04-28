@@ -70,3 +70,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Test artifacts and ad-hoc batch-mode logs at repo root
+/TestResults*.xml
+/codegen*.txt
+/compile_log*.txt
+/test_log*.txt
