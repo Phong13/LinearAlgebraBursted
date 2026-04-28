@@ -1,5 +1,9 @@
 # Using LinearAlgebraBursted (Generated/)
 
+License: MIT, see `../LICENSE` (one folder up, in `Source/`). The whole
+`Source/` tree — including this `Generated/` folder, the asmdef, and any
+static singular files — ships under that one license.
+
 This folder contains generated code from `CodeGen/TemplateSource/`. Do not
 edit files here — they are overwritten on every codegen run. Edit the
 templates under `Assets/LinearAlgebra/CodeGen/TemplateSource/` instead.
